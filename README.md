@@ -20,7 +20,8 @@ Alegi proiectul și vezi fiecare agent ca o mascotă mică: ce face acum, dacă 
 - **✈️ Mesaje.** Poți scrie unui agent direct din aplicație:
   - **sesiune pornită**: mesajul ajunge în ea prin unealta oficială `SendMessage`, printr-un releu scurt `claude -p` pe Haiku. Agentul îl vede ca mesaj de la un coleg, deci nu e echivalent cu o aprobare de-a ta;
   - **sesiune închisă**: o pornește în fundal cu mesajul tău (`claude --resume <id> --bg`).
-- Se actualizează singur la 3 secunde. Citește sesiunile din Windows și din WSL.
+- **🎨 Trei teme:** 🍑 Cremă (urmează tema deschisă sau închisă a sistemului), 🌙 Noapte cu stele și 🍵 Matcha. Aplicația o ține minte pe cea aleasă.
+- Se actualizează singur la 3 secunde. Merge pe **Windows** (inclusiv cu sesiunile din WSL) și pe **macOS**.
 
 ## Cum funcționează
 
@@ -35,22 +36,29 @@ Aplicația doar **citește**. Nu modifică nimic din `~/.claude`:
 
 Pentru sesiunile din WSL, starea e estimată din cât de recent a scris sesiunea și din ultimul ei mesaj.
 
-Serverul ascultă doar pe `127.0.0.1` și folosește numai biblioteca standard Python. Fereastra de desktop folosește [pywebview](https://pywebview.flowrl.com/) peste WebView2, care e deja inclus în Windows 10/11.
+Serverul ascultă doar pe `127.0.0.1` și folosește numai biblioteca standard Python. Fereastra de desktop folosește [pywebview](https://pywebview.flowrl.com/): pe Windows rulează peste WebView2, care e deja inclus în Windows 10/11, iar pe macOS peste WebKit.
 
 ## Instalare
 
-Ai nevoie de Windows, Python 3.10+ și Claude Code (`claude` în PATH).
+📘 **Pas cu pas, pentru Windows și macOS: [GHID-INSTALARE.md](GHID-INSTALARE.md)** (în română și engleză)
 
-```powershell
+Pe scurt, ai nevoie de Python 3.10+ și de Claude Code (`claude` în PATH). Apoi:
+
+| | |
+|---|---|
+| 🪟 **Windows** | *Code* → *Download ZIP*, dezarhivezi, dublu-click pe **`instaleaza.bat`**, apoi deschizi **Agenti Hub** de pe Desktop |
+| 🍎 **macOS** | *Code* → *Download ZIP*, apoi dublu-click pe **`porneste.command`**. Prima dată: click dreapta → *Open*. |
+
+Cu git:
+
+```bash
 git clone https://github.com/andrei-petrache/agenti-hub.git
 cd agenti-hub
-pip install -r requirements.txt
-powershell -ExecutionPolicy Bypass -File creeaza-scurtatura.ps1   # scurtătură pe Desktop
+# Windows:  instaleaza.bat
+# macOS:    bash porneste.command
 ```
 
-Apoi deschizi **Agenti Hub** de pe Desktop sau rulezi `porneste.bat`.
-
-Dacă îl vrei în browser în loc de fereastră: `porneste-in-browser.bat` deschide http://127.0.0.1:4777. Portul se schimbă cu variabila `AGENTI_PORT`.
+Dacă îl vrei în browser în loc de fereastră: `porneste-in-browser.bat` (sau `python3 server.py`) deschide http://127.0.0.1:4777. Portul se schimbă cu variabila `AGENTI_PORT`.
 
 ## Configurare
 
@@ -58,7 +66,7 @@ La prima pornire se creează `proiecte.json` din `proiecte.exemplu.json`. Fișie
 
 ```json
 {
-  "numele_tau": "Andrei",
+  "numele_tau": "Ana",
   "proiecte": [
     {
       "nume": "Aplicația mea",
@@ -86,6 +94,8 @@ Ce nu se potrivește nicăieri ajunge în **Diverse**.
 | Fișier | Rol |
 |---|---|
 | `app.py` | fereastra de desktop (pywebview) |
+| `instaleaza.bat` / `porneste.bat` | instalare și pornire pe Windows |
+| `porneste.command` | instalare (într-un `.venv`) și pornire pe macOS |
 | `server.py` | serverul local: citește sesiunile, calculează stările și legăturile, trimite mesaje |
 | `index.html` | toată interfața (HTML/CSS/JS fără dependențe, mascote SVG) |
 | `fa_iconita.py` | desenează iconița `agenti.ico` / `agenti.png` din cod, fără biblioteci |
@@ -93,6 +103,7 @@ Ce nu se potrivește nicăieri ajunge în **Diverse**.
 
 ## Limite
 
+- Pe macOS l-am scris să meargă, dar nu l-am testat încă pe un Mac real. Dacă ceva nu merge, deschide un issue.
 - Starea din WSL e estimată, nu exactă.
 - Sesiunile din WSL nu pot primi mesaje din aplicație, pentru că acolo rulează alt `claude`.
 - Un mesaj către o sesiune pornită costă puțin, pentru că pornește un releu scurt pe Haiku.

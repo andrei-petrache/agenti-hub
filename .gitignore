@@ -7,5 +7,7 @@ releu/
 # profilul ferestrei WebView2
 .webview/
 agenti-hub.log
+# mediul Python creat de porneste.command (macOS)
+.venv/
 __pycache__/
 *.pyc

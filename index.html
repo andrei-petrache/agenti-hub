@@ -12,11 +12,38 @@
   --shadow:0 2px 0 #efe3d6, 0 8px 24px rgba(120,80,50,.08);
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#211c19; --card:#2b2521; --ink:#f3e9df; --muted:#b0a297; --line:#3b332d;
+  :root:not([data-theme]){ --bg:#211c19; --card:#2b2521; --ink:#f3e9df; --muted:#b0a297; --line:#3b332d;
          --shadow:0 2px 0 #3b332d, 0 8px 24px rgba(0,0,0,.3); }
 }
+/* 🌙 Noapte cu stele: indigo adânc, accente neon */
+:root[data-theme="noapte"]{
+  --bg:#141331; --card:#1f1d45; --ink:#ecebff; --muted:#a3a0d6; --line:#2f2c63;
+  --orange:#ff9ec7; --work:#ff9ec7; --wait:#7fe0ff; --sleep:#6f6ba8; --stuck:#ffd36e;
+  --shadow:0 2px 0 #2f2c63, 0 10px 30px rgba(0,0,0,.45);
+  --body-bg: radial-gradient(1.5px 1.5px at 12% 18%, #fff8 50%, transparent 51%),
+             radial-gradient(1px 1px at 72% 12%, #fff9 50%, transparent 51%),
+             radial-gradient(1.5px 1.5px at 38% 62%, #fff6 50%, transparent 51%),
+             radial-gradient(1px 1px at 88% 48%, #fff8 50%, transparent 51%),
+             radial-gradient(1px 1px at 22% 84%, #fff7 50%, transparent 51%),
+             radial-gradient(1.5px 1.5px at 60% 90%, #fff6 50%, transparent 51%),
+             radial-gradient(ellipse at 80% -10%, #3b2b7a 0%, transparent 55%),
+             radial-gradient(ellipse at 0% 110%, #2a1f5c 0%, transparent 50%), #141331;
+}
+/* 🍵 Matcha: verde pastel, liniștit, ca un caiet */
+:root[data-theme="matcha"]{
+  --bg:#eef4e6; --card:#fbfdf7; --ink:#2c3a2a; --muted:#728370; --line:#dbe6cf;
+  --orange:#6aa36f; --work:#e0894f; --wait:#4f9fc4; --sleep:#a9b7a3; --stuck:#d6a83c;
+  --shadow:0 2px 0 #dbe6cf, 0 8px 22px rgba(60,90,50,.09);
+  --body-bg: radial-gradient(circle at 1px 1px, #c9d8bb 1px, transparent 0) 0 0/22px 22px, #eef4e6;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Nunito","Segoe UI",system-ui,sans-serif}
+body{margin:0;background:var(--body-bg, var(--bg));background-attachment:fixed;color:var(--ink);font:15px/1.45 "Nunito","Segoe UI",system-ui,sans-serif}
+.themes{display:inline-flex;gap:2px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:2px}
+.themes button{border:none;background:none;padding:4px 8px;border-radius:9px;font-size:16px;line-height:1}
+.themes button.on{background:color-mix(in srgb,var(--orange) 25%,transparent)}
+[data-theme="noapte"] .ag svg .m-body,[data-theme="noapte"] .map .m-body{filter:drop-shadow(0 0 7px #ffffff35)}
+[data-theme="noapte"] .p-blocat{color:var(--stuck)}
+[data-theme="noapte"] .ag h3,[data-theme="noapte"] .proj h3,[data-theme="noapte"] .hello{text-shadow:0 0 18px #ff9ec755}
 header{display:flex;align-items:center;gap:14px;padding:18px 28px;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line)}
 header h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.3px}
 header .crumb{color:var(--muted);font-weight:700}
@@ -137,6 +164,11 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
   <span class="crumb" id="crumb"></span>
   <span class="sp"></span>
   <span class="live"><i></i><span id="upd">live</span></span>
+  <span class="themes" id="themes" title="Temă">
+    <button data-th="" title="Cremă (urmează tema sistemului)">🍑</button>
+    <button data-th="noapte" title="Noapte cu stele">🌙</button>
+    <button data-th="matcha" title="Matcha">🍵</button>
+  </span>
   <select id="zile" title="Ce sesiuni arăt">
     <option value="1">ultima zi</option>
     <option value="3" selected>ultimele 3 zile</option>
@@ -435,6 +467,14 @@ function save(){ try{ PROJ ? localStorage.setItem('proj', PROJ) : localStorage.r
 $('#back').onclick = () => { PROJ = null; SEL = null; $('#panel').classList.remove('open'); save(); render(); };
 $('#zile').onchange = () => { save(); load(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && SEL){ SEL = null; $('#panel').classList.remove('open'); render(); } });
+function setTheme(t){
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  document.querySelectorAll('#themes button').forEach(b => b.classList.toggle('on', b.dataset.th === (t || '')));
+  try{ localStorage.setItem('tema', t || ''); }catch(e){}
+}
+document.querySelectorAll('#themes button').forEach(b => b.onclick = () => setTheme(b.dataset.th));
+let temaSalvata = ''; try{ temaSalvata = localStorage.getItem('tema') || ''; }catch(e){}
+setTheme(temaSalvata);
 load(); setInterval(() => { if (!document.hidden && !document.querySelector('#mut:focus')) load(); }, 3000);
 </script>
 </body>
