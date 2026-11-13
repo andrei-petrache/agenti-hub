@@ -1,0 +1,11 @@
+# configurarea ta locală (ID-uri de sesiuni, nume de proiecte) — pornește din proiecte.exemplu.json
+proiecte.json
+# jurnalul mesajelor trimise din aplicație
+mesaje.jsonl
+# folderul de lucru al releului de mesaje
+releu/
+# profilul ferestrei WebView2
+.webview/
+agenti-hub.log
+__pycache__/
+*.pyc

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenți Hub</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%B3%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#fbf6ef; --card:#fffdf9; --ink:#3b2f2a; --muted:#8a7a70; --line:#efe3d6;
+  --orange:#e8875b; --work:#e8875b; --wait:#5aa9e6; --sleep:#b9aea6; --stuck:#e6b34a;
+  --shadow:0 2px 0 #efe3d6, 0 8px 24px rgba(120,80,50,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#211c19; --card:#2b2521; --ink:#f3e9df; --muted:#b0a297; --line:#3b332d;
+         --shadow:0 2px 0 #3b332d, 0 8px 24px rgba(0,0,0,.3); }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Nunito","Segoe UI",system-ui,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:18px 28px;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line)}
+header h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.3px}
+header .crumb{color:var(--muted);font-weight:700}
+header .sp{flex:1}
+button,select{font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--orange)}
+.back{font-weight:800}
+.live{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+.live i{width:8px;height:8px;border-radius:50%;background:#7cc576;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
+.hello{font-size:26px;font-weight:800;margin:6px 0 4px}
+.sub{color:var(--muted);margin:0 0 22px}
+
+/* proiecte */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.proj{background:var(--card);border-radius:22px;padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;border:2px solid transparent;position:relative;overflow:hidden}
+.proj:hover{transform:translateY(-3px);border-color:var(--c)}
+.proj::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--c)}
+.proj .em{font-size:34px}
+.proj h3{margin:6px 0 2px;font-size:19px}
+.proj p{margin:0 0 12px;color:var(--muted);font-size:13px;min-height:18px}
+.minis{display:flex;flex-wrap:wrap;gap:2px;min-height:44px}
+.minis svg{width:40px;height:40px}
+.counts{display:flex;gap:10px;font-size:13px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
+.d-lucreaza{background:var(--work)} .d-asteapta{background:var(--wait)} .d-blocat{background:var(--stuck)} .d-doarme{background:var(--sleep)}
+
+/* agenți */
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.ag{background:var(--card);border-radius:22px;padding:16px 18px 18px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;transition:transform .15s}
+.ag:hover{transform:translateY(-2px);border-color:var(--line)}
+.ag.sel{border-color:var(--orange)}
+.ag .top{display:flex;gap:12px;align-items:center}
+.ag .top svg{width:76px;height:76px;flex:none}
+.ag h3{margin:0;font-size:18px;word-break:break-word}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;margin-top:4px}
+.p-lucreaza{background:color-mix(in srgb,var(--work) 18%,transparent);color:var(--work)}
+.p-asteapta{background:color-mix(in srgb,var(--wait) 18%,transparent);color:var(--wait)}
+.p-blocat{background:color-mix(in srgb,var(--stuck) 22%,transparent);color:#b98418}
+.p-doarme{background:color-mix(in srgb,var(--sleep) 25%,transparent);color:var(--muted)}
+.act{margin:12px 0 6px;font-size:14px;background:var(--bg);border-radius:12px;padding:8px 11px;min-height:38px;word-break:break-word}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.subs{font-size:12px;color:var(--muted);margin-top:6px}
+.section-t{font-weight:800;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:28px 0 12px}
+
+/* panou */
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--card);box-shadow:-10px 0 40px rgba(0,0,0,.12);transform:translateX(105%);transition:transform .25s;z-index:10;display:flex;flex-direction:column}
+.panel.open{transform:none}
+.panel .ph{display:flex;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+.panel .ph svg{width:64px;height:64px}
+.panel .pb{overflow:auto;padding:16px 20px 40px}
+.panel h4{margin:18px 0 8px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.bubble{background:var(--bg);border-radius:14px;padding:10px 12px;white-space:pre-wrap;word-break:break-word;font-size:14px;max-height:260px;overflow:auto}
+.feed{list-style:none;margin:0;padding:0}
+.feed li{display:flex;gap:9px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px;word-break:break-word}
+.feed .ic{flex:none;width:22px;text-align:center}
+.feed .tm{color:var(--muted);flex:none;font-size:11px;width:40px;padding-top:2px}
+.feed .tu{font-weight:700}
+.kv{font-size:13px;display:grid;grid-template-columns:80px 1fr;gap:4px 10px;word-break:break-all}
+.kv b{color:var(--muted);font-weight:700}
+.x{margin-left:auto;font-size:18px;border:none;background:none}
+.empty{color:var(--muted);text-align:center;padding:50px 0}
+.empty svg{width:110px;height:110px}
+
+/* mascota */
+.m-body{transform-origin:50px 88px}
+.st-lucreaza .m-body{animation:bob .7s ease-in-out infinite}
+.st-lucreaza .m-star{animation:spin 2.2s linear infinite;transform-origin:50px 17px}
+.st-asteapta .m-arm{animation:wave 1.2s ease-in-out infinite;transform-origin:78px 62px}
+.st-asteapta .m-eyes{animation:blink 4s infinite;transform-origin:50px 54px}
+.st-doarme .m-body{animation:breathe 3.5s ease-in-out infinite}
+.st-blocat .m-body{animation:wobble 2s ease-in-out infinite}
+.m-z{animation:zz 2.4s ease-in-out infinite;opacity:0}
+.m-z2{animation-delay:1.2s}
+@keyframes bob{50%{transform:translateY(-5px) scaleY(1.03)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes wave{50%{transform:rotate(-28deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes breathe{50%{transform:scale(1.035,.97)}}
+@keyframes wobble{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(8px,-14px)}}
+@media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
+
+/* tab-uri */
+.tabs{display:inline-flex;background:var(--card);border-radius:14px;padding:4px;box-shadow:var(--shadow);margin-bottom:6px}
+.tabs button{border:none;border-radius:10px;padding:7px 16px;font-weight:800;color:var(--muted);background:none}
+.tabs button.on{background:var(--orange);color:#fff}
+
+/* hartă */
+.map{background:var(--card);border-radius:22px;box-shadow:var(--shadow);margin-top:14px;position:relative;overflow:hidden}
+.map svg.g{width:100%;height:auto;display:block}
+.map .node{cursor:pointer}
+.map .node text{font-weight:800;font-size:13px;fill:var(--ink)}
+.map .edge{fill:none;stroke-linecap:round;opacity:.55;cursor:pointer;transition:opacity .15s}
+.map .edge:hover,.map .edge.hl{opacity:1}
+.map .lbl{font-size:11px;font-weight:800;fill:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:12px;padding:9px 12px;font-size:12px;max-width:340px;display:none;z-index:3}
+.tip b{display:block;margin-bottom:4px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:12px 18px;border-top:1px solid var(--line)}
+
+/* mesaj */
+.compose textarea{width:100%;min-height:80px;resize:vertical;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.compose textarea:focus{outline:none;border-color:var(--orange)}
+.compose .row{display:flex;gap:10px;align-items:center;margin-top:8px}
+.compose .send{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:800}
+.compose .send:disabled{opacity:.5;cursor:wait}
+.compose .hint{font-size:12px;color:var(--muted);flex:1}
+.compose .res{font-size:13px;margin-top:8px;border-radius:10px;padding:7px 10px}
+.res.ok{background:color-mix(in srgb,#7cc576 18%,transparent)} .res.err{background:color-mix(in srgb,#e97a7a 20%,transparent)}
+.on-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7cc576;box-shadow:0 0 0 3px color-mix(in srgb,#7cc576 25%,transparent)}
+</style>
+</head>
+<body>
+<header>
+  <button class="back" id="back" hidden>← proiecte</button>
+  <h1>✳️ Agenți Hub</h1>
+  <span class="crumb" id="crumb"></span>
+  <span class="sp"></span>
+  <span class="live"><i></i><span id="upd">live</span></span>
+  <select id="zile" title="Ce sesiuni arăt">
+    <option value="1">ultima zi</option>
+    <option value="3" selected>ultimele 3 zile</option>
+    <option value="7">ultima săptămână</option>
+    <option value="30">ultima lună</option>
+  </select>
+</header>
+<main id="main"></main>
+<aside class="panel" id="panel"></aside>
+
+<script>
+const $ = s => document.querySelector(s);
+let DATA = null, PROJ = null, SEL = null, TAB = 'agenti', DRAFT = {}, SENDING = false, LASTRES = null;
+try { PROJ = localStorage.getItem('proj'); $('#zile').value = localStorage.getItem('zile') || '3'; } catch(e){}
+
+const STATUS = {
+  lucreaza:{t:'lucrează', e:'⚡'}, asteapta:{t:'te așteaptă', e:'👋'},
+  blocat:{t:'blocat?', e:'😅'}, doarme:{t:'doarme', e:'💤'}
+};
+const PALETA = ['#e8875b','#f2a65a','#e97a7a','#d98fc2','#9b8ce0','#6fb1e0','#5cc0a8','#8cc56b','#e6b34a','#c99572'];
+function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return PALETA[h%PALETA.length]}
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function ago(sec){
+  if (sec < 60) return 'acum ' + Math.max(1,Math.round(sec)) + 's';
+  if (sec < 3600) return 'acum ' + Math.round(sec/60) + ' min';
+  if (sec < 86400) return 'acum ' + Math.round(sec/3600) + ' h';
+  return 'acum ' + Math.round(sec/86400) + ' zile';
+}
+const hhmm = ts => ts ? new Date(ts).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'}) : '';
+
+/* mascota: un bulgăraș rotund cu o steluță-antenă */
+function mascot(color, status, id){
+  const s = status;
+  const eyes = s === 'doarme'
+    ? `<path d="M34 55q5 4 10 0M56 55q5 4 10 0" stroke="#3b2f2a" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    : s === 'lucreaza'
+    ? `<g class="m-eyes"><ellipse cx="39" cy="54" rx="4" ry="5" fill="#3b2f2a"/><ellipse cx="61" cy="54" rx="4" ry="5" fill="#3b2f2a"/><circle cx="40.5" cy="52" r="1.5" fill="#fff"/><circle cx="62.5" cy="52" r="1.5" fill="#fff"/></g>`
+    : `<g class="m-eyes"><circle cx="39" cy="54" r="4.5" fill="#3b2f2a"/><circle cx="61" cy="54" r="4.5" fill="#3b2f2a"/><circle cx="40.5" cy="52.3" r="1.6" fill="#fff"/><circle cx="62.5" cy="52.3" r="1.6" fill="#fff"/></g>`;
+  const mouth = s === 'lucreaza' ? `<path d="M45 64q5 3 10 0" stroke="#3b2f2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+    : s === 'asteapta' ? `<path d="M43 63q7 7 14 0z" fill="#3b2f2a"/>`
+    : s === 'blocat' ? `<path d="M44 66q6-4 12 0" stroke="#3b2f2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+    : `<circle cx="50" cy="65" r="2.3" fill="#3b2f2a"/>`;
+  const star = `<g class="m-star"><path d="M50 7 L52.2 14.8 L60 17 L52.2 19.2 L50 27 L47.8 19.2 L40 17 L47.8 14.8 Z" fill="${color}" stroke="#fff" stroke-width="1.2"/></g>`;
+  const extra = s === 'doarme'
+    ? `<text class="m-z" x="74" y="34" font-size="13" font-weight="900" fill="#b9aea6">z</text><text class="m-z m-z2" x="82" y="26" font-size="10" font-weight="900" fill="#b9aea6">z</text>`
+    : s === 'blocat' ? `<path d="M74 40q4 6 0 9q-4-3 0-9z" fill="#8fc8f0"/>`
+    : s === 'lucreaza' ? `<g opacity=".85"><rect x="30" y="80" width="40" height="8" rx="3" fill="#3b2f2a" opacity=".18"/></g>` : '';
+  const arm = s === 'asteapta' ? `<g class="m-arm"><ellipse cx="82" cy="56" rx="6" ry="9" fill="${color}" transform="rotate(25 82 56)"/></g>`
+    : `<ellipse cx="80" cy="66" rx="5" ry="7" fill="${color}"/>`;
+  return `<svg viewBox="0 0 100 100" class="st-${s}" aria-hidden="true">
+    <ellipse cx="50" cy="93" rx="24" ry="4" fill="#000" opacity=".07"/>
+    <g class="m-body">
+      <line x1="50" y1="25" x2="50" y2="32" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+      ${star}
+      <ellipse cx="20" cy="66" rx="5" ry="7" fill="${color}"/>
+      ${arm}
+      <path d="M50 30c19 0 32 13 32 32c0 17-12 27-32 27S18 79 18 62c0-19 13-32 32-32z" fill="${color}"/>
+      <ellipse cx="42" cy="40" rx="9" ry="5" fill="#fff" opacity=".28"/>
+      <circle cx="31" cy="62" r="5" fill="#ff8fa3" opacity=".45"/><circle cx="69" cy="62" r="5" fill="#ff8fa3" opacity=".45"/>
+      ${eyes}${mouth}
+    </g>${extra}</svg>`;
+}
+
+async function load(){
+  try{
+    const z = $('#zile').value;
+    const r = await fetch('/api/stare?zile=' + z, {cache:'no-store'});
+    DATA = await r.json();
+    $('#upd').textContent = 'live · ' + new Date().toLocaleTimeString('ro-RO');
+    render();
+  }catch(e){ $('#upd').textContent = 'server oprit?'; }
+}
+
+function render(){
+  if (!DATA) return;
+  const p = PROJ && DATA.proiecte.find(x => x.nume === PROJ);
+  if (PROJ && !p && PROJ !== '*') { PROJ = null; }
+  const tipOn = $('#tip') && $('#tip').style.display === 'block';
+  if (!tipOn) PROJ ? renderProject() : renderHome();
+  if (SEL) renderPanel();
+}
+
+function counts(list){
+  const c = {lucreaza:0, asteapta:0, blocat:0, doarme:0};
+  list.forEach(a => c[a.status]++);
+  return c;
+}
+
+function renderHome(){
+  $('#back').hidden = true; $('#crumb').textContent = '';
+  const all = DATA.proiecte.flatMap(p => p.agenti);
+  const c = counts(all);
+  const ore = new Date().getHours();
+  const salut = ore < 5 ? 'Noapte bună' : ore < 12 ? 'Bună dimineața' : ore < 18 ? 'Bună ziua' : 'Bună seara';
+  let h = `<div class="hello">${salut}! Alege un proiect</div>
+    <p class="sub">${c.lucreaza} lucrează acum · ${c.asteapta} te așteaptă · ${c.blocat} poate blocați · ${c.doarme} dorm</p><div class="grid">`;
+  const proj = [...DATA.proiecte, {nume:'*', emoji:'🌈', culoare:'#e8875b', descriere:'toți agenții, din toate proiectele', agenti: all}];
+  for (const p of proj){
+    if (!p.agenti.length && p.nume !== '*') { /* proiect gol: tot îl arăt, mai stins */ }
+    const cc = counts(p.agenti);
+    const minis = p.agenti.slice(0, 8).map(a => mascot(hue(a.titlu), a.status)).join('');
+    h += `<div class="proj" style="--c:${p.culoare};${p.agenti.length?'':'opacity:.55'}" data-p="${esc(p.nume)}">
+      <div class="em">${p.emoji}</div><h3>${p.nume === '*' ? 'Toate' : esc(p.nume)}</h3><p>${esc(p.descriere)}</p>
+      <div class="minis">${minis || '<span class="sub" style="margin:0">niciun agent recent</span>'}</div>
+      <div class="counts">${Object.entries(cc).filter(([,n])=>n).map(([k,n]) => `<span><span class="dot d-${k}"></span>${n} ${STATUS[k].t}</span>`).join('')}</div>
+    </div>`;
+  }
+  $('#main').innerHTML = h + '</div>';
+  document.querySelectorAll('.proj').forEach(el => el.onclick = () => { PROJ = el.dataset.p; save(); render(); scrollTo(0,0); });
+}
+
+function card(a){
+  const subsActive = a.subagenti.filter(s => !s.terminat && s.varsta < 300).length;
+  return `<div class="ag ${SEL===a.id?'sel':''}" data-id="${a.id}">
+    <div class="top">${mascot(hue(a.titlu), a.status)}
+      <div><h3>${esc(a.titlu)}</h3>
+      <span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span></div></div>
+    <div class="act">${esc(a.activitate)}</div>
+    <div class="meta">${a.pornita?'<span><span class="on-dot"></span> pornită</span>':''}<span>🕒 ${ago(a.varsta)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(a.proiect)}</span>`:''}</div>
+    ${a.subagenti.length ? `<div class="subs">🐣 ${a.subagenti.length} sub-agenți${subsActive?` · <b style="color:var(--work)">${subsActive} activi</b>`:''}</div>` : ''}
+  </div>`;
+}
+
+function renderProject(){
+  const p = PROJ === '*' ? {nume:'Toate', emoji:'🌈', agenti: DATA.proiecte.flatMap(x => x.agenti).sort((a,b)=>a.varsta-b.varsta)}
+                         : DATA.proiecte.find(x => x.nume === PROJ);
+  $('#back').hidden = false; $('#crumb').textContent = '/ ' + p.emoji + ' ' + p.nume;
+  const treji = p.agenti.filter(a => a.status !== 'doarme');
+  const dorm = p.agenti.filter(a => a.status === 'doarme');
+  const ord = {lucreaza:0, blocat:1, asteapta:2};
+  treji.sort((a,b) => ord[a.status]-ord[b.status] || a.varsta-b.varsta);
+  const nPornite = p.agenti.filter(a => a.pornita).length;
+  let h = `<div class="hello">${p.emoji} ${esc(p.nume)}</div><p class="sub">${p.agenti.length} sesiuni · ${nPornite} pornite acum</p>
+    <div class="tabs"><button data-t="agenti" class="${TAB==='agenti'?'on':''}">🐣 Agenți</button><button data-t="harta" class="${TAB==='harta'?'on':''}">🕸️ Legături</button></div>`;
+  if (TAB === 'harta') {
+    $('#main').innerHTML = h + harta(p);
+    bindTabs(); bindMap(); return;
+  }
+  if (!p.agenti.length) h += `<div class="empty">${mascot('#e8875b','doarme')}<p>Niciun agent în perioada asta.</p></div>`;
+  if (treji.length) h += `<div class="section-t">Treji</div><div class="agents">${treji.map(card).join('')}</div>`;
+  if (dorm.length) h += `<div class="section-t">Dorm</div><div class="agents">${dorm.map(card).join('')}</div>`;
+  $('#main').innerHTML = h;
+  bindTabs();
+  document.querySelectorAll('.ag').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
+}
+
+function bindTabs(){
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; render(); });
+}
+
+/* ---------- hartă: cine cui scrie ---------- */
+function harta(p){
+  const all = DATA.proiecte.flatMap(x => x.agenti);
+  const inProj = new Set(p.agenti.map(a => a.titlu));
+  const byName = n => all.find(a => a.titlu === n || a.nume_live === n);
+  const edges = DATA.legaturi.filter(e => inProj.has(e.de) || inProj.has(e.la) ||
+      (e.de === 'Tu' && inProj.has(e.la)) || PROJ === '*');
+  const names = [];
+  const add = n => { if (n && !names.includes(n)) names.push(n); };
+  p.agenti.filter(a => a.pornita).forEach(a => add(a.titlu));
+  edges.forEach(e => { add(e.de); add(e.la); });
+  const tu = names.includes('Tu');
+  const ring = names.filter(n => n !== 'Tu');
+  if (!ring.length) return `<div class="map"><div class="empty">${mascot('#e8875b','doarme')}<p>Agenții din proiectul ăsta nu și-au scris încă unul altuia.</p></div></div>`;
+  const W = 1000, H = Math.max(560, 300 + ring.length * 22), cx = W/2, cy = H/2, R = Math.min(W, H)/2 - 95;
+  const pos = {};
+  ring.forEach((n, i) => {
+    const ang = -Math.PI/2 + i * 2*Math.PI/ring.length;
+    pos[n] = ring.length === 1 ? {x: cx, y: cy - 80} : {x: cx + R*1.35*Math.cos(ang), y: cy + R*Math.sin(ang)};
+  });
+  if (tu) pos['Tu'] = {x: cx, y: cy};
+  const maxN = Math.max(...edges.map(e => e.n), 1);
+  const now = Date.now();
+  let es = '', ls = '';
+  edges.forEach((e, i) => {
+    const a = pos[e.de], b = pos[e.la]; if (!a || !b) return;
+    const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
+    const nx = -dy/L, ny = dx/L, off = 34;               // curbă: dus și întors nu se suprapun
+    const r0 = 52, x1 = a.x + dx/L*r0, y1 = a.y + dy/L*r0, x2 = b.x - dx/L*(r0+6), y2 = b.y - dy/L*(r0+6);
+    const mx = (a.x+b.x)/2 + nx*off, my = (a.y+b.y)/2 + ny*off;
+    const col = e.de === 'Tu' ? '#e8875b' : hue(e.de);
+    const w = 1.5 + 5 * Math.log(1+e.n) / Math.log(1+maxN);
+    const fresh = e.ultim && (now - new Date(e.ultim).getTime()) < 15*60*1000;
+    const d = `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    es += `<path class="edge" data-i="${i}" d="${d}" stroke="${col}" stroke-width="${w}" marker-end="url(#ar-${i})"/>
+      <marker id="ar-${i}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${col}"/></marker>`;
+    if (fresh) es += `<circle r="5" fill="${col}"><animateMotion dur="1.6s" repeatCount="indefinite" path="${d}"/></circle>`;
+    ls += `<text class="lbl" x="${(x1+x2)/2*0.5 + mx*0.5}" y="${(y1+y2)/2*0.5 + my*0.5}" text-anchor="middle">${e.n}</text>`;
+  });
+  let ns = '';
+  for (const n of names){
+    const {x, y} = pos[n];
+    if (n === 'Tu'){
+      ns += `<g class="node" transform="translate(${x-38},${y-38})"><circle cx="38" cy="38" r="36" fill="var(--bg)" stroke="#e8875b" stroke-width="3"/>
+        <text x="38" y="50" text-anchor="middle" font-size="34">🙋</text><text x="38" y="94" text-anchor="middle">Tu</text></g>`;
+      continue;
+    }
+    const a = byName(n);
+    const st = a ? a.status : 'doarme';
+    const out = a && !inProj.has(a.titlu) ? ` <tspan style="fill:var(--muted);font-weight:600">· ${esc(a.proiect)}</tspan>` : '';
+    ns += `<g class="node" data-id="${a ? a.id : ''}" transform="translate(${x-55},${y-60})">
+      ${mascot(hue(n), st).replace('<svg', '<svg width="110" height="110"')}
+      <text x="55" y="124" text-anchor="middle" style="font-size:15px">${esc(n.length > 22 ? n.slice(0,21)+'…' : n)}${out}</text>
+      ${a && a.pornita ? `<circle cx="88" cy="22" r="6" fill="#7cc576" stroke="var(--card)" stroke-width="2"/>` : ''}</g>`;
+  }
+  window._edges = edges;
+  return `<div class="map"><svg class="g" viewBox="0 0 ${W} ${H}">${es}${ls}${ns}</svg><div class="tip" id="tip"></div>
+    <div class="legend"><span>➜ săgeata = cine cui a scris · grosimea = câte mesaje</span><span>● bulina care curge = mesaj în ultimele 15 min</span><span><span class="on-dot"></span> sesiune pornită</span><span>click pe un agent = detalii + mesaj</span></div></div>`;
+}
+
+function bindMap(){
+  const tip = $('#tip'), box = document.querySelector('.map');
+  document.querySelectorAll('.map .edge').forEach(el => {
+    el.onmousemove = ev => {
+      const e = window._edges[+el.dataset.i], r = box.getBoundingClientRect();
+      tip.innerHTML = `<b>${esc(e.de)} → ${esc(e.la)} · ${e.n} mesaje</b>` +
+        e.recent.slice().reverse().map(m => `<div>${hhmm(m.ts)} · ${esc(m.text)}</div>`).join('');
+      tip.style.display = 'block';
+      tip.style.left = Math.min(ev.clientX - r.left + 14, r.width - 350) + 'px';
+      tip.style.top = (ev.clientY - r.top + 14) + 'px';
+    };
+    el.onmouseleave = () => tip.style.display = 'none';
+  });
+  document.querySelectorAll('.map .node[data-id]').forEach(el => el.onclick = () => {
+    if (el.dataset.id){ SEL = el.dataset.id; LASTRES = null; renderPanel(); }
+  });
+}
+
+function renderPanel(){
+  const a = DATA.proiecte.flatMap(p => p.agenti).find(x => x.id === SEL);
+  const P = $('#panel');
+  if (!a){ P.classList.remove('open'); return; }
+  const ic = {tu:'🙋', text:'💬', tool:'🔧'};
+  const opts = DATA.proiecte.map(p => `<option ${p.nume===a.proiect?'selected':''}>${esc(p.nume)}</option>`).join('');
+  if (P.dataset.id !== a.id || !P.querySelector('#pinfo')){
+    P.dataset.id = a.id;
+    P.innerHTML = `<div id="pinfo" style="display:contents"></div>`;
+  }
+  const keepScroll = P.querySelector('.pb') ? P.querySelector('.pb').scrollTop : 0;
+  const ta = P.querySelector('#msg');
+  if (ta) DRAFT[a.id] = ta.value;
+  const hadFocus = ta && document.activeElement === ta;
+  const modTxt = a.wsl ? 'Sesiunile din WSL nu pot primi mesaje de aici.'
+    : a.pornita ? `E pornită: mesajul ajunge în ea ca de la un coleg (prin releu, ~10 s). Agentul îl citește când termină ce face.`
+    : `E închisă: o pornesc în fundal cu mesajul tău (claude --resume --bg).`;
+  P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.titlu), a.status)}
+      <div><h3 style="margin:0">${esc(a.titlu)}</h3><span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span></div>
+      <button class="x" id="close" title="închide">✕</button></div>
+    <div class="pb">
+      <div class="act">${a.pornita?'<span class="on-dot"></span> ':''}${esc(a.activitate)}</div>
+      <h4>Scrie-i un mesaj</h4>
+      <div class="compose">
+        <textarea id="msg" placeholder="ex: după ce termini, dă-mi un rezumat scurt" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
+        <div class="row"><span class="hint">${modTxt}</span>
+          <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${SENDING?'se trimite…':'Trimite ✈️'}</button></div>
+        ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(LASTRES.info)}</div>` : ''}
+      </div>
+      ${a.ultimul_prompt ? `<h4>Ultima ta cerere</h4><div class="bubble">${esc(a.ultimul_prompt)}</div>` : ''}
+      ${a.ultimul_text ? `<h4>Ultimul lucru spus</h4><div class="bubble">${esc(a.ultimul_text)}</div>` : ''}
+      <h4>Ce a făcut recent</h4>
+      <ul class="feed">${a.feed.slice().reverse().map(e => `<li><span class="tm">${hhmm(e.ts)}</span><span class="ic">${ic[e.tip]}</span>
+        <span class="${e.tip}">${e.tip==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>
+      ${a.subagenti.length ? `<h4>Sub-agenți</h4><ul class="feed">${a.subagenti.map(s => `<li><span class="ic">${s.terminat?'✅':(s.varsta<300?'⚡':'⏸️')}</span><span>${esc(s.descriere)} <span style="color:var(--muted)">· ${ago(s.varsta)}</span></span></li>`).join('')}</ul>` : ''}
+      <h4>Detalii</h4>
+      <div class="kv"><b>proiect</b><span><select id="mut">${opts}<option value="">↺ automat</option></select></span>
+        <b>folder</b><span>${esc(a.cwd)}</span><b>branch</b><span>${esc(a.branch||'—')}</span>
+        <b>model</b><span>${esc(a.model||'—')}</span><b>sesiune</b><span>${a.id}</span>
+        <b>activ</b><span>${ago(a.varsta)}</span></div>
+      <p class="sub" style="margin-top:14px;font-size:12px">Continui sesiunea cu: <code>claude --resume ${a.id}</code></p>
+    </div>`;
+  P.classList.add('open');
+  P.querySelector('.pb').scrollTop = keepScroll;
+  const t2 = $('#msg');
+  if (hadFocus){ t2.focus(); t2.setSelectionRange(t2.value.length, t2.value.length); }
+  t2.oninput = () => DRAFT[a.id] = t2.value;
+  t2.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) $('#send').click(); };
+  $('#send').onclick = async () => {
+    const text = t2.value.trim(); if (!text || SENDING) return;
+    SENDING = true; LASTRES = null; renderPanel();
+    try{
+      const r = await fetch('/api/mesaj', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, text})});
+      LASTRES = await r.json();
+      if (LASTRES.ok){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
+    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
+    SENDING = false; load();
+  };
+  $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
+  $('#mut').onchange = async e => {
+    await fetch('/api/aloca', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, proiect:e.target.value})});
+    load();
+  };
+}
+
+function save(){ try{ PROJ ? localStorage.setItem('proj', PROJ) : localStorage.removeItem('proj'); localStorage.setItem('zile', $('#zile').value);}catch(e){} }
+$('#back').onclick = () => { PROJ = null; SEL = null; $('#panel').classList.remove('open'); save(); render(); };
+$('#zile').onchange = () => { save(); load(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && SEL){ SEL = null; $('#panel').classList.remove('open'); render(); } });
+load(); setInterval(() => { if (!document.hidden && !document.querySelector('#mut:focus')) load(); }, 3000);
+</script>
+</body>
+</html>
