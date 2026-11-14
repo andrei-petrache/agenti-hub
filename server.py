@@ -559,6 +559,9 @@ class H(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/api/stare"):
             m = re.search(r"zile=(\d+(?:\.\d+)?)", self.path)
+            if "--demo" in sys.argv:
+                import demo
+                return self._json(demo.stare())
             return self._json(stare(float(m.group(1)) if m else 3))
         if self.path in ("/", "/index.html"):
             b = (AICI / "index.html").read_bytes()

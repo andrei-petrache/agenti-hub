@@ -7,6 +7,16 @@ Alegi proiectul și vezi fiecare agent ca o mascotă mică: ce face acum, dacă 
 
 ---
 
+<p align="center"><img src="docs/agenti.jpg" alt="Agenții unui proiect: cine lucrează, cine așteaptă, cine e blocat, plus panoul cu detalii"></p>
+<p align="center"><i>Agenții unui proiect, fiecare cu starea lui. Panoul din dreapta arată ce face agentul și îi poți scrie direct.</i></p>
+
+<p align="center"><img src="docs/legaturi.jpg" alt="Harta legăturilor: cine cui a scris și câte mesaje"></p>
+<p align="center"><i>Harta legăturilor: săgețile arată cine cui a scris, iar grosimea lor câte mesaje au fost.</i></p>
+
+<sub>Capturile sunt făcute cu date inventate: <code>python server.py --demo</code>.</sub>
+
+---
+
 ## Ce face
 
 - **Proiecte.** Sesiunile sunt grupate pe proiecte după numele sesiunii sau după folder. Pe prima pagină vezi câți agenți lucrează în fiecare proiect.

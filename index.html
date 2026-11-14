@@ -331,8 +331,7 @@ function harta(p){
   const add = n => { if (n && !names.includes(n)) names.push(n); };
   p.agenti.filter(a => a.pornita).forEach(a => add(a.titlu));
   edges.forEach(e => { add(e.de); add(e.la); });
-  const tu = names.includes('Tu');
-  const ring = names.filter(n => n !== 'Tu');
+  const ring = names.includes('Tu') ? ['Tu', ...names.filter(n => n !== 'Tu')] : names;
   if (!ring.length) return `<div class="map"><div class="empty">${mascot('#e8875b','doarme')}<p>Agenții din proiectul ăsta nu și-au scris încă unul altuia.</p></div></div>`;
   const W = 1000, H = Math.max(560, 300 + ring.length * 22), cx = W/2, cy = H/2, R = Math.min(W, H)/2 - 95;
   const pos = {};
@@ -340,7 +339,6 @@ function harta(p){
     const ang = -Math.PI/2 + i * 2*Math.PI/ring.length;
     pos[n] = ring.length === 1 ? {x: cx, y: cy - 80} : {x: cx + R*1.35*Math.cos(ang), y: cy + R*Math.sin(ang)};
   });
-  if (tu) pos['Tu'] = {x: cx, y: cy};
   const maxN = Math.max(...edges.map(e => e.n), 1);
   const now = Date.now();
   let es = '', ls = '';
@@ -363,8 +361,9 @@ function harta(p){
   for (const n of names){
     const {x, y} = pos[n];
     if (n === 'Tu'){
-      ns += `<g class="node" transform="translate(${x-38},${y-38})"><circle cx="38" cy="38" r="36" fill="var(--bg)" stroke="#e8875b" stroke-width="3"/>
-        <text x="38" y="50" text-anchor="middle" font-size="34">🙋</text><text x="38" y="94" text-anchor="middle">Tu</text></g>`;
+      ns += `<g class="node" transform="translate(${x-40},${y-40})"><circle cx="40" cy="40" r="38" fill="var(--bg)" stroke="var(--orange)" stroke-width="3"/>
+        <text x="40" y="42" text-anchor="middle" dominant-baseline="central" style="font-size:40px">🙋</text>
+        <text x="40" y="104" text-anchor="middle" style="font-size:15px">Tu</text></g>`;
       continue;
     }
     const a = byName(n);
