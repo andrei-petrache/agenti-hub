@@ -988,6 +988,10 @@ def _put_to_sleep(sid):
             return False, "no_process", {}
         try:
             if os.name == "nt":
+                import terminal
+                if terminal.soft_exit(pid):          # quits by itself and tidies its terminal
+                    _live["t"] = 0
+                    return True, ("slept_term" if a["mode"] == "terminal" else "slept"), {}
                 r = subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True, timeout=20,
                                    creationflags=NO_WIN)
                 if r.returncode != 0:

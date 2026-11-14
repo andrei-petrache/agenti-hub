@@ -207,3 +207,62 @@ def bring_to_front(pid, name=None):
         if len(exact) == 1:
             return show(exact[0])
     return False
+
+
+# ---------------------------------------------------------------- a clean exit (😴 sleep)
+# Killing Claude leaves its terminal with mouse reporting on, and every mouse move then types text like
+# "35;130;16M" at the prompt, also in windows BuzzzHub did not open. So first we ask Claude to quit by
+# itself: Ctrl+C typed into its console (1st stops the work, 2nd and 3rd quit), and it tidies the terminal.
+def soft_exit(pid, wait=8):
+    """Windows only. True if the process quit by itself within `wait` seconds."""
+    if os.name != "nt":
+        return False
+    import ctypes
+    k = ctypes.WinDLL("kernel32")
+    h = k.OpenProcess(0x00100000, False, int(pid))                 # SYNCHRONIZE
+    if not h:
+        return False
+    try:
+        subprocess.run([sys.executable, str(Path(__file__).resolve()), "--ctrl-c", str(int(pid))],
+                       timeout=15, capture_output=True, creationflags=0x08000000)   # CREATE_NO_WINDOW
+        return k.WaitForSingleObject(h, int(wait * 1000)) == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+    finally:
+        k.CloseHandle(h)
+
+
+def _type_ctrl_c(pid):
+    """Runs in its own small process: joins the console of pid and types Ctrl+C three times."""
+    import ctypes
+    import time
+    from ctypes import wintypes
+
+    class Key(ctypes.Structure):
+        _fields_ = [("down", wintypes.BOOL), ("repeat", wintypes.WORD), ("vk", wintypes.WORD),
+                    ("scan", wintypes.WORD), ("char", wintypes.WCHAR), ("state", wintypes.DWORD)]
+
+    class Event(ctypes.Union):
+        _fields_ = [("key", Key), ("pad", ctypes.c_byte * 16)]
+
+    class Record(ctypes.Structure):
+        _fields_ = [("type", wintypes.WORD), ("event", Event)]
+
+    k = ctypes.WinDLL("kernel32")
+    k.CreateFileW.restype = wintypes.HANDLE
+    k.FreeConsole()
+    if not k.AttachConsole(pid):
+        sys.exit(1)
+    k.SetConsoleCtrlHandler(None, True)                            # the Ctrl+C is not for us
+    con = k.CreateFileW("CONIN$", 0xC0000000, 3, None, 3, 0, None)
+    for pause in (1.0, 0.4, 0):
+        recs = (Record * 2)()
+        for i, down in enumerate((1, 0)):
+            recs[i].type = 1                                       # KEY_EVENT
+            recs[i].event.key = Key(down, 1, 0x43, 0x2E, "\x03", 0x08)   # C, with left Ctrl
+        k.WriteConsoleInputW(con, recs, 2, ctypes.byref(wintypes.DWORD()))
+        time.sleep(pause)
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["--ctrl-c"]:
+    _type_ctrl_c(int(sys.argv[2]))
