@@ -15,3 +15,5 @@ buzzzhub.log
 .venv/
 __pycache__/
 *.pyc
+# usage index (token totals per transcript, rebuilt automatically)
+cache/

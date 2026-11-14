@@ -31,8 +31,9 @@ for _k in ("CLAUDECODE", "CLAUDE_PID", "CLAUDE_CODE_CHILD_SESSION", "CLAUDE_CODE
     os.environ.pop(_k, None)
 
 HERE = Path(__file__).resolve().parent
-if str(HERE) not in sys.path:          # terminal.py / processes.py live next to server.py
+if str(HERE) not in sys.path:          # terminal.py / processes.py / usage.py live next to server.py
     sys.path.insert(0, str(HERE))
+import usage  # noqa: E402  (needs the path above)
 CONFIG = HERE / "config.json"
 EXAMPLE_CONFIG = HERE / "config.example.json"
 OLD_CONFIG = HERE / "proiecte.json"    # pre-1.0 Romanian config, migrated once
@@ -258,7 +259,7 @@ def sent_messages(path: Path, size: int):
 
 def parse(path: Path, st):
     lines, head = read_chunks(path, st.st_size)
-    title = agent_name = cwd = start = branch = model = last_prompt = first = None
+    title = agent_name = cwd = start = branch = model = last_prompt = first = effort = None
     cwds = {}                # folder -> number of entries (where the session spent most time)
     prompts = []             # first requests, used to guess the project
     events = []              # (ts, kind, text, tool)
@@ -287,6 +288,7 @@ def parse(path: Path, st):
         if t == "assistant" and not d.get("isSidechain"):
             m = d.get("message") or {}
             model = m.get("model") or model
+            effort = d.get("perTurnEffort") or d.get("effort") or effort
             ts = d.get("timestamp")
             for c in m.get("content") or []:
                 if not isinstance(c, dict):
@@ -309,6 +311,7 @@ def parse(path: Path, st):
                 last = ("user", r[0], None)
     return {
         "title": title or agent_name,
+        "effort": effort if isinstance(effort, str) else None,
         "first": short(first, 34) if first else None,
         "cwd": cwd, "branch": branch, "model": model,
         "cwd_start": start,
@@ -559,6 +562,7 @@ def state(days):
             sid = f.stem
             wsl = str(f).startswith("\\\\wsl")
             subs = subagents_of(f, now_t)
+            u = usage.INDEX.session(f, st)
             stt, activity = status(p, subs, st.st_mtime, now_t)
             info = (live or {}).get(sid)
             if not info and not wsl:
@@ -597,7 +601,8 @@ def state(days):
                 "project": find_project(sid, p, cfg),
                 "cwd": next((c for c, _ in p["cwds"] if not _generic(c, shared)), p["cwd_start"] or p["cwd"]),
                 "cwd_start": p["cwd_start"] or p["cwd"],
-                "branch": p["branch"], "model": p["model"],
+                "branch": p["branch"], "model": p["model"], "effort": p["effort"],
+                "pending": (cfg.get("pending") or {}).get(sid),
                 "wsl": wsl, "distro": str(f).split("\\")[3] if wsl and len(str(f).split("\\")) > 3 else None,
                 "running": bool(info), "live_name": info.get("name") if info else None,
                 "mode": mode, "pid": info.get("pid") if info else None, "job": info.get("id") if info else None,
@@ -607,6 +612,8 @@ def state(days):
                 "last_prompt": p["last_prompt"], "last_text": p["last_text"],
                 "feed": p["feed"],
                 "subagents": subs,
+                "usage": {k: v for k, v in u.items() if k != "hours"} if u else None,
+                "tips": [{"k": c, "p": prm} for c, prm in usage.tips(u)],
             }
             agents.append(a)
             for m in sent:
@@ -647,7 +654,15 @@ def state(days):
         projects.append({"name": n, "emoji": m.get("emoji", "📁"), "color": m.get("color", "#c9b8a6"),
                          "description": m.get("description", ""),
                          "agents": [a for a in agents if a["project"] == n]})
-    return {"now": now_t, "projects": projects, "links": link_list, "live_ok": live is not None}
+    usage.INDEX.save()
+    hub = {"msgs": 0, "tok": 0, "cost": 0.0}           # what BuzzzHub's own relay spent
+    for m in hub_messages():
+        if m.get("t", 0) >= since and m.get("relay_tok"):
+            hub["msgs"] += 1
+            hub["tok"] += m["relay_tok"]
+            hub["cost"] += m.get("relay_cost") or 0
+    return {"now": now_t, "projects": projects, "links": link_list, "live_ok": live is not None,
+            "hub_usage": hub}
 
 
 # ---------------------------------------------------------------- actions
@@ -677,10 +692,10 @@ def _lang(lang):
     return lang if lang in BANNER else "en"
 
 
-def log_message(a, text, via):
+def log_message(a, text, via, **extra):
     with open(MESSAGES, "a", encoding="utf-8") as f:
         f.write(json.dumps({"t": time.time(), "ts": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()) + "Z",
-                            "id": a["id"], "title": a["title"], "text": text, "via": via},
+                            "id": a["id"], "title": a["title"], "text": text, "via": via, **extra},
                            ensure_ascii=False) + "\n")
     _live["t"] = 0
 
@@ -690,11 +705,50 @@ def _launch_dir(a):
     return c if c and Path(c).is_dir() else str(Path.home())
 
 
+MODELS = ["claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]
+EFFORTS = ["low", "medium", "high", "xhigh", "max"]
+
+
+def _model_flags(sid):
+    """--model / --effort chosen in BuzzzHub for this session, waiting for its next start."""
+    p = (load_config().get("pending") or {}).get(sid) or {}
+    out = []
+    if p.get("model") in MODELS:
+        out += ["--model", p["model"]]
+    if p.get("effort") in EFFORTS:
+        out += ["--effort", p["effort"]]
+    return out
+
+
+def _pending_done(sid):
+    cfg = load_config()
+    if sid in (cfg.get("pending") or {}):
+        cfg["pending"].pop(sid)
+        save_config(cfg)
+
+
+def _forget_stopped_job(sid):
+    """A stopped background job keeps its record, and resuming its session with --bg then FORKS it into a
+    new session id. Removing the record (`claude rm`; the conversation stays) makes --resume continue it."""
+    if not CLAUDE or (running_sessions() or {}).get(sid):
+        return
+    try:
+        r = subprocess.run([CLAUDE, "agents", "--json", "--all"], capture_output=True, timeout=15, creationflags=NO_WIN)
+        for x in json.loads(r.stdout.decode("utf-8", "replace")):
+            if x.get("sessionId") == sid and x.get("id"):
+                subprocess.run([CLAUDE, "rm", x["id"]], capture_output=True, timeout=15, creationflags=NO_WIN)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+
+
 def start_background(a, text=""):
-    """claude --resume <id> --bg [-n title] [text]."""
+    """claude --resume <id> --bg [-n title] [--model m] [--effort e] [text]."""
+    _forget_stopped_job(a["id"])
     cmd = [CLAUDE, "--resume", a["id"], "--bg"]
     if a.get("has_title"):
         cmd += ["-n", a["title"]]                    # otherwise it renames itself after the first message
+    flags = _model_flags(a["id"])
+    cmd += flags
     if text:
         cmd.append(text)
     try:
@@ -706,8 +760,46 @@ def start_background(a, text=""):
         return False, "not_trusted", {"dir": _launch_dir(a)}
     if r.returncode != 0:
         return False, "not_started", {"out": short(out, 300)}
+    if flags:
+        _pending_done(a["id"])
     _live["t"] = 0
     return True, ("bg_started_msg" if text else "bg_started"), {}
+
+
+def set_model(sid, model, effort, lang="en"):
+    """Changes model and/or effort. Nothing outside Claude can switch a running session, so a running
+    one is stopped and started again in the background with the new flags (the conversation stays);
+    a closed one gets them on its next start."""
+    a = _latest.get(sid)
+    if not a:
+        return False, "not_found", {}
+    if a["wsl"]:
+        return False, "wsl_no_model", {}
+    model = model if model in MODELS else None
+    effort = effort if effort in EFFORTS else None
+    if not model and not effort:
+        return False, "nothing_to_change", {}
+    cfg = load_config()
+    cfg.setdefault("pending", {})[sid] = {k: v for k, v in (("model", model), ("effort", effort)) if v}
+    save_config(cfg)
+    if not a["running"]:
+        return True, "model_pending", {}
+    was_terminal = a["mode"] == "terminal"
+    ok, code, params = put_to_sleep(sid)
+    if not ok:
+        return False, code, params
+    for _ in range(20):                             # wait until it is really gone
+        _live["t"] = 0
+        if not (running_sessions() or {}).get(sid):
+            break
+        time.sleep(0.5)
+    a = dict(a, running=False, mode=None)
+    _latest[sid] = a
+    if was_terminal:                                # it had a window: give it one again
+        r = open_in_terminal(sid, "", lang)
+        return (True, "model_restarted_term", r[2]) if r[0] else r
+    ok, code, params = start_background(a)
+    return (True, "model_restarted", {}) if ok else (False, code, params)
 
 
 def send(sid, text, lang="en"):
@@ -731,16 +823,24 @@ def send(sid, text, lang="en"):
     body = SIGNATURE[_lang(lang)].format(who=who) + "\n" + text
     try:
         r = subprocess.run(
-            [CLAUDE, "-p", "--model", "haiku", "--no-session-persistence",
+            [CLAUDE, "-p", "--model", "haiku", "--no-session-persistence", "--output-format", "json",
              "--allowedTools", "SendMessage,ListAgents"],
             input=RELAY_PROMPT.format(to=a["live_name"], text=body).encode("utf-8"),
             capture_output=True, timeout=150, cwd=RELAY_DIR, creationflags=NO_WIN)
     except (OSError, subprocess.SubprocessError) as e:
         return False, "relay_failed", {"err": str(e)}
-    out = r.stdout.decode("utf-8", "replace").strip()
+    raw = r.stdout.decode("utf-8", "replace").strip()
+    try:
+        res = json.loads(raw)
+    except ValueError:
+        res = {"result": raw}
+    out = str(res.get("result") or "").strip()
     if not (r.returncode == 0 and out.upper().startswith("OK")):
-        return False, "relay_failed", {"err": short(out or r.stderr.decode("utf-8", "replace"), 200)}
-    log_message(a, text, "relay")
+        return False, "relay_failed", {"err": short(out or raw or r.stderr.decode("utf-8", "replace"), 200)}
+    ru = res.get("usage") or {}
+    relay_tok = sum(ru.get(k, 0) or 0 for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
+                                                 "cache_creation_input_tokens"))
+    log_message(a, text, "relay", relay_tok=relay_tok, relay_cost=res.get("total_cost_usd"))
     return True, ("relayed_asks" if a.get("asks") else "relayed"), {}
 
 
@@ -760,6 +860,10 @@ def put_to_sleep(sid):
             return False, "stop_failed", {"err": str(e)}
         if r.returncode != 0:
             return False, "stop_failed", {"err": short((r.stdout + r.stderr).decode("utf-8", "replace"), 200)}
+        try:                                       # drop the job record too, or the next --resume forks it
+            subprocess.run([CLAUDE, "rm", a.get("job") or sid[:8]], capture_output=True, timeout=15, creationflags=NO_WIN)
+        except (OSError, subprocess.SubprocessError):
+            pass
     else:
         pid = a.get("pid")
         live = (running_sessions() or {}).get(sid) or {}
@@ -821,9 +925,11 @@ def open_in_terminal(sid, text="", lang="en"):
         ok, code, params = start_background(a, text)
         if not ok and code == "not_trusted":
             # fallback: interactive, straight in a terminal (where the folder can be trusted once)
-            cmd = ["claude", "--resume", sid] + ([text] if text else [])
+            cmd = ["claude", "--resume", sid] + _model_flags(sid) + ([text] if text else [])
             ok, term = terminal.open_window(sid, a["title"], _banner(a, lang, b["trust"]), cmd,
                                             _launch_dir(a), pref, b["left"])
+            if ok:
+                _pending_done(sid)
             if ok and text:
                 log_message(a, text, "terminal")
             return (True, "opened_interactive", {"term": term}) if ok else (False, "term_failed", {"err": term})
@@ -883,7 +989,7 @@ class H(BaseHTTPRequestHandler):
         self.send_error(404)
 
     def do_POST(self):
-        if self.path not in ("/api/assign", "/api/project", "/api/send", "/api/open", "/api/sleep"):
+        if self.path not in ("/api/assign", "/api/project", "/api/send", "/api/open", "/api/sleep", "/api/model"):
             return self.send_error(404)
         if self.headers.get("Origin") not in (None, f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"):
             return self.send_error(403)
@@ -902,6 +1008,10 @@ class H(BaseHTTPRequestHandler):
             return self._result(send(sid, str(d.get("text", ""))[:8000], lang))
         if self.path == "/api/open":
             return self._result(open_in_terminal(sid, str(d.get("text", ""))[:8000], lang))
+        if self.path == "/api/model":
+            if "--demo" in sys.argv:
+                return self._result((False, "demo", {}))
+            return self._result(set_model(sid, str(d.get("model") or ""), str(d.get("effort") or ""), lang))
         if self.path == "/api/sleep":
             return self._result(put_to_sleep(sid))
         cfg = load_config()

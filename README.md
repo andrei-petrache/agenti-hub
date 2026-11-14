@@ -16,8 +16,11 @@ Open it in a terminal with one click, send it a message or put it to sleep.</p>
 <p align="center"><img src="docs/workshop.png" alt="A project's workshop: every agent in its own room, at the terminal, desk or window, with its crew of sub-agents below"></p>
 <p align="center"><i>🏡 The workshop: every awake agent has a room and moves around depending on what it is doing (here <b>ops</b> is at the terminal, <b>backend</b> at the desk, <b>research</b> by the window). Its crew of sub-agents sits below the room. <b>review</b> needs your approval, so it comes first.</i></p>
 
+<p align="center"><img src="docs/usage.png" alt="The usage tab: tokens per hour, per agent and per model, context size per message, and suggestions"></p>
+<p align="center"><i>📊 Usage: tokens and API-equivalent cost per project and agent, live per hour, how big each agent's context is, and local suggestions to spend fewer tokens.</i></p>
+
 <p align="center"><img src="docs/agents.png" alt="A project's agents: who is working, who is waiting, who needs approval, plus the details panel"></p>
-<p align="center"><i>The agents of a project (here as animals with hobbies), each with its status. The side panel shows what the agent is doing; you can write to it, open it in a terminal, give it a <b>BUZZ!</b> or put it to sleep.</i></p>
+<p align="center"><i>The agents of a project (here as animals with hobbies), each with its status. The side panel shows what the agent is doing; you can write to it, open it in a terminal, change its model and effort, give it a <b>BUZZ!</b> or put it to sleep.</i></p>
 
 <p align="center"><img src="docs/links.png" alt="The links map: who wrote to whom and how many messages"></p>
 <p align="center"><i>The links map (here with dev robots and the night theme): arrows show who wrote to whom, their thickness how many messages there were.</i></p>
@@ -36,6 +39,7 @@ Open it in a terminal with one click, send it a message or put it to sleep.</p>
   - 😅 **stuck?**: it stopped at a tool, maybe waiting for a permission.
   - 💤 **sleeping**: the session is closed or untouched for a few hours.
 - **🏡 Workshop.** Every awake agent has a room with a mailbox, a terminal, a desk, a window and a bookshelf. The mascot walks to the right spot for what it is doing: the terminal when it runs commands, the desk when it writes code, the shelf when it reads or searches, the window when it searches the web, the mailbox when it sends messages. A speech bubble says exactly what it is doing. Below the room you see its crew of sub-agents, each with its own task. New messages between agents fly as ✉️ envelopes from one room to another. Sleeping agents stay in the dorm. All of it comes from local files, so it costs no tokens.
+- **📊 Usage.** Exact token counts for every project, agent and sub-agent, read from the `usage` block Claude Code writes after every reply: the last 24 hours, the last hour, the total, an estimate in dollars at API list prices, how much came from the cache, and a chart per hour. For each agent you see how big its context is right now (every message re-sends it) and what a message to it will cost. A histogram shows how big the context was at each message and how much an earlier automatic summary would save. Suggestions are written locally from rules, with no model calls.
 - **Details.** Click an agent to see your last request, the last thing it said, what it did recently (tools, files, messages), its sub-agents, its branch and the command to resume it.
 - **🕸️ Links.** A map of who wrote to whom (`SendMessage`). The arrow's thickness shows how many messages there were, and a moving dot marks a message from the last 15 minutes. Hover an arrow to read the latest messages.
 - **🖥️ Terminal.** Any agent opens in a terminal window with one click (Git Bash by default, with the agent's name in the title), where you see it and answer it:
@@ -43,6 +47,7 @@ Open it in a terminal with one click, send it a message or put it to sleep.</p>
   - **background session**: it opens it with `claude attach`. If you close the window, the agent keeps working and you can reopen it any time;
   - **already open in a terminal**: it brings that window to the front.
   - Note: plain `claude` always starts a new session. For an old one you need `claude attach <id>` (background) or `claude --resume <id>`.
+- **🧠 Model & effort.** Every agent shows the model and effort level its last reply used (read from the transcript), on its card, in its room and in the usage table. Change them from its panel: a closed agent gets them the next time you wake it (`claude --resume --model … --effort …`); a running one is restarted in the background with them, and one open in a terminal is reopened in a new window, keeping the conversation. The panel warns that switching models re-processes the whole context once, while changing only the effort keeps the cache on Opus 5.5 and Fable 5.1+.
 - **😴 Put to sleep.** Stops a running agent: a background one with `claude stop`, one in a terminal by closing its `claude` process. The conversation is kept and you wake it any time with 🖥️ Terminal or a message. It asks first, and warns you if the agent is working right then.
 - **✈️ Messages.** Write to an agent straight from the app:
   - **running session**: the message reaches it through the official `SendMessage` tool, carried by a short `claude -p` relay on Haiku. The agent sees it as a message from a teammate, so it does not count as your approval;
@@ -63,6 +68,7 @@ To show things, the app only **reads** and never changes anything in `~/.claude`
 | exact status of running sessions | `claude agents --json` |
 | running sessions missing from `claude agents` | the list of `claude` processes (their `--resume` argument), without starting anything |
 | sub-agents and what each one is doing | `<session>/subagents/*.meta.json` and the tail of each sub-agent's transcript |
+| token usage | the `usage` block of every reply in the transcripts (and sub-agents' transcripts), counted once per message, indexed in `cache/usage.json` so only new bytes are read |
 | links | the `SendMessage` calls in the transcripts. Technical addresses become names via `~/.claude/sessions/*.json` and received messages. |
 
 For WSL sessions the status is estimated from how recently the session wrote and from its last message.
@@ -120,6 +126,7 @@ On the first start the app creates `config.json` from `config.example.json`. It 
 - `paths`: pieces of the session's working folder. What counts is the folder the session spent most time in; the home folder, Temp and `.claude` are ignored.
 - `shared_folders`: folders where you start sessions from several projects. They count only if nothing else matches.
 - `terminal`: `auto` (Git Bash, then Windows Terminal, then cmd), `gitbash`, `wt` or `cmd`.
+- `pending`: a model/effort chosen in BuzzzHub for a closed agent, applied (and removed) when it next starts.
 - `assignments`: manual moves, saved automatically when you pick another project in an agent's panel.
 - `your_name`: shown in the messages you send ("from …, via BuzzzHub").
 - `scan_wsl` / `extra_roots`: where else to look for transcripts.
@@ -138,6 +145,7 @@ Upgrading from an older version? Its `proiecte.json` is copied into `config.json
 | `start.command` | install (into a `.venv`) and start on macOS |
 | `server.py` | the local server: reads the sessions, works out statuses and links, runs the buttons |
 | `processes.py` | finds the running `claude` processes and the session of each (a safety net for status) |
+| `usage.py` | token usage and cost per session, the local index, the context histogram and the suggestion rules |
 | `terminal.py` | opens an agent in a terminal window (Git Bash / Windows Terminal / cmd / Terminal on macOS) |
 | `index.html` | the whole interface (HTML/CSS/JS with no dependencies, SVG mascots, English and Romanian texts) |
 | `demo.py` | made-up data for `--demo` |
@@ -150,6 +158,23 @@ Upgrading from an older version? Its `proiecte.json` is copied into `config.json
 - WSL status is estimated, not exact.
 - WSL sessions can't get messages from the app, because a different `claude` runs there. You can still open them in a terminal (`wsl.exe … claude --resume`).
 - Claude starts background sessions only in folders you trusted. Otherwise the app opens the session interactively in a terminal so you can trust the folder once.
+
+## Saving tokens: what we found
+
+We read Anthropic's guides ([costs](https://code.claude.com/docs/en/costs), [prompt caching](https://code.claude.com/docs/en/prompt-caching), [model config](https://code.claude.com/docs/en/model-config)) and measured real sessions with the usage tab. In short:
+
+1. **Context size is the main cost.** Claude Code sends the whole conversation with every request. Thanks to the prompt cache most of it is billed at the cheap cache-read rate, but in long sessions it still dominates: in our own sessions 99% of all tokens were cache reads, with contexts of 400k–950k tokens per message.
+2. **Compact earlier.** By default a 1M-token model lets the conversation grow almost to the limit. `CLAUDE_CODE_AUTO_COMPACT_WINDOW` sets the point where Claude summarises it on its own. On our sessions, 300k would have cut about 57% of the tokens and 200k about 71% (the usage tab computes this for your sessions). Put it in `~/.claude/settings.json`:
+   ```json
+   { "env": { "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000" } }
+   ```
+3. **Clear between unrelated tasks.** `/rename`, then `/clear`, and `/resume` when you come back. `/compact` with a focus ("keep the open decisions") at natural breaks, not mid-task.
+4. **Every message wakes the whole context.** A message from another session (or BuzzzHub's ✈️ / 🐝 BUZZ!) to an idle agent starts a new turn that re-sends its entire context. Send fewer, bigger messages; `"crossSessionInbound": "hold"` makes idle agents keep them until their next turn.
+5. **Breaks longer than the cache lifetime are expensive.** On a subscription the main conversation's cache lives one hour; after a longer pause the next message re-processes everything. `/compact` before stepping away, or start fresh.
+6. **Model and effort.** Fable models cost twice as much per token as Opus 5.5; use them where they earn it. Lower `/effort` for routine steps. Give reading-heavy sub-agents `model: haiku` or `sonnet`.
+7. **Keep the always-loaded context small.** `CLAUDE.md` under ~200 lines; move workflow-specific instructions into skills, which load only when used; disable MCP servers you don't use.
+
+**Should BuzzzHub keep its own store so agents don't re-read their history?** For BuzzzHub itself, yes: it now keeps a small index of every transcript's token totals (`cache/usage.json`, about 100 KB for 450 MB of transcripts), so it reads each file once and then only new bytes, and the dashboard costs no tokens at all. For the agents, no: they don't re-read their history from disk; the history lives in their conversation and is re-sent to the model with every message. What shrinks that is a smaller conversation (compaction, `/clear`), and the right "local store" for knowledge that must survive is what Claude Code already has: `CLAUDE.md`, auto memory and skills.
 
 ## What it costs
 

@@ -203,6 +203,44 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .bed svg{width:54px;height:54px}
 .nobody{color:var(--muted);text-align:center;padding:30px 0}
 
+/* 📊 usage */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin:14px 0}
+.tile{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:14px 16px}
+.tile .v{font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1.1}
+.tile .l{font-size:12px;color:var(--muted);font-weight:700;margin-top:4px}
+.box{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:16px 18px;margin-top:16px;position:relative}
+.box h3{margin:0 0 4px;font-size:15px}
+.box .note{font-size:12px;color:var(--muted);margin:0 0 10px}
+.bars{display:block;width:100%;height:auto}
+.bars .grid{stroke:var(--line);stroke-width:1}
+.bars text{font-size:11px;fill:var(--muted)}
+.bars .bar{fill:var(--orange)}
+.bars .bar.dim{opacity:.45}
+.bars .hit{fill:transparent}
+.bars .hit:hover + .bar,.bars .bar:hover{opacity:.8}
+.ctip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:10px;padding:6px 10px;font-size:12px;display:none;z-index:4;white-space:nowrap}
+.utable{width:100%;border-collapse:collapse;font-size:13px}
+.utable th{text-align:left;color:var(--muted);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.utable td{padding:8px;border-bottom:1px dashed var(--line);vertical-align:middle}
+.utable tr.click{cursor:pointer} .utable tr.click:hover td{background:var(--bg)}
+.utable .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gauge{display:flex;align-items:center;gap:8px;min-width:130px}
+.gauge .track{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.gauge .fill{height:100%;border-radius:4px;background:var(--orange)}
+.gauge span{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted);width:44px;text-align:right}
+.hbar{display:grid;grid-template-columns:150px 1fr 120px;gap:10px;align-items:center;font-size:13px;margin:6px 0}
+.hbar .track{height:12px;border-radius:0 4px 4px 0;background:transparent}
+.hbar .fill{height:100%;border-radius:0 4px 4px 0;background:var(--orange);min-width:2px}
+.hbar .num{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.reco{border-left:4px solid var(--orange)}
+.reco pre{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:12px;overflow:auto;margin:8px 0 0}
+.tiplist{list-style:none;margin:0;padding:0}
+.tiplist li{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.tiplist li b{font-weight:800}
+.usage-mini{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+.spark{display:inline-block;vertical-align:middle}
+.spark rect{fill:var(--orange)}
+
 /* tabs */
 .tabs{display:inline-flex;background:var(--card);border-radius:14px;padding:4px;box-shadow:var(--shadow);margin-bottom:6px}
 .tabs button{border:none;border-radius:10px;padding:7px 16px;font-weight:800;color:var(--muted);background:none}
@@ -344,7 +382,41 @@ en: {
   animals:{cat:'cat', fox:'fox', bear:'bear', bunny:'bunny', frog:'frog', panda:'panda', owl:'owl', penguin:'penguin', dog:'puppy', hamster:'hamster'},
   hobbies:{headphones:'music', coffee:'coffee', laptop:'code', gamepad:'games', book:'reading', beret:'painting', chef:'cooking',
     plant:'gardening', glasses:'studying', beanie:'hiking', guitar:'guitar', camera:'photos'},
+  mdl_h:'🧠 Model & effort', mdl_model:'model', mdl_effort:'effort', mdl_apply:'Apply', mdl_now:'now: {m} · effort {e}',
+  mdl_note_run:'It is running: applying stops it and starts it again in the background with the new settings. The conversation stays.',
+  mdl_note_term:'It is open in a terminal: applying closes Claude in that window and reopens the session in a new one, with the new settings. The conversation stays.',
+  mdl_note_closed:'It is closed: the new settings apply the next time you wake it (🖥️ Terminal or ✈️ Send).',
+  mdl_note_switch:'Switching the model re-processes the whole context once (about {k}k tokens); changing only the effort keeps the cache on Opus 5.5 and Fable 5.1+.',
+  mdl_pending:'Waiting for its next start: {v}', mdl_confirm:'Restart "{t}" with {v}?\n\nThe conversation stays.{warn}',
+  mdl_keep:'(keep)',
+  tab_usage:'📊 Usage', u_today:'tokens in the last 24 h', u_cost:'≈ API value, last 24 h', u_hour:'tokens in the last hour',
+  u_total:'tokens in these sessions', u_cache:'read from cache', u_ctx:'average context per message',
+  u_home:'Last 24 h: {t} tokens · ≈ {c} at API prices · last hour {h}', u_home_hub:'BuzzzHub relay: {n} messages, {t} tokens',
+  u_hours:'Tokens per hour, last 24 h', u_hours_note:'Every bar is one hour; hover for the exact number.',
+  u_agents:'Agents', u_col_agent:'agent', u_col_day:'24 h', u_col_total:'total', u_col_cost:'≈ $', u_col_ctx:'context now',
+  u_col_cache:'cache', u_col_subs:'sub-agents', u_models:'By model', u_models_note:'All tokens of these sessions, by the model that produced them.',
+  u_hist:'How big the context was at each message', u_hist_note:'Every message re-sends the whole conversation. Bars to the right of the line are what an earlier automatic summary (compaction) would cut.',
+  u_hist_line:'compact at {k}k', u_req:'{n} messages', u_tips:'Suggestions', u_no_tips:'Nothing stands out. 👍',
+  u_none:'No usage recorded yet for these sessions.', u_sub_share:'{p}% by sub-agents',
+  u_api_note:'Tokens are exact (from the transcripts). Dollars are an estimate at Anthropic API list prices; on a Pro/Max plan you are not billed per token, but the same tokens count against your plan limits.',
+  reco_compact_t:'Let agents summarise their conversation earlier',
+  reco_compact:'Your agents let the conversation grow to {max}k tokens, and {p}% of messages carried more than 300k. Setting the automatic summary (compaction) at 300k tokens would cut about {s}% of the tokens of these sessions. Add this to ~/.claude/settings.json and restart the agents:',
+  reco_cross_t:'Messages between agents wake them up', reco_cross:'{n} messages from other sessions started a new turn for an idle agent, about {t} tokens in total: each one re-sends the whole conversation. Send fewer, bigger messages, or let idle agents hold them until their next turn:',
+  per_msg:'Each message to it re-sends about {k}k tokens of context.',
+  p_usage:'Usage', p_usage_line:'{d} tokens in the last 24 h (≈ {c}) · {t} total (≈ {ct})', p_ctx:'Context now: {k}k tokens',
+  p_cache:'{p}% read from cache', mini:'{t} · 24 h',
+  tip:{
+    big_context:'<b>Big context: {k}k tokens.</b> Every message re-sends it. For an unrelated task: /rename, then /clear (and /resume later). Otherwise /compact with a focus, e.g. "/compact keep the open decisions".',
+    rebuilds:'<b>{n} cache rebuilds after a break of over an hour</b> (≈ {k}k tokens re-processed). Before stepping away, finish with /compact, or start a fresh session.',
+    subagents:'<b>Sub-agents use {p}% of its tokens.</b> For reading-heavy sub-agents set model: haiku or sonnet in the agent file.',
+    pricey_model:'<b>Most of its cost is on {m}</b>, which costs twice as much per token as Opus 5.5. For routine work: /model opus.',
+    thinking:'<b>{p}% of its output is thinking.</b> For routine steps: /effort low or /effort medium.',
+    cross:'<b>{n} messages from other sessions woke it up</b> (≈ {k}k tokens). Batch them, or set "crossSessionInbound": "hold".',
+  },
   msg:{
+    model_pending:'Saved: it gets the new model/effort the next time you wake it.', model_restarted:'Restarted in the background with the new model/effort.',
+    model_restarted_term:'Restarted with the new model/effort and opened again in {term}.', wsl_no_model:"WSL sessions can't be changed from here.",
+    nothing_to_change:'Pick a model or an effort first.',
     not_found:"Can't find the session (reload).", no_claude:"Can't find the claude command in PATH.",
     wsl_no_msg:"WSL sessions can't get messages from here.", empty:'Empty message.',
     relay_failed:'The relay failed: {err}', relayed:'Sent through the relay.',
@@ -423,7 +495,41 @@ ro: {
   animals:{cat:'pisică', fox:'vulpe', bear:'urs', bunny:'iepuraș', frog:'broscuță', panda:'panda', owl:'bufniță', penguin:'pinguin', dog:'cățel', hamster:'hamster'},
   hobbies:{headphones:'muzică', coffee:'cafea', laptop:'cod', gamepad:'jocuri', book:'citit', beret:'pictură', chef:'gătit',
     plant:'grădinărit', glasses:'studiu', beanie:'drumeții', guitar:'chitară', camera:'foto'},
+  mdl_h:'🧠 Model și efort', mdl_model:'model', mdl_effort:'efort', mdl_apply:'Aplică', mdl_now:'acum: {m} · efort {e}',
+  mdl_note_run:'Rulează: la aplicare îl opresc și îl pornesc din nou în fundal cu noile setări. Conversația rămâne.',
+  mdl_note_term:'E deschis într-un terminal: la aplicare închid Claude din fereastra aceea și redeschid sesiunea într-una nouă, cu noile setări. Conversația rămâne.',
+  mdl_note_closed:'E închis: noile setări se aplică data viitoare când îl trezești (🖥️ Terminal sau ✈️ Trimite).',
+  mdl_note_switch:'Schimbarea modelului reprocesează o dată tot contextul (cam {k}k tokeni); dacă schimbi doar efortul, cache-ul rămâne pe Opus 5.5 și Fable 5.1+.',
+  mdl_pending:'Așteaptă următoarea pornire: {v}', mdl_confirm:'Repornești „{t}” cu {v}?\n\nConversația rămâne.{warn}',
+  mdl_keep:'(neschimbat)',
+  tab_usage:'📊 Consum', u_today:'tokeni în ultimele 24 h', u_cost:'≈ valoare la prețuri API, 24 h', u_hour:'tokeni în ultima oră',
+  u_total:'tokeni în sesiunile astea', u_cache:'citiți din cache', u_ctx:'context mediu pe mesaj',
+  u_home:'Ultimele 24 h: {t} tokeni · ≈ {c} la prețuri API · ultima oră {h}', u_home_hub:'Releul BuzzzHub: {n} mesaje, {t} tokeni',
+  u_hours:'Tokeni pe oră, ultimele 24 h', u_hours_note:'Fiecare bară e o oră; treci cu mouse-ul pentru cifra exactă.',
+  u_agents:'Agenți', u_col_agent:'agent', u_col_day:'24 h', u_col_total:'total', u_col_cost:'≈ $', u_col_ctx:'context acum',
+  u_col_cache:'cache', u_col_subs:'sub-agenți', u_models:'Pe modele', u_models_note:'Toți tokenii sesiunilor astea, după modelul care i-a folosit.',
+  u_hist:'Cât de mare era contextul la fiecare mesaj', u_hist_note:'Fiecare mesaj retrimite toată conversația. Barele din dreapta liniei sunt ce ar tăia un rezumat automat (compactare) făcut mai devreme.',
+  u_hist_line:'compactare la {k}k', u_req:'{n} mesaje', u_tips:'Sugestii', u_no_tips:'Nimic ieșit din comun. 👍',
+  u_none:'Încă nu e consum înregistrat pentru sesiunile astea.', u_sub_share:'{p}% de la sub-agenți',
+  u_api_note:'Tokenii sunt exacți (din transcrieri). Dolarii sunt o estimare la prețurile de listă API Anthropic; pe un abonament Pro/Max nu plătești per token, dar aceiași tokeni se scad din limitele planului.',
+  reco_compact_t:'Lasă agenții să-și rezume conversația mai devreme',
+  reco_compact:'Agenții tăi lasă conversația să crească până la {max}k tokeni, iar {p}% din mesaje au dus peste 300k. Cu rezumatul automat (compactarea) la 300k tokeni, sesiunile astea ar folosi cu aproximativ {s}% mai puțini tokeni. Pune asta în ~/.claude/settings.json și repornește agenții:',
+  reco_cross_t:'Mesajele între agenți îi trezesc', reco_cross:'{n} mesaje de la alte sesiuni au pornit o tură nouă la un agent care stătea, în total cam {t} tokeni: fiecare retrimite toată conversația. Trimite mesaje mai puține și mai mari, sau lasă agenții să le țină până la tura următoare:',
+  per_msg:'Fiecare mesaj către el retrimite cam {k}k tokeni de context.',
+  p_usage:'Consum', p_usage_line:'{d} tokeni în ultimele 24 h (≈ {c}) · {t} în total (≈ {ct})', p_ctx:'Context acum: {k}k tokeni',
+  p_cache:'{p}% din cache', mini:'{t} · 24 h',
+  tip:{
+    big_context:'<b>Context mare: {k}k tokeni.</b> Fiecare mesaj îl retrimite. Pentru o treabă fără legătură: /rename, apoi /clear (și /resume mai târziu). Altfel /compact cu o direcție, de ex. „/compact păstrează deciziile deschise”.',
+    rebuilds:'<b>{n} reconstruiri ale cache-ului după o pauză de peste o oră</b> (≈ {k}k tokeni reprocesați). Înainte de pauză, încheie cu /compact sau începe o sesiune nouă.',
+    subagents:'<b>Sub-agenții folosesc {p}% din tokenii lui.</b> Pentru sub-agenții care doar citesc pune model: haiku sau sonnet în fișierul agentului.',
+    pricey_model:'<b>Cea mai mare parte a costului e pe {m}</b>, care costă de două ori mai mult pe token decât Opus 5.5. Pentru treburi obișnuite: /model opus.',
+    thinking:'<b>{p}% din ce scrie e gândire.</b> Pentru pași de rutină: /effort low sau /effort medium.',
+    cross:'<b>{n} mesaje de la alte sesiuni l-au trezit</b> (≈ {k}k tokeni). Grupează-le sau setează "crossSessionInbound": "hold".',
+  },
   msg:{
+    model_pending:'Salvat: primește noul model/efort data viitoare când îl trezești.', model_restarted:'Repornit în fundal cu noul model/efort.',
+    model_restarted_term:'Repornit cu noul model/efort și redeschis în {term}.', wsl_no_model:'Sesiunile din WSL nu pot fi schimbate de aici.',
+    nothing_to_change:'Alege întâi un model sau un efort.',
     not_found:'Nu găsesc sesiunea (reîncarcă).', no_claude:'Nu găsesc comanda claude în PATH.',
     wsl_no_msg:'Sesiunile din WSL nu pot primi mesaje de aici.', empty:'Mesaj gol.',
     relay_failed:'Releul a eșuat: {err}', relayed:'Trimis prin releu.',
@@ -683,6 +789,7 @@ function setLang(l){
   [...$('#days').options].forEach(o => o.textContent = t('d' + o.value));
   const panel = $('#panel'); if (panel) panel.dataset.id = '';
   const ws = $('#workshop'); if (ws) ws.dataset.lang = '';
+  USAGE_KEY = '';
   render();
 }
 
@@ -717,7 +824,9 @@ function renderHome(){
   const hour = new Date().getHours();
   const g = I18N[LANG].greet[hour < 5 ? 0 : hour < 12 ? 1 : hour < 18 ? 2 : 3];
   let h = `<div class="hello">${t('pick', {g})}</div>
-    <p class="sub">${t('summary', {w:c.working, a:c.waiting, s:c.stuck, z:c.sleeping})}</p><div class="grid">`;
+    <p class="sub" style="margin-bottom:4px">${t('summary', {w:c.working, a:c.waiting, s:c.stuck, z:c.sleeping})}</p>`;
+  const su = sumUsage(all), hub = DATA.hub_usage || {};
+  h += `<p class="sub">📊 ${t('u_home', {t: fmtTok(su.day.tok), c: fmtUsd(su.day.cost), h: fmtTok(su.hour.tok)})}${hub.msgs ? ' · ' + t('u_home_hub', {n: hub.msgs, t: fmtTok(hub.tok)}) : ''}</p><div class="grid">`;
   const projects = [...DATA.projects, {name:'*', emoji:'🌈', color:'#e8875b', description:t('all_desc'), agents: all}];
   for (const p of projects){
     const cc = counts(p.agents);
@@ -727,6 +836,7 @@ function renderHome(){
       <div class="em">${p.emoji}</div><h3>${esc(projName(p.name))}</h3><p>${esc(desc)}</p>
       <div class="minis">${minis || `<span class="sub" style="margin:0">${t('no_recent')}</span>`}</div>
       <div class="counts">${Object.entries(cc).filter(([,n])=>n).map(([k,n]) => `<span><span class="dot d-${k}"></span>${n} ${t('st_' + k)}</span>`).join('')}</div>
+      ${(() => { const pu = sumUsage(p.agents); return pu.day.tok ? `<div class="counts" style="align-items:center"><span>📊 ${t('mini', {t: fmtTok(pu.day.tok)})} · ${fmtUsd(pu.day.cost)}</span>${spark(pu.spark, 72, 16)}</div>` : ''; })()}
     </div>`;
   }
   $('#main').innerHTML = h + '</div>';
@@ -746,7 +856,7 @@ function card(a){
       ${pill(a)}
       ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div></div>
     <div class="act">${esc(activity(a))}</div>
-    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}</div>
+    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}${a.usage && a.usage.tok ? `<span>📊 ${t('mini', {t: fmtTok(a.usage.day.tok)})}</span>` : ''}${a.model ? `<span>🧠 ${esc(modelEffort(a))}</span>` : ''}</div>
     ${a.subagents.length ? `<div class="subs">${t('n_subs', {n: a.subagents.length})}${subsActive?` · <b style="color:var(--work)">${t('n_active', {n: subsActive})}</b>`:''}</div>` : ''}
   </div>`;
 }
@@ -762,7 +872,9 @@ function renderProject(){
   awake.sort((a,b) => rank(a)-rank(b) || a.age-b.age);
   const nRunning = p.agents.filter(a => a.running).length;
   let h = `<div class="hello">${p.emoji} ${esc(projName(p.name))}</div><p class="sub">${t('proj_sub', {n: p.agents.length, r: nRunning})}</p>
-    <div class="tabs"><button data-t="workshop" class="${TAB==='workshop'?'on':''}">${t('tab_workshop')}</button><button data-t="agents" class="${TAB==='agents'?'on':''}">${t('tab_agents')}</button><button data-t="map" class="${TAB==='map'?'on':''}">${t('tab_map')}</button></div>`;
+    <div class="tabs"><button data-t="workshop" class="${TAB==='workshop'?'on':''}">${t('tab_workshop')}</button><button data-t="agents" class="${TAB==='agents'?'on':''}">${t('tab_agents')}</button><button data-t="map" class="${TAB==='map'?'on':''}">${t('tab_map')}</button><button data-t="usage" class="${TAB==='usage'?'on':''}">${t('tab_usage')}</button></div>`;
+  if (TAB === 'usage') return renderUsage(p, h);
+  USAGE_KEY = '';
   if (TAB === 'workshop') return renderWorkshop(p, h);
   if (TAB === 'map') {
     $('#main').innerHTML = h + linkMap(p);
@@ -809,7 +921,7 @@ function speech(a){
   const s = tl && tl.text ? tl.text : activity(a);
   return s.length > 70 ? s.slice(0, 69) + '…' : s;
 }
-const ROOM = `<div class="room-top"><span class="name"></span><span class="pillw"></span></div>
+const ROOM = `<div class="room-top"><span class="name"></span><span class="usage-mini"></span><span class="pillw"></span></div>
   <div class="scene"><div class="wall"></div><div class="planks"></div>
     <div class="prop p-mail">📮</div>
     <div class="prop p-terminal"><div class="screen"></div><div class="stand"></div></div>
@@ -847,6 +959,7 @@ function updateRoom(el, a){
   el.classList.toggle('asking', !!a.asks);
   el.classList.toggle('working', a.status === 'working');
   el.querySelector('.name').textContent = a.title;
+  el.querySelector('.usage-mini').textContent = [a.model ? '🧠 ' + modelEffort(a) : '', a.usage && a.usage.day.tok ? '📊 ' + fmtTok(a.usage.day.tok) : ''].filter(Boolean).join('  ');
   el.querySelector('.pillw').innerHTML = pill(a) + (a.mode ? ` <span title="${t(a.mode==='background'?'bg_title':'term_title_short')}">${a.mode==='background'?'👻':'🖥️'}</span>` : '');
   const bot = el.querySelector('.bot');
   if (bot.dataset.z !== z){
@@ -930,6 +1043,145 @@ function fly(from, to){
     {transform:`translate(${mx}px,${my}px) scale(1.25) rotate(8deg)`, opacity:1, offset:.55},
     {transform:`translate(${b.x}px,${b.y}px) scale(.7)`, opacity:1}], {duration:2000, easing:'ease-in-out'});
   anim.onfinish = () => { env.remove(); B.classList.add('got-mail'); setTimeout(() => B.classList.remove('got-mail'), 700); };
+}
+
+/* ---------- 📊 usage: all from the transcripts' usage blocks, zero tokens ---------- */
+function fmtTok(n){
+  n = n || 0;
+  if (n >= 1e9) return (n/1e9).toFixed(n >= 1e10 ? 0 : 1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(n >= 1e8 ? 0 : 1) + 'M';
+  if (n >= 1e3) return Math.round(n/1e3) + 'k';
+  return String(Math.round(n));
+}
+const fmtUsd = x => '$' + ((x || 0) >= 100 ? Math.round(x).toLocaleString('en-US') : (x || 0).toFixed(2));
+const tipText = tp => fill((I18N[LANG].tip || I18N.en.tip)[tp.k] || I18N.en.tip[tp.k] || tp.k,
+  Object.fromEntries(Object.entries(tp.p || {}).map(([k, v]) => [k, esc(v)])));
+
+function sumUsage(agents){
+  const s = {tok:0, cost:0, cr:0, in:0, cw:0, out:0, req:0, sub_tok:0, day:{tok:0, cost:0}, hour:{tok:0, cost:0},
+             spark: Array(24).fill(0), models:{}, hist: Array.from({length:11}, () => [0, 0]), max_context:0,
+             cross_msgs:0, cross_tok:0};
+  for (const a of agents){
+    const u = a.usage; if (!u) continue;
+    for (const k of ['tok','cost','cr','in','cw','out','req','sub_tok','cross_msgs']) s[k] += u[k] || 0;
+    s.cross_tok += u.cross_tok || 0;
+    s.day.tok += u.day.tok; s.day.cost += u.day.cost; s.hour.tok += u.hour.tok; s.hour.cost += u.hour.cost;
+    u.spark.forEach((v, i) => s.spark[i] += v);
+    for (const [m, v] of Object.entries(u.models)){ const x = s.models[m] ||= {tok:0, cost:0}; x.tok += v.tok; x.cost += v.cost; }
+    (u.ctx_hist || []).forEach(([n, t], i) => { s.hist[i][0] += n; s.hist[i][1] += t; });
+    s.max_context = Math.max(s.max_context, u.max_context || 0);
+  }
+  return s;
+}
+function compactSaving(hist, w){   // same estimate as usage.compact_saving
+  let saved = 0;
+  hist.forEach(([n, t], i) => { if (n && i * 100000 >= w) saved += Math.max(0, t - n * w / 2); });
+  return saved;
+}
+
+/* single-hue vertical bars with a hover tooltip; marker = optional vertical rule after bucket index */
+function barChart(values, labels, tipOf, opts = {}){
+  const W = 760, H = opts.h || 170, padL = 44, padB = 22, padT = 8, n = values.length;
+  const max = Math.max(...values, 1), bw = (W - padL) / n, gap = 2;
+  const y = v => padT + (H - padT - padB) * (1 - v / max);
+  let g = '';
+  [0, .5, 1].forEach(f => { const yy = y(max * f);
+    g += `<line class="grid" x1="${padL}" x2="${W}" y1="${yy}" y2="${yy}"/><text x="${padL - 6}" y="${yy + 4}" text-anchor="end">${fmtTok(max * f)}</text>`; });
+  values.forEach((v, i) => {
+    const x = padL + i * bw + gap / 2, h = Math.max(0, H - padB - y(v)), w = bw - gap, r = Math.min(4, w / 2, h);
+    const top = H - padB - h;
+    const d = h > 0 ? `M${x},${H - padB} V${top + r} Q${x},${top} ${x + r},${top} H${x + w - r} Q${x + w},${top} ${x + w},${top + r} V${H - padB} Z` : '';
+    g += `<rect class="hit" x="${x}" y="${padT}" width="${w}" height="${H - padT - padB}" data-tip="${esc(tipOf(i))}"/>`;
+    if (d) g += `<path class="bar ${opts.dim && opts.dim(i) ? 'dim' : ''}" d="${d}" data-tip="${esc(tipOf(i))}"/>`;
+    if (labels[i]) g += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${labels[i]}</text>`;
+  });
+  if (opts.rule != null){
+    const xr = padL + opts.rule * bw;
+    g += `<line x1="${xr}" x2="${xr}" y1="${padT}" y2="${H - padB}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="${xr + 6}" y="${padT + 12}" style="fill:var(--ink);font-weight:800">${esc(opts.ruleLabel || '')}</text>`;
+  }
+  return `<svg class="bars" viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`;
+}
+function bindChartTips(root){
+  root.querySelectorAll('.box').forEach(box => {
+    const tip = box.querySelector('.ctip'); if (!tip) return;
+    box.querySelectorAll('[data-tip]').forEach(el => {
+      el.onmousemove = ev => { const r = box.getBoundingClientRect();
+        tip.textContent = el.dataset.tip; tip.style.display = 'block';
+        tip.style.left = Math.min(ev.clientX - r.left + 12, r.width - 200) + 'px'; tip.style.top = (ev.clientY - r.top - 34) + 'px'; };
+      el.onmouseleave = () => tip.style.display = 'none';
+    });
+  });
+}
+function spark(values, w = 72, h = 18){
+  const max = Math.max(...values, 1), bw = w / values.length;
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${values.map((v, i) => {
+    const hh = v ? Math.max(1.5, h * v / max) : 0; return hh ? `<rect x="${i * bw + .3}" y="${h - hh}" width="${bw - .6}" height="${hh}" rx="1"/>` : ''; }).join('')}</svg>`;
+}
+
+let USAGE_KEY = '';
+const MODEL_CHOICES = [['claude-fable-5-2','$8 / $40'], ['claude-opus-5-5','$4 / $20'], ['claude-sonnet-5-5','$2 / $10'], ['claude-haiku-5-5','$0.10 / $0.50']];
+const EFFORT_CHOICES = ['low','medium','high','xhigh','max'];
+function modelName(m){
+  if (!m) return '—';
+  return m.replace(/^claude-/, '').replace(/\[.*\]$/, '').replace(/-(\d+)-(\d+)$/, ' $1.$2').replace(/-(\d+)$/, ' $1')
+          .replace(/^\w/, c => c.toUpperCase());
+}
+const modelEffort = a => a.model ? `${modelName(a.model)}${a.effort ? ' · ' + a.effort : ''}` : '';
+function renderUsage(p, head){
+  const agents = p.agents.filter(a => a.usage && a.usage.req);
+  const s = sumUsage(agents);
+  const key = LANG + JSON.stringify([s.tok, s.day.tok, s.hour.tok, agents.map(a => a.id + a.status)]);
+  if (USAGE_KEY === key && $('#usage')) return;
+  USAGE_KEY = key;
+  if (!agents.length){ $('#main').innerHTML = head + `<div class="empty">${mascot('#e8875b','sleeping')}<p>${t('u_none')}</p></div>`; bindTabs(); return; }
+  const inputs = s.in + s.cr + s.cw;
+  const tiles = [[fmtTok(s.day.tok), t('u_today')], [fmtUsd(s.day.cost), t('u_cost')], [fmtTok(s.hour.tok), t('u_hour')],
+                 [fmtTok(s.tok), t('u_total')], [inputs ? Math.round(100 * s.cr / inputs) + '%' : '—', t('u_cache')],
+                 [s.req ? fmtTok(inputs / s.req) : '—', t('u_ctx')]];
+  const nowH = new Date().getHours();
+  const hourLabels = s.spark.map((_, i) => { const hh = (nowH - 23 + i + 24) % 24; return i % 3 === 2 || i === 23 ? String(hh).padStart(2, '0') : ''; });
+  const hoursChart = barChart(s.spark, hourLabels, i => `${String((nowH - 23 + i + 24) % 24).padStart(2,'0')}:00 · ${fmtTok(s.spark[i])} tok`);
+  const W = 300000, totalCtx = s.hist.reduce((a, [, t2]) => a + t2, 0), saving = totalCtx ? compactSaving(s.hist, W) : 0;
+  const over = s.hist.reduce((a, [n], i) => a + (i >= 3 ? n : 0), 0), nReq = s.hist.reduce((a, [n]) => a + n, 0);
+  const histChart = barChart(s.hist.map(h => h[0]), s.hist.map((_, i) => i === 10 ? '1M' : (i * 100) + 'k'),
+    i => `${i * 100}–${(i + 1) * 100}k · ${t('u_req', {n: s.hist[i][0]})}`, {rule: 3, ruleLabel: t('u_hist_line', {k: 300}), dim: i => i < 3, h: 160});
+  const models = Object.entries(s.models).sort((a, b) => b[1].cost - a[1].cost);
+  const maxM = Math.max(...models.map(([, v]) => v.tok), 1);
+  const rows = agents.slice().sort((a, b) => b.usage.day.tok - a.usage.day.tok || b.usage.tok - a.usage.tok);
+  const tipsAll = agents.flatMap(a => (a.tips || []).map(tp => ({a, tp})));
+  let recos = '';
+  if (saving / Math.max(totalCtx, 1) >= 0.15)
+    recos += `<div class="box reco"><h3>💡 ${t('reco_compact_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_compact', {max: Math.round(s.max_context / 1000), p: Math.round(100 * over / Math.max(nReq, 1)), s: Math.round(100 * saving / totalCtx)})}</p>
+      <pre>{
+  "env": { "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000" }
+}</pre></div>`;
+  if (s.cross_msgs >= 10 && s.cross_tok >= 5e6)
+    recos += `<div class="box reco"><h3>💡 ${t('reco_cross_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_cross', {n: s.cross_msgs, t: fmtTok(s.cross_tok)})}</p>
+      <pre>{
+  "crossSessionInbound": "hold"
+}</pre></div>`;
+  const html = `<div id="usage">
+    <div class="tiles">${tiles.map(([v, l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('')}</div>
+    <p class="sub" style="font-size:12px;margin:0">${t('u_api_note')}</p>
+    ${recos}
+    <div class="box"><h3>${t('u_hours')}</h3><p class="note">${t('u_hours_note')}</p>${hoursChart}<div class="ctip"></div></div>
+    <div class="box"><h3>${t('u_agents')}</h3>
+      <table class="utable"><thead><tr><th>${t('u_col_agent')}</th><th class="num">${t('u_col_day')}</th><th></th><th class="num">${t('u_col_total')}</th><th class="num">${t('u_col_cost')}</th><th>${t('u_col_ctx')}</th><th class="num">${t('u_col_cache')}</th><th class="num">${t('u_col_subs')}</th><th>🧠</th></tr></thead><tbody>
+      ${rows.map(a => { const u = a.usage, ci = u.in + u.cr + u.cw;
+        return `<tr class="click" data-id="${a.id}"><td><b>${esc(a.title)}</b>${PROJ === '*' ? ` <span class="usage-mini">· ${esc(projName(a.project))}</span>` : ''}${(a.tips||[]).length ? ' 💡' : ''}</td>
+          <td class="num">${fmtTok(u.day.tok)}</td><td>${spark(u.spark)}</td><td class="num">${fmtTok(u.tok)}</td><td class="num">${fmtUsd(u.cost)}</td>
+          <td><div class="gauge"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span>${fmtTok(u.context)}</span></div></td>
+          <td class="num">${ci ? Math.round(100 * u.cr / ci) + '%' : '—'}</td><td class="num">${u.tok ? Math.round(100 * u.sub_tok / u.tok) + '%' : '—'}</td><td class="usage-mini">${esc(modelEffort(a))}</td></tr>`; }).join('')}
+      </tbody></table></div>
+    <div class="box"><h3>${t('u_hist')}</h3><p class="note">${t('u_hist_note')}</p>${histChart}<div class="ctip"></div></div>
+    <div class="box"><h3>${t('u_models')}</h3><p class="note">${t('u_models_note')}</p>
+      ${models.map(([m, v]) => `<div class="hbar"><span>${esc(m.replace(/^claude-/, ''))}</span><div class="track"><div class="fill" style="width:${100 * v.tok / maxM}%"></div></div><span class="num">${fmtTok(v.tok)} · ${fmtUsd(v.cost)}</span></div>`).join('')}</div>
+    <div class="box"><h3>💡 ${t('u_tips')}</h3>${tipsAll.length ? `<ul class="tiplist">${tipsAll.map(({a, tp}) => `<li><b>${esc(a.title)}:</b> ${tipText(tp)}</li>`).join('')}</ul>` : `<p class="note">${t('u_no_tips')}</p>`}</div>
+  </div>`;
+  $('#main').innerHTML = head + html;
+  bindTabs(); bindChartTips($('#usage'));
+  document.querySelectorAll('#usage tr.click').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; renderPanel(); });
 }
 
 function bindTabs(){
@@ -1049,13 +1301,32 @@ function renderPanel(){
       <h4>${t('write')}</h4>
       <div class="compose">
         <textarea id="msg" placeholder="${esc(t('placeholder'))}" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
-        <div class="row"><span class="hint">${modeTxt}</span>
+        <div class="row"><span class="hint">${modeTxt}${a.usage && a.usage.context >= 20000 ? ' ' + t('per_msg', {k: Math.round(a.usage.context / 1000)}) : ''}</span>
           ${a.running && !a.wsl ? `<button class="sleep" id="sleep" ${SENDING?'disabled':''} title="${esc(t('sleep_hint'))}">${t('btn_sleep')}</button>` : ''}
           <button class="term" id="term" ${SENDING?'disabled':''} title="${esc(t('term_hint'))}">${termTxt}</button>
           <button class="buzz" id="buzz" ${!a.running||a.wsl||SENDING?'disabled':''} title="${esc(t(a.running&&!a.wsl ? 'buzz_ok' : 'buzz_no'))}">🐝 BUZZ!</button>
           <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${t(SENDING ? 'sending' : 'send')}</button></div>
         ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(resultText(LASTRES))}</div>` : ''}
       </div>
+      ${a.wsl ? '' : `<h4>${t('mdl_h')}</h4>
+        <div class="act" style="margin-top:0">
+          <div class="usage-mini" style="margin-bottom:8px">${t('mdl_now', {m: esc(modelName(a.model)), e: esc(a.effort || '—')})}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select id="mdl">${(MODEL_CHOICES.some(([m]) => m === a.model) ? [] : [['', '']]).concat(MODEL_CHOICES).map(([m, p]) => m
+              ? `<option value="${m}" ${m === a.model ? 'selected' : ''}>${modelName(m)} · ${p}</option>`
+              : `<option value="" selected>${esc(modelName(a.model))} ${t('mdl_keep')}</option>`).join('')}</select>
+            <select id="eff">${EFFORT_CHOICES.map(e => `<option ${e === a.effort ? 'selected' : ''}>${e}</option>`).join('')}</select>
+            <button class="term" id="mdl-apply" ${SENDING ? 'disabled' : ''}>${t('mdl_apply')}</button></div>
+          <div class="usage-mini" style="margin-top:8px;font-weight:600;white-space:normal">${t(a.running ? (a.mode === 'terminal' ? 'mdl_note_term' : 'mdl_note_run') : 'mdl_note_closed')}
+            ${a.usage && a.usage.context >= 20000 ? ' ' + t('mdl_note_switch', {k: Math.round(a.usage.context / 1000)}) : ''}</div>
+          ${a.pending ? `<div class="usage-mini" style="margin-top:6px;color:var(--work)">⏳ ${t('mdl_pending', {v: esc([a.pending.model && modelName(a.pending.model), a.pending.effort].filter(Boolean).join(' · '))})}</div>` : ''}
+        </div>`}
+      ${a.usage && a.usage.req ? (() => { const u = a.usage, ci = u.in + u.cr + u.cw; return `<h4>📊 ${t('p_usage')}</h4>
+        <div class="act" style="margin-top:0">${t('p_usage_line', {d: fmtTok(u.day.tok), c: fmtUsd(u.day.cost), t: fmtTok(u.tok), ct: fmtUsd(u.cost)})}
+          <div style="margin:8px 0 4px">${spark(u.spark, 300, 34)}</div>
+          <div class="gauge" style="margin-top:6px"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span style="width:auto">${t('p_ctx', {k: Math.round(u.context / 1000)})}</span></div>
+          <div class="usage-mini" style="margin-top:6px">${ci ? t('p_cache', {p: Math.round(100 * u.cr / ci)}) : ''}${u.sub_tok ? ' · ' + t('u_sub_share', {p: Math.round(100 * u.sub_tok / Math.max(u.tok, 1))}) : ''}</div></div>
+        ${(a.tips || []).length ? `<ul class="tiplist">${a.tips.map(tp => `<li>💡 ${tipText(tp)}</li>`).join('')}</ul>` : ''}`; })() : ''}
       ${a.last_prompt ? `<h4>${t('last_req')}</h4><div class="bubble">${esc(a.last_prompt)}</div>` : ''}
       ${a.last_text ? `<h4>${t('last_said')}</h4><div class="bubble">${esc(a.last_text)}</div>` : ''}
       <h4>${t('recent')}</h4>
@@ -1101,6 +1372,17 @@ function renderPanel(){
     if (SENDING) return;
     buzzEffect(a.id);
     run('/api/send', {id:a.id, text: t('buzz_text')}, false);
+  };
+  if ($('#mdl-apply')) $('#mdl-apply').onclick = () => {
+    if (SENDING) return;
+    const model = $('#mdl').value, effort = $('#eff').value;
+    const change = {model: model && model !== a.model ? model : '', effort: effort !== a.effort ? effort : ''};
+    if (!change.model && !change.effort) { LASTRES = {ok:false, msg:'nothing_to_change'}; return renderPanel(); }
+    if (a.running){
+      const v = [change.model && modelName(change.model), change.effort && 'effort ' + change.effort].filter(Boolean).join(' · ');
+      if (!confirm(t('mdl_confirm', {t: a.title, v, warn: a.status === 'working' ? t('sleep_warn') : ''}))) return;
+    }
+    run('/api/model', {id: a.id, ...change}, false);
   };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
   $('#move').onchange = async e => {
