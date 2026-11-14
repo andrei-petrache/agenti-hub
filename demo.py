@@ -19,7 +19,9 @@ def _usage(day_m, total_m, ctx_k, sub_share=0.0, model="claude-opus-5-5", shape=
         k = min(i, ctx_k // 100 + 1)
         hist[k][0] += n
         hist[k][1] += n * (k * 100_000 + 50_000)
-    return {"tok": tok, "cost": round(cost, 2), "in": 0, "out": out, "cr": cr, "cw": cw, "think": out // 3,
+    step = [0 if not w else int(ctx_k * 1000 * (0.8 + 0.05 * i)) for i, w in enumerate(weights)]
+    return {"per_step": {"day": int(ctx_k * 1150), "week": int(ctx_k * 1250)}, "step_spark": step,
+            "tok": tok, "cost": round(cost, 2), "in": 0, "out": out, "cr": cr, "cw": cw, "think": out // 3,
             "req": sum(h[0] for h in hist), "cache_hit": 0.99,
             "hour": {"tok": spark[-1], "cost": round(cost * spark[-1] / tok, 2)},
             "day": {"tok": day, "cost": round(cost * day / tok, 2)}, "spark": spark,
@@ -50,6 +52,7 @@ def _agent(id_, title, project, status, activity, age, prompt, text, feed, subag
                        "now": None if done else {"tool": rest[0], "text": rest[1]} if rest else None}
                       for i, (d, done, a, *rest) in enumerate(subagents)],
         "usage": use[0] if use else None,
+        "cache_age": age + 60, "compact": None,
         "tips": [{"k": k, "p": p} for k, p in use[1]] if use else [],
     }
 
@@ -125,7 +128,8 @@ def state():
     link_list = [{"from": a, "to": b, "n": n, "last": _iso(s), "recent": [{"ts": _iso(s), "text": t}]}
                  for a, b, n, s, t in links]
     projects = [
-        {"name": P, "emoji": "🛒", "color": "#f2a65a", "description": "ops, backend, frontend, review, research"},
+        {"name": P, "emoji": "🛒", "color": "#f2a65a", "description": "ops, backend, frontend, review, research",
+         "prompt_suggestions": False},
         {"name": "Landing page", "emoji": "🌐", "color": "#8fb996", "description": "site + check"},
         {"name": "Platformer game", "emoji": "🎮", "color": "#b48ac7", "description": "levels and art"},
     ]

@@ -95,6 +95,18 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 /* panel */
 .panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--card);box-shadow:-10px 0 40px rgba(0,0,0,.12);transform:translateX(105%);transition:transform .25s;z-index:10;display:flex;flex-direction:column}
 .panel.open{transform:none}
+@media (min-width:900px){
+  :root{--pw:min(460px,42vw)}
+  .panel{width:var(--pw);box-shadow:-6px 0 24px rgba(0,0,0,.08)}
+  body:has(.panel.open){padding-right:var(--pw)}
+}
+.act.cmp{border-left:3px solid var(--wait);margin-top:10px}
+.cmpb{color:var(--wait);font-weight:700}
+.psecs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 2px;align-items:center}
+.psecs .lbl{font-size:12px;color:var(--muted);font-weight:700;margin-right:2px}
+.psec{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:999px;padding:4px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.psec:hover{border-color:var(--orange)}
+.psec.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .panel .ph{display:flex;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
 .panel .ph svg{width:64px;height:64px}
 .panel .pb{overflow:auto;padding:16px 20px 40px}
@@ -367,6 +379,18 @@ en: {
   term_hint:'Opens the session in a terminal window where you can see it and answer',
   buzz_ok:'Shake it and ask for a short update', buzz_no:'Only for running sessions',
   sending:'sending…', send:'Send ✈️',
+  cmp_h:'📝 Big conversation: {k}k tokens re-read at every step',
+  cmp_warm:'Its cache is still warm for about {m} more min, so summarising it now is cheap: the summary reads the conversation from cache. Later it costs the full {k}k again.',
+  cmp_cold:'Its cache has expired, so a summary now reads the {k}k at full price, about what its next start would cost anyway. It still pays off if you will keep working with it.',
+  cmp_now:'📝 Summarise now', cmp_sleep:'😴 Sleep + summarise', cmp_running:'📝 Summarising… it takes a minute or two.', cmp_badge:'summarise now',
+  cmp_type:'It is open in a terminal: type /compact there, or put it to sleep and let BuzzzHub summarise it.',
+  cmp_bg:'It runs in the background: open it (🖥️) and type /compact, or put it to sleep and let BuzzzHub summarise it.',
+  cmp_sleep_confirm:'Put "{t}" to sleep and summarise its conversation?\n\nThe conversation stays; it continues from the summary when you wake it.',
+  cmp_done:'Summarised: {pre}k → {post}k tokens per step.', cmp_failed:'Summarising failed: {err}',
+  ps_h:'⚙️ Saving settings · {p}', ps_note:'They apply to the agents of this project that BuzzzHub starts or wakes (🖥️ Terminal, ✈️ Send, model change), from any folder. An agent that is running now gets them at its next start.',
+  ps_compact:'Summarise automatically at', ps_default:'default (~1M)', ps_sugg:'Prompt suggestions: the grey hint in the input box costs one extra read of the whole conversation after every reply',
+  ps_saved:'Saved.', reco_compact_box:'For one project at a time, use the saving settings below.',
+  sec_show:'Show:', sec_feed:'📜 Activity', sec_subs:'🐝 Sub-agents ({n})', sec_usage:'📊 {t} today', sec_details:'ℹ️ Details',
   last_req:'Your last request', last_said:'Last thing it said', recent:'What it did recently', subs:'Sub-agents', details:'Details',
   k_project:'project', k_folder:'folder', k_branch:'branch', k_model:'model', k_session:'session', k_active:'active',
   new_project:'➕ new project…', automatic:'↺ automatic',
@@ -404,7 +428,10 @@ en: {
   reco_cross_t:'Messages between agents wake them up', reco_cross:'{n} messages from other sessions started a new turn for an idle agent, about {t} tokens in total: each one re-sends the whole conversation. Send fewer, bigger messages, or let idle agents hold them until their next turn:',
   per_msg:'Each message to it re-sends about {k}k tokens of context.',
   p_usage:'Usage', p_usage_line:'{d} tokens in the last 24 h (≈ {c}) · {t} total (≈ {ct})', p_ctx:'Context now: {k}k tokens',
-  p_cache:'{p}% read from cache', mini:'{t} · 24 h',
+  p_cache:'{p}% read from cache', mini:'{t} in 24 h', per_step:'{t}/step',
+  step_hint:'Each step (a reply or a tool call) re-reads the whole conversation: this is what one step costs now. Lower is better.',
+  p_step:'Per step: {now} now · {day} average 24 h · {week} average 7 days', p_step_down:'↓ {p}% less than its 7-day average',
+  u_col_step:'per step now / 7 d',
   tip:{
     big_context:'<b>Big context: {k}k tokens.</b> Every message re-sends it. For an unrelated task: /rename, then /clear (and /resume later). Otherwise /compact with a focus, e.g. "/compact keep the open decisions".',
     rebuilds:'<b>{n} cache rebuilds after a break of over an hour</b> (≈ {k}k tokens re-processed). Before stepping away, finish with /compact, or start a fresh session.',
@@ -417,6 +444,9 @@ en: {
     model_pending:'Saved: it gets the new model/effort the next time you wake it.', model_restarted:'Restarted in the background with the new model/effort.',
     model_restarted_term:'Restarted with the new model/effort and opened again in {term}.', wsl_no_model:"WSL sessions can't be changed from here.",
     nothing_to_change:'Pick a model or an effort first.',
+    compact_started:'Summarising in the background; it takes a minute or two.', compact_running:'It is running: put it to sleep first, or type /compact in its window.',
+    compact_busy:'It is already being summarised.', wsl_no_compact:"WSL sessions can't be summarised from here.", slept_compact:'Asleep; summarising it now in the background.',
+    psettings_saved:'Saved.',
     not_found:"Can't find the session (reload).", no_claude:"Can't find the claude command in PATH.",
     wsl_no_msg:"WSL sessions can't get messages from here.", empty:'Empty message.',
     relay_failed:'The relay failed: {err}', relayed:'Sent through the relay.',
@@ -480,6 +510,18 @@ ro: {
   term_hint:'Deschide sesiunea într-o fereastră de terminal în care o vezi și îi poți răspunde',
   buzz_ok:'Scutură-l și cere-i un update scurt', buzz_no:'Merge doar la sesiunile pornite',
   sending:'se trimite…', send:'Trimite ✈️',
+  cmp_h:'📝 Conversație mare: {k}k tokeni recitiți la fiecare pas',
+  cmp_warm:'Cache-ul lui mai e cald încă ~{m} min, deci rezumatul e ieftin acum: citește conversația din cache. Mai târziu costă din nou toți cei {k}k.',
+  cmp_cold:'Cache-ul a expirat, deci un rezumat acum citește cei {k}k la preț întreg, cam cât ar costa oricum următoarea pornire. Merită dacă mai lucrezi cu el.',
+  cmp_now:'📝 Rezumă acum', cmp_sleep:'😴 Somn + rezumat', cmp_running:'📝 Rezumă… durează un minut-două.', cmp_badge:'rezumă acum',
+  cmp_type:'E deschis într-un terminal: scrie /compact acolo, sau pune-l la somn și îl rezumă BuzzzHub.',
+  cmp_bg:'Rulează în fundal: deschide-l (🖥️) și scrie /compact, sau pune-l la somn și îl rezumă BuzzzHub.',
+  cmp_sleep_confirm:'Pui „{t}” la somn și îi rezum conversația?\n\nConversația rămâne; când îl trezești, continuă de la rezumat.',
+  cmp_done:'Rezumat: {pre}k → {post}k tokeni pe pas.', cmp_failed:'Rezumatul n-a mers: {err}',
+  ps_h:'⚙️ Setări de economie · {p}', ps_note:'Se aplică agenților din proiect pe care îi pornește sau trezește BuzzzHub (🖥️ Terminal, ✈️ Trimite, schimbare de model), din orice folder. Un agent pornit acum le primește la următoarea pornire.',
+  ps_compact:'Rezumă automat la', ps_default:'implicit (~1M)', ps_sugg:'Sugestii de prompt: textul gri din căsuța de scris costă o recitire în plus a toată conversația după fiecare răspuns',
+  ps_saved:'Salvat.', reco_compact_box:'Pentru câte un proiect, folosește setările de economie de mai jos.',
+  sec_show:'Arată:', sec_feed:'📜 Activitate', sec_subs:'🐝 Sub-agenți ({n})', sec_usage:'📊 {t} azi', sec_details:'ℹ️ Detalii',
   last_req:'Ultima ta cerere', last_said:'Ultimul lucru spus', recent:'Ce a făcut recent', subs:'Sub-agenți', details:'Detalii',
   k_project:'proiect', k_folder:'folder', k_branch:'branch', k_model:'model', k_session:'sesiune', k_active:'activ',
   new_project:'➕ proiect nou…', automatic:'↺ automat',
@@ -517,7 +559,10 @@ ro: {
   reco_cross_t:'Mesajele între agenți îi trezesc', reco_cross:'{n} mesaje de la alte sesiuni au pornit o tură nouă la un agent care stătea, în total cam {t} tokeni: fiecare retrimite toată conversația. Trimite mesaje mai puține și mai mari, sau lasă agenții să le țină până la tura următoare:',
   per_msg:'Fiecare mesaj către el retrimite cam {k}k tokeni de context.',
   p_usage:'Consum', p_usage_line:'{d} tokeni în ultimele 24 h (≈ {c}) · {t} în total (≈ {ct})', p_ctx:'Context acum: {k}k tokeni',
-  p_cache:'{p}% din cache', mini:'{t} · 24 h',
+  p_cache:'{p}% din cache', mini:'{t} în 24 h', per_step:'{t}/pas',
+  step_hint:'La fiecare pas (un răspuns sau o unealtă) recitește toată conversația: atât costă acum un pas. Cu cât mai mic, cu atât mai bine.',
+  p_step:'Pe pas: {now} acum · {day} media 24 h · {week} media 7 zile', p_step_down:'↓ cu {p}% mai puțin decât media lui pe 7 zile',
+  u_col_step:'pe pas acum / 7 z',
   tip:{
     big_context:'<b>Context mare: {k}k tokeni.</b> Fiecare mesaj îl retrimite. Pentru o treabă fără legătură: /rename, apoi /clear (și /resume mai târziu). Altfel /compact cu o direcție, de ex. „/compact păstrează deciziile deschise”.',
     rebuilds:'<b>{n} reconstruiri ale cache-ului după o pauză de peste o oră</b> (≈ {k}k tokeni reprocesați). Înainte de pauză, încheie cu /compact sau începe o sesiune nouă.',
@@ -530,6 +575,9 @@ ro: {
     model_pending:'Salvat: primește noul model/efort data viitoare când îl trezești.', model_restarted:'Repornit în fundal cu noul model/efort.',
     model_restarted_term:'Repornit cu noul model/efort și redeschis în {term}.', wsl_no_model:'Sesiunile din WSL nu pot fi schimbate de aici.',
     nothing_to_change:'Alege întâi un model sau un efort.',
+    compact_started:'Îl rezum în fundal; durează un minut-două.', compact_running:'Rulează: pune-l întâi la somn sau scrie /compact în fereastra lui.',
+    compact_busy:'Se rezumă deja.', wsl_no_compact:'Sesiunile din WSL nu pot fi rezumate de aici.', slept_compact:'Adormit; îl rezum acum în fundal.',
+    psettings_saved:'Salvat.',
     not_found:'Nu găsesc sesiunea (reîncarcă).', no_claude:'Nu găsesc comanda claude în PATH.',
     wsl_no_msg:'Sesiunile din WSL nu pot primi mesaje de aici.', empty:'Mesaj gol.',
     relay_failed:'Releul a eșuat: {err}', relayed:'Trimis prin releu.',
@@ -556,6 +604,8 @@ const fill = (s, p) => String(s).replace(/\{(\w+)\}/g, (m, k) => p && p[k] != nu
 const t = (k, p) => fill(I18N[LANG][k] ?? I18N.en[k] ?? k, p);
 
 /* ---------- state ---------- */
+const PANEL_SECS = ['feed', 'subs', 'model', 'usage', 'details'];
+let PSECS = new Set((store.get('psecs') ?? 'feed').split(',').filter(k => PANEL_SECS.includes(k)));
 let DATA = null, PROJ = store.get('proj'), SEL = null, DRAFT = {}, SENDING = false, LASTRES = null;
 const OLD_TAB = {atelier:'workshop', agenti:'agents', harta:'map'};
 let TAB = store.get('tab'); TAB = OLD_TAB[TAB] || TAB || 'workshop';
@@ -856,7 +906,7 @@ function card(a){
       ${pill(a)}
       ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div></div>
     <div class="act">${esc(activity(a))}</div>
-    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}${a.usage && a.usage.tok ? `<span>📊 ${t('mini', {t: fmtTok(a.usage.day.tok)})}</span>` : ''}${a.model ? `<span>🧠 ${esc(modelEffort(a))}</span>` : ''}</div>
+    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}${a.usage && a.usage.tok ? `<span title="${esc(t('step_hint'))}">📊 ${t('per_step', {t: fmtTok(a.usage.context)})} · ${t('mini', {t: fmtTok(a.usage.day.tok)})}</span>` : ''}${a.model ? `<span>🧠 ${esc(modelEffort(a))}</span>` : ''}${cmpBadge(a)}</div>
     ${a.subagents.length ? `<div class="subs">${t('n_subs', {n: a.subagents.length})}${subsActive?` · <b style="color:var(--work)">${t('n_active', {n: subsActive})}</b>`:''}</div>` : ''}
   </div>`;
 }
@@ -959,7 +1009,7 @@ function updateRoom(el, a){
   el.classList.toggle('asking', !!a.asks);
   el.classList.toggle('working', a.status === 'working');
   el.querySelector('.name').textContent = a.title;
-  el.querySelector('.usage-mini').textContent = [a.model ? '🧠 ' + modelEffort(a) : '', a.usage && a.usage.day.tok ? '📊 ' + fmtTok(a.usage.day.tok) : ''].filter(Boolean).join('  ');
+  el.querySelector('.usage-mini').textContent = [a.model ? '🧠 ' + modelEffort(a) : '', a.usage && a.usage.context ? '📊 ' + t('per_step', {t: fmtTok(a.usage.context)}) : '', (compactInfo(a) || {}).warm ? '📝' : ''].filter(Boolean).join('  ');
   el.querySelector('.pillw').innerHTML = pill(a) + (a.mode ? ` <span title="${t(a.mode==='background'?'bg_title':'term_title_short')}">${a.mode==='background'?'👻':'🖥️'}</span>` : '');
   const bot = el.querySelector('.bot');
   if (bot.dataset.z !== z){
@@ -1057,6 +1107,20 @@ const fmtUsd = x => '$' + ((x || 0) >= 100 ? Math.round(x).toLocaleString('en-US
 const tipText = tp => fill((I18N[LANG].tip || I18N.en.tip)[tp.k] || I18N.en.tip[tp.k] || tp.k,
   Object.fromEntries(Object.entries(tp.p || {}).map(([k, v]) => [k, esc(v)])));
 
+const stepDrop = u => u.per_step && u.per_step.week && u.context < u.per_step.week * 0.8 ? Math.round(100 * (1 - u.context / u.per_step.week)) : 0;
+const stepCell = u => `${fmtTok(u.context)} <span class="usage-mini">/ ${u.per_step && u.per_step.week ? fmtTok(u.per_step.week) : '—'}</span>${stepDrop(u) ? ' <b style="color:#3d9a5b">↓</b>' : ''}`;
+const WARM_S = 3300;      // the main conversation's cache lives 1 h on a subscription; keep a margin
+function compactInfo(a){
+  const u = a.usage, c = a.compact || {};
+  if (!u || a.wsl) return null;
+  if (c.state === 'running') return {k: 'running'};
+  if (c.state && c.t && Date.now() / 1000 - c.t < 1800 && a.status !== 'working') return {k: c.state, c};
+  if (u.context < 150000 || a.status === 'working') return null;
+  const left = a.cache_age != null ? Math.max(0, Math.round((WARM_S - a.cache_age) / 60)) : 0;
+  return {k: 'big', warm: left > 0, left, ctx: u.context};
+}
+const cmpBadge = a => { const ci = compactInfo(a); return !ci ? '' : ci.k === 'running' ? '<span class="cmpb">📝 …</span>'
+  : ci.k === 'big' && ci.warm ? `<span class="cmpb">📝 ${t('cmp_badge')}</span>` : ''; };
 function sumUsage(agents){
   const s = {tok:0, cost:0, cr:0, in:0, cw:0, out:0, req:0, sub_tok:0, day:{tok:0, cost:0}, hour:{tok:0, cost:0},
              spark: Array(24).fill(0), models:{}, hist: Array.from({length:11}, () => [0, 0]), max_context:0,
@@ -1131,7 +1195,7 @@ const modelEffort = a => a.model ? `${modelName(a.model)}${a.effort ? ' · ' + a
 function renderUsage(p, head){
   const agents = p.agents.filter(a => a.usage && a.usage.req);
   const s = sumUsage(agents);
-  const key = LANG + JSON.stringify([s.tok, s.day.tok, s.hour.tok, agents.map(a => a.id + a.status)]);
+  const key = LANG + JSON.stringify([s.tok, s.day.tok, s.hour.tok, agents.map(a => a.id + a.status + (a.compact || {}).state), p.auto_compact, p.prompt_suggestions]);
   if (USAGE_KEY === key && $('#usage')) return;
   USAGE_KEY = key;
   if (!agents.length){ $('#main').innerHTML = head + `<div class="empty">${mascot('#e8875b','sleeping')}<p>${t('u_none')}</p></div>`; bindTabs(); return; }
@@ -1151,11 +1215,12 @@ function renderUsage(p, head){
   const rows = agents.slice().sort((a, b) => b.usage.day.tok - a.usage.day.tok || b.usage.tok - a.usage.tok);
   const tipsAll = agents.flatMap(a => (a.tips || []).map(tp => ({a, tp})));
   let recos = '';
-  if (saving / Math.max(totalCtx, 1) >= 0.15)
+  const canSet = p.name && p.name !== '*' && !p.name.startsWith('@') && DATA.projects.some(x => x.name === p.name);
+  if (!p.auto_compact && saving / Math.max(totalCtx, 1) >= 0.15)
     recos += `<div class="box reco"><h3>💡 ${t('reco_compact_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_compact', {max: Math.round(s.max_context / 1000), p: Math.round(100 * over / Math.max(nReq, 1)), s: Math.round(100 * saving / totalCtx)})}</p>
       <pre>{
   "env": { "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000" }
-}</pre></div>`;
+}</pre>${canSet ? `<p class="note" style="margin:8px 0 0">👇 ${t('reco_compact_box')}</p>` : ''}</div>`;
   if (s.cross_msgs >= 10 && s.cross_tok >= 5e6)
     recos += `<div class="box reco"><h3>💡 ${t('reco_cross_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_cross', {n: s.cross_msgs, t: fmtTok(s.cross_tok)})}</p>
       <pre>{
@@ -1165,13 +1230,21 @@ function renderUsage(p, head){
     <div class="tiles">${tiles.map(([v, l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('')}</div>
     <p class="sub" style="font-size:12px;margin:0">${t('u_api_note')}</p>
     ${recos}
+    ${canSet ? `<div class="box"><h3>${t('ps_h', {p: esc(p.name)})}</h3><p class="note">${t('ps_note')}</p>
+      <div style="display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center">
+        <label style="font-weight:700">${t('ps_compact')} <select id="ps-ac">${[[0, t('ps_default')], [200000, '200k'], [300000, '300k'], [500000, '500k']]
+          .concat([0, 200000, 300000, 500000].includes(p.auto_compact || 0) ? [] : [[p.auto_compact, fmtTok(p.auto_compact)]])
+          .map(([v, l]) => `<option value="${v}" ${(p.auto_compact || 0) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label style="flex:1;min-width:260px"><input type="checkbox" id="ps-sg" ${p.prompt_suggestions === false ? '' : 'checked'}> ${t('ps_sugg')}</label>
+        <span id="ps-res" class="usage-mini"></span></div></div>` : ''}
     <div class="box"><h3>${t('u_hours')}</h3><p class="note">${t('u_hours_note')}</p>${hoursChart}<div class="ctip"></div></div>
     <div class="box"><h3>${t('u_agents')}</h3>
-      <table class="utable"><thead><tr><th>${t('u_col_agent')}</th><th class="num">${t('u_col_day')}</th><th></th><th class="num">${t('u_col_total')}</th><th class="num">${t('u_col_cost')}</th><th>${t('u_col_ctx')}</th><th class="num">${t('u_col_cache')}</th><th class="num">${t('u_col_subs')}</th><th>🧠</th></tr></thead><tbody>
+      <table class="utable"><thead><tr><th>${t('u_col_agent')}</th><th class="num">${t('u_col_day')}</th><th></th><th class="num">${t('u_col_total')}</th><th class="num">${t('u_col_cost')}</th><th>${t('u_col_ctx')}</th><th class="num" title="${esc(t('step_hint'))}">${t('u_col_step')}</th><th class="num">${t('u_col_cache')}</th><th class="num">${t('u_col_subs')}</th><th>🧠</th></tr></thead><tbody>
       ${rows.map(a => { const u = a.usage, ci = u.in + u.cr + u.cw;
         return `<tr class="click" data-id="${a.id}"><td><b>${esc(a.title)}</b>${PROJ === '*' ? ` <span class="usage-mini">· ${esc(projName(a.project))}</span>` : ''}${(a.tips||[]).length ? ' 💡' : ''}</td>
           <td class="num">${fmtTok(u.day.tok)}</td><td>${spark(u.spark)}</td><td class="num">${fmtTok(u.tok)}</td><td class="num">${fmtUsd(u.cost)}</td>
           <td><div class="gauge"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span>${fmtTok(u.context)}</span></div></td>
+          <td class="num">${stepCell(u)}</td>
           <td class="num">${ci ? Math.round(100 * u.cr / ci) + '%' : '—'}</td><td class="num">${u.tok ? Math.round(100 * u.sub_tok / u.tok) + '%' : '—'}</td><td class="usage-mini">${esc(modelEffort(a))}</td></tr>`; }).join('')}
       </tbody></table></div>
     <div class="box"><h3>${t('u_hist')}</h3><p class="note">${t('u_hist_note')}</p>${histChart}<div class="ctip"></div></div>
@@ -1181,6 +1254,14 @@ function renderUsage(p, head){
   </div>`;
   $('#main').innerHTML = head + html;
   bindTabs(); bindChartTips($('#usage'));
+  if (canSet){
+    const savePs = async () => {
+      const r = await post('/api/psettings', {project: p.name, auto_compact: +$('#ps-ac').value || null, prompt_suggestions: $('#ps-sg').checked});
+      $('#ps-res').textContent = (r.ok ? '✅ ' : '⚠️ ') + resultText(r);
+      if (r.ok) setTimeout(load, 600);
+    };
+    $('#ps-ac').onchange = savePs; $('#ps-sg').onchange = savePs;
+  }
   document.querySelectorAll('#usage tr.click').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; renderPanel(); });
 }
 
@@ -1298,6 +1379,16 @@ function renderPanel(){
         ${t(a.mode==='background'?'ask_bg':'ask_term')} ${t('ask_wait')}</p>
         <button class="term" id="term2" ${SENDING?'disabled':''}>${t(a.mode==='background'?'btn_answer':'btn_show')}</button></div>` : ''}
       ${a.asks ? '' : `<div class="act">${a.running?'<span class="on-dot"></span> ':''}${esc(activity(a))}</div>`}
+      ${(() => { const ci = compactInfo(a); if (!ci) return '';
+        if (ci.k === 'running') return `<div class="act cmp">${t('cmp_running')}</div>`;
+        if (ci.k === 'done') return `<div class="act cmp">✅ ${t('cmp_done', {pre: Math.round((ci.c.pre || 0) / 1000), post: Math.round(a.usage.context / 1000)})}</div>`;
+        if (ci.k === 'failed') return `<div class="act cmp">⚠️ ${t('cmp_failed', {err: esc(ci.c.err || '')})}</div>`;
+        const k = Math.round(ci.ctx / 1000);
+        return `<div class="act cmp"><b>${t('cmp_h', {k})}</b>
+          <div class="usage-mini" style="white-space:normal;margin:4px 0 8px">${ci.warm ? t('cmp_warm', {m: ci.left, k}) : t('cmp_cold', {k})}</div>
+          ${!a.running ? `<button class="term" id="cmp-now" ${SENDING ? 'disabled' : ''}>${t('cmp_now')}</button>`
+            : `<div class="usage-mini" style="white-space:normal;margin-bottom:8px">${t(a.mode === 'terminal' ? 'cmp_type' : 'cmp_bg')}</div>
+               <button class="sleep" id="cmp-sleep" ${SENDING ? 'disabled' : ''}>${t('cmp_sleep')}</button>`}</div>`; })()}
       <h4>${t('write')}</h4>
       <div class="compose">
         <textarea id="msg" placeholder="${esc(t('placeholder'))}" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
@@ -1308,7 +1399,14 @@ function renderPanel(){
           <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${t(SENDING ? 'sending' : 'send')}</button></div>
         ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(resultText(LASTRES))}</div>` : ''}
       </div>
-      ${a.wsl ? '' : `<h4>${t('mdl_h')}</h4>
+      <div class="psecs"><span class="lbl">${t('sec_show')}</span>${[
+        ['feed', t('sec_feed')],
+        a.subagents.length ? ['subs', t('sec_subs', {n: a.subagents.length})] : null,
+        a.wsl ? null : ['model', '🧠 ' + esc(modelEffort(a) || modelName(a.model))],
+        a.usage && a.usage.req ? ['usage', t('sec_usage', {t: fmtTok(a.usage.day.tok)})] : null,
+        ['details', t('sec_details')],
+      ].filter(Boolean).map(([k, label]) => `<button class="psec ${PSECS.has(k) ? 'on' : ''}" data-k="${k}">${label}</button>`).join('')}</div>
+      ${a.wsl || !PSECS.has('model') ? '' : `<h4>${t('mdl_h')}</h4>
         <div class="act" style="margin-top:0">
           <div class="usage-mini" style="margin-bottom:8px">${t('mdl_now', {m: esc(modelName(a.model)), e: esc(a.effort || '—')})}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -1321,26 +1419,30 @@ function renderPanel(){
             ${a.usage && a.usage.context >= 20000 ? ' ' + t('mdl_note_switch', {k: Math.round(a.usage.context / 1000)}) : ''}</div>
           ${a.pending ? `<div class="usage-mini" style="margin-top:6px;color:var(--work)">⏳ ${t('mdl_pending', {v: esc([a.pending.model && modelName(a.pending.model), a.pending.effort].filter(Boolean).join(' · '))})}</div>` : ''}
         </div>`}
-      ${a.usage && a.usage.req ? (() => { const u = a.usage, ci = u.in + u.cr + u.cw; return `<h4>📊 ${t('p_usage')}</h4>
+      ${PSECS.has('usage') && a.usage && a.usage.req ? (() => { const u = a.usage, ci = u.in + u.cr + u.cw; return `<h4>📊 ${t('p_usage')}</h4>
         <div class="act" style="margin-top:0">${t('p_usage_line', {d: fmtTok(u.day.tok), c: fmtUsd(u.day.cost), t: fmtTok(u.tok), ct: fmtUsd(u.cost)})}
           <div style="margin:8px 0 4px">${spark(u.spark, 300, 34)}</div>
+          ${u.per_step ? `<div style="margin-top:6px" title="${esc(t('step_hint'))}">${t('p_step', {now: fmtTok(u.context), day: fmtTok(u.per_step.day || 0), week: fmtTok(u.per_step.week || 0)})}
+            ${stepDrop(u) ? `<div style="color:#3d9a5b;font-weight:700">${t('p_step_down', {p: stepDrop(u)})}</div>` : ''}
+            <div style="margin:4px 0">${spark(u.step_spark || [], 300, 28)}</div></div>` : ''}
           <div class="gauge" style="margin-top:6px"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span style="width:auto">${t('p_ctx', {k: Math.round(u.context / 1000)})}</span></div>
           <div class="usage-mini" style="margin-top:6px">${ci ? t('p_cache', {p: Math.round(100 * u.cr / ci)}) : ''}${u.sub_tok ? ' · ' + t('u_sub_share', {p: Math.round(100 * u.sub_tok / Math.max(u.tok, 1))}) : ''}</div></div>
         ${(a.tips || []).length ? `<ul class="tiplist">${a.tips.map(tp => `<li>💡 ${tipText(tp)}</li>`).join('')}</ul>` : ''}`; })() : ''}
+      ${PSECS.has('feed') ? `
       ${a.last_prompt ? `<h4>${t('last_req')}</h4><div class="bubble">${esc(a.last_prompt)}</div>` : ''}
       ${a.last_text ? `<h4>${t('last_said')}</h4><div class="bubble">${esc(a.last_text)}</div>` : ''}
       <h4>${t('recent')}</h4>
       <ul class="feed">${a.feed.slice().reverse().map(e => `<li><span class="tm">${hhmm(e.ts)}</span><span class="ic">${ic[e.kind]}</span>
-        <span class="${e.kind}">${e.kind==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>
-      ${a.subagents.length ? `<h4>${t('subs')}</h4><ul class="feed">${a.subagents.map(s => `<li><span class="ic">${s.done?'✅':(s.age<300?'⚡':'⏸️')}</span><span>${esc(s.description)} <span style="color:var(--muted)">· ${ago(s.age)}</span>${s.now && !s.done ? `<br><span style="color:var(--work);font-weight:700">${esc(toolText(s.now.tool, s.now.text))}</span>` : ''}</span></li>`).join('')}</ul>` : ''}
-      <h4>${t('details')}</h4>
+        <span class="${e.kind}">${e.kind==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>` : ''}
+      ${PSECS.has('subs') && a.subagents.length ? `<h4>${t('subs')}</h4><ul class="feed">${a.subagents.map(s => `<li><span class="ic">${s.done?'✅':(s.age<300?'⚡':'⏸️')}</span><span>${esc(s.description)} <span style="color:var(--muted)">· ${ago(s.age)}</span>${s.now && !s.done ? `<br><span style="color:var(--work);font-weight:700">${esc(toolText(s.now.tool, s.now.text))}</span>` : ''}</span></li>`).join('')}</ul>` : ''}
+      ${PSECS.has('details') ? `<h4>${t('details')}</h4>
       <div class="kv"><b>${t('k_project')}</b><span><select id="move">${opts}<option value="__new__">${t('new_project')}</option><option value="" ${a.project==='@other'?'selected':''}>${t('automatic')}</option></select></span>
         <b>${t('k_folder')}</b><span>${esc(a.cwd)}</span><b>${t('k_branch')}</b><span>${esc(a.branch||'—')}</span>
         <b>${t('k_model')}</b><span>${esc(a.model||'—')}</span><b>${t('k_session')}</b><span>${a.id}</span>
         <b>${t('k_active')}</b><span>${ago(a.age)}</span></div>
       <p class="sub" style="margin-top:14px;font-size:12px">${t('from_any')} ${a.running && a.mode==='background'
         ? `<code>claude attach ${esc(a.job || a.id.slice(0,8))}</code> ${t('bg_session')}`
-        : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> ${t('plain_new')}</p>
+        : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> ${t('plain_new')}</p>` : ''}
     </div>`;
   P.classList.add('open');
   P.querySelector('.pb').scrollTop = keepScroll;
@@ -1384,8 +1486,18 @@ function renderPanel(){
     }
     run('/api/model', {id: a.id, ...change}, false);
   };
+  P.querySelectorAll('.psec').forEach(b => b.onclick = () => {
+    const k = b.dataset.k;
+    PSECS.has(k) ? PSECS.delete(k) : PSECS.add(k);
+    store.set('psecs', [...PSECS].join(','));
+    renderPanel();
+  });
+  if ($('#cmp-now')) $('#cmp-now').onclick = () => { if (!SENDING) run('/api/compact', {id: a.id}, false); };
+  if ($('#cmp-sleep')) $('#cmp-sleep').onclick = () => {
+    if (!SENDING && confirm(t('cmp_sleep_confirm', {t: a.title}))) run('/api/sleep', {id: a.id, compact: true}, false);
+  };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
-  $('#move').onchange = async e => {
+  if ($('#move')) $('#move').onchange = async e => {
     if (e.target.value === '__new__'){
       const name = (prompt(t('new_project_prompt')) || '').trim();
       if (!name){ e.target.value = a.project; return; }

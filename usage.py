@@ -16,7 +16,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CACHE_FILE = HERE / "cache" / "usage.json"
-VERSION = 4
+VERSION = 6
 
 CACHE_TTL = 3600            # Claude Code writes its prompt cache with a 1-hour lifetime
 REBUILD_MIN = 20_000        # a cache write this big after a long pause = the whole context re-processed
@@ -108,6 +108,14 @@ def _scan(path: Path, st, s):
             pending_cross = True             # the next request is a turn started by another session
             s["cross_msgs"] += 1
             continue
+        if b'"compact_boundary"' in ln and b'"compactMetadata"' in ln:
+            try:                             # summarised: the next step re-reads only what is left
+                post = (json.loads(ln).get("compactMetadata") or {}).get("postTokens")
+                if post:
+                    s["context"] = post
+            except ValueError:
+                pass
+            continue
         if b'"usage"' not in ln or b'"assistant"' not in ln:
             continue
         try:
@@ -140,6 +148,8 @@ def _scan(path: Path, st, s):
             hb = s["hours"].setdefault(h, {"tok": 0, "cost": 0.0})
             hb["tok"] += total(one)
             hb["cost"] += one["cost"]
+            hb["req"] = hb.get("req", 0) + 1            # for the average context read per step
+            hb["ctx"] = hb.get("ctx", 0) + one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
             gap = t - s["last"] if s["last"] else 0
             if gap > CACHE_TTL and one["cw5"] + one["cw1h"] > REBUILD_MIN:
                 s["rebuilds"] += 1                       # cache had expired: whole context written again
@@ -275,8 +285,26 @@ def summarize(own, subs):
                 cst += v["cost"]
         return {"tok": tok, "cost": round(cst, 4)}
 
+    def per_step(n_hours):
+        """Average context read per step (each reply or tool call) of the session itself, sub-agents left out:
+        the number that drops when the agent compacts or starts fresh."""
+        req = ctx = 0
+        for h, v in own["hours"].items():
+            if now_h - int(h) < n_hours:
+                req += v.get("req", 0)
+                ctx += v.get("ctx", 0)
+        return round(ctx / req) if req else None
+
+    def step_spark():
+        out = []
+        for i in range(23, -1, -1):
+            v = own["hours"].get(str(now_h - i)) or {}
+            out.append(round(v["ctx"] / v["req"]) if v.get("req") else 0)
+        return out
+
     inputs = all_["in"] + all_["cr"] + all_["cw5"] + all_["cw1h"]
     return {
+        "per_step": {"day": per_step(24), "week": per_step(24 * 7)}, "step_spark": step_spark(),
         "tok": total(all_), "cost": round(all_["cost"], 4),
         "in": all_["in"], "out": all_["out"], "cr": all_["cr"], "cw": all_["cw5"] + all_["cw1h"],
         "think": all_["think"], "req": all_["req"],

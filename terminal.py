@@ -74,6 +74,10 @@ def _bash_script(sid, title, header, command, cwd, bye):
         lines.append(f"printf '\\033[{colour}m%s\\033[0m\\n' {shlex.quote(line)}")
     lines += ["printf '\\n'",
               " ".join(shlex.quote(x) for x in command),
+              # Claude turns on mouse reporting; when it is killed (😴 sleep) it can't turn it off, and every
+              # mouse move then lands at the bash prompt as text like "35;130;16M". Reset the terminal modes.
+              "printf '\\033[?1000l\\033[?1002l\\033[?1003l\\033[?1005l\\033[?1006l\\033[?1015l"
+              "\\033[?1004l\\033[?2004l\\033[?25h\\033[0m'; stty sane 2>/dev/null",
               f"printf '\\n\\033[0;37m%s\\033[0m\\n' {shlex.quote(bye)}",
               "exec bash -i"]
     p.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
