@@ -1,4 +1,4 @@
-"""Desenează mascota (bulgăraș portocaliu cu steluță) și o salvează ca agenti.ico — fără biblioteci externe."""
+"""Desenează albinuța BuzzzHub și o salvează ca buzzzhub.ico / buzzzhub.png — fără biblioteci externe."""
 import math
 import struct
 import zlib
@@ -34,34 +34,48 @@ def in_poly(x, y, pts):
 STAR = star_pts(50, 17, 12, 3.2)
 
 
+YELLOW = (255, 196, 61)
+WING = (205, 232, 255)
+
+
+def seg_dist(x, y, x1, y1, x2, y2):
+    dx, dy = x2 - x1, y2 - y1
+    t = max(0, min(1, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy)))
+    return math.hypot(x - x1 - t * dx, y - y1 - t * dy)
+
+
 def sample(x, y):
-    """Culoare (r,g,b,a) într-un punct din spațiul 100x100."""
+    """Albinuța BuzzzHub: culoare (r,g,b,a) într-un punct din spațiul 100x100."""
     col = None
-    # antena
-    if abs(x - 50) < 1.6 and 24 <= y <= 33:
-        col = ORANGE + (255,)
-    if in_poly(x, y, STAR):
-        col = ORANGE + (255,)
-    # brațe
-    for ax in (20, 80):
-        if ((x - ax) / 5.5) ** 2 + ((y - 66) / 7.5) ** 2 <= 1:
-            col = ORANGE + (255,)
+    # aripioare (în spate)
+    for wx, rot in ((29, 0.5), (71, -0.5)):
+        c, s_ = math.cos(rot), math.sin(rot)
+        u, v = (x - wx) * c + (y - 30) * s_, -(x - wx) * s_ + (y - 30) * c
+        if (u / 15) ** 2 + (v / 10) ** 2 <= 1:
+            col = WING + (235,)
+    # antene
+    for (x1, y1, x2, y2) in ((42, 34, 35, 15), (58, 34, 65, 15)):
+        if seg_dist(x, y, x1, y1, x2, y2) < 1.7:
+            col = DARK + (255,)
+        if math.hypot(x - x2, y - y2) < 4:
+            col = DARK + (255,)
     # corp
-    if ((x - 50) / 32) ** 2 + ((y - 61) / 29) ** 2 <= 1:
-        col = ORANGE + (255,)
-        if ((x - 42) / 9) ** 2 + ((y - 41) / 5) ** 2 <= 1:
-            col = tuple(int(c * 0.72 + 255 * 0.28) for c in ORANGE) + (255,)
-        for bx in (31, 69):
-            if (x - bx) ** 2 + (y - 63) ** 2 <= 30:
-                col = tuple(int(c * 0.55 + p * 0.45) for c, p in zip(ORANGE, PINK)) + (255,)
+    if ((x - 50) / 33) ** 2 + ((y - 60) / 31) ** 2 <= 1:
+        col = YELLOW + (255,)
+        if 73 <= y <= 79 or 84.5 <= y <= 90:
+            col = DARK + (255,)
+        if ((x - 41) / 9) ** 2 + ((y - 39) / 4.5) ** 2 <= 1:
+            col = tuple(int(c * 0.7 + 255 * 0.3) for c in YELLOW) + (255,)
+        for bx in (30, 70):
+            if (x - bx) ** 2 + (y - 60) ** 2 <= 30:
+                col = tuple(int(c * 0.55 + p * 0.45) for c, p in zip(YELLOW, PINK)) + (255,)
         for ex in (39, 61):
-            if (x - ex) ** 2 + (y - 55) ** 2 <= 5.2 ** 2:
+            if (x - ex) ** 2 + (y - 52) ** 2 <= 5.2 ** 2:
                 col = DARK + (255,)
-            if (x - ex - 1.8) ** 2 + (y - 53) ** 2 <= 1.9 ** 2:
+            if (x - ex - 1.8) ** 2 + (y - 50) ** 2 <= 1.9 ** 2:
                 col = WHITE + (255,)
-        # zâmbet
-        d = math.hypot(x - 50, y - 61)
-        if 5.2 <= d <= 7.6 and y > 64:
+        d = math.hypot(x - 50, y - 58)
+        if 5.2 <= d <= 7.6 and y > 61:
             col = DARK + (255,)
     return col or (0, 0, 0, 0)
 
@@ -104,9 +118,9 @@ def main():
     for s, data in zip(sizes, imgs):
         dirs += struct.pack("<BBBBHHII", s % 256, s % 256, 0, 0, 1, 32, len(data), off)
         off += len(data)
-    out = Path(__file__).with_name("agenti.ico")
+    out = Path(__file__).with_name("buzzzhub.ico")
     out.write_bytes(head + dirs + b"".join(imgs))
-    Path(__file__).with_name("agenti.png").write_bytes(imgs[-1])
+    Path(__file__).with_name("buzzzhub.png").write_bytes(imgs[-1])
     print("scris", out)
 
 

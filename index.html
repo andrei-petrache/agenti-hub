@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agenți Hub</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%B3%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>BuzzzHub</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%9D%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --bg:#fbf6ef; --card:#fffdf9; --ink:#3b2f2a; --muted:#8a7a70; --line:#efe3d6;
@@ -158,6 +158,14 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .compose .row{display:flex;gap:10px;align-items:center;margin-top:8px}
 .compose .send{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:800}
 .compose .send:disabled{opacity:.5;cursor:wait}
+.compose .buzz{background:#ffc43d;color:#3b2f2a;border-color:#e8a900;font-weight:900;letter-spacing:.3px}
+.compose .buzz:hover:not(:disabled){transform:rotate(-3deg) scale(1.05)}
+.compose .buzz:disabled{opacity:.4;cursor:not-allowed}
+.buzzing{animation:buzz .65s linear}
+.node.buzzing{animation:none}
+.node.buzzing > svg{animation:buzz .65s linear}
+@keyframes buzz{0%,100%{translate:0 0}10%{translate:-7px 2px}20%{translate:6px -3px}30%{translate:-6px -2px}40%{translate:7px 3px}
+  50%{translate:-5px 2px}60%{translate:5px -2px}70%{translate:-4px 1px}80%{translate:3px -1px}90%{translate:-2px 0}}
 .compose .hint{font-size:12px;color:var(--muted);flex:1}
 .compose .res{font-size:13px;margin-top:8px;border-radius:10px;padding:7px 10px}
 .res.ok{background:color-mix(in srgb,#7cc576 18%,transparent)} .res.err{background:color-mix(in srgb,#e97a7a 20%,transparent)}
@@ -167,7 +175,7 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 <body>
 <header>
   <button class="back" id="back" hidden>← proiecte</button>
-  <h1>✳️ Agenți Hub</h1>
+  <h1>🐝 BuzzzHub</h1>
   <span class="crumb" id="crumb"></span>
   <span class="sp"></span>
   <span class="live"><i></i><span id="upd">live</span></span>
@@ -585,6 +593,7 @@ function renderPanel(){
       <div class="compose">
         <textarea id="msg" placeholder="ex: după ce termini, dă-mi un rezumat scurt" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
         <div class="row"><span class="hint">${modTxt}</span>
+          <button class="buzz" id="buzz" ${!a.pornita||a.wsl||SENDING?'disabled':''} title="${a.pornita&&!a.wsl ? 'Scutură-l și cere-i un update scurt' : 'Merge doar la sesiunile pornite'}">🐝 BUZZ!</button>
           <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${SENDING?'se trimite…':'Trimite ✈️'}</button></div>
         ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(LASTRES.info)}</div>` : ''}
       </div>
@@ -607,21 +616,49 @@ function renderPanel(){
   if (hadFocus){ t2.focus(); t2.setSelectionRange(t2.value.length, t2.value.length); }
   t2.oninput = () => DRAFT[a.id] = t2.value;
   t2.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) $('#send').click(); };
-  $('#send').onclick = async () => {
-    const text = t2.value.trim(); if (!text || SENDING) return;
+  const trimite = async (text, golesteCaseta) => {
     SENDING = true; LASTRES = null; renderPanel();
     try{
       const r = await fetch('/api/mesaj', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, text})});
       LASTRES = await r.json();
-      if (LASTRES.ok){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
+      if (LASTRES.ok && golesteCaseta){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
     }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
     SENDING = false; load();
+  };
+  $('#send').onclick = () => { const text = t2.value.trim(); if (text && !SENDING) trimite(text, true); };
+  $('#buzz').onclick = () => {
+    if (SENDING) return;
+    buzzEfect(a.id);
+    trimite('Buzzz! 🐝 Ce faci? Dă-mi un update scurt (2–3 rânduri): la ce lucrezi acum și dacă ești blocat în ceva.', false);
   };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
   $('#mut').onchange = async e => {
     await fetch('/api/aloca', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, proiect:e.target.value})});
     load();
   };
+}
+
+/* BUZZ!: un bâzâit scurt (sintetizat) + tot ce ține de agent se scutură */
+function buzzSunet(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 170;
+    lfo.frequency.value = 38; lg.gain.value = 0.05; lfo.connect(lg); lg.connect(g.gain);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.09, ctx.currentTime + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.55);
+    o.frequency.linearRampToValueAtTime(140, ctx.currentTime + 0.55);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); lfo.start(); o.stop(ctx.currentTime + 0.6); lfo.stop(ctx.currentTime + 0.6);
+    setTimeout(() => ctx.close(), 800);
+  }catch(e){}
+}
+function buzzEfect(id){
+  buzzSunet();
+  const tinte = [$('#panel'), ...document.querySelectorAll(`.ag[data-id="${id}"], .node[data-id="${id}"]`)];
+  tinte.forEach(el => { if (!el) return; el.classList.remove('buzzing'); void el.offsetWidth; el.classList.add('buzzing'); });
+  setTimeout(() => tinte.forEach(el => el && el.classList.remove('buzzing')), 700);
 }
 
 function save(){ try{ PROJ ? localStorage.setItem('proj', PROJ) : localStorage.removeItem('proj'); localStorage.setItem('zile', $('#zile').value);}catch(e){} }

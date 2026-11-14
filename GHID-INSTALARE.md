@@ -6,7 +6,7 @@
 
 ## Română
 
-Agenți Hub e o aplicație mică de desktop care îți arată toate sesiunile **Claude Code** de pe calculator, grupate pe proiecte. Nu trimite nimic pe internet. Citește doar fișierele pe care Claude Code le ține deja pe disc.
+BuzzzHub e o aplicație mică de desktop care îți arată toate sesiunile **Claude Code** de pe calculator, grupate pe proiecte. Nu trimite nimic pe internet. Citește doar fișierele pe care Claude Code le ține deja pe disc.
 
 ### Ce îți trebuie
 
@@ -16,26 +16,26 @@ Agenți Hub e o aplicație mică de desktop care îți arată toate sesiunile **
 ### 🪟 Windows
 
 1. **Instalează Python** de pe https://www.python.org/downloads/windows/. La primul ecran al instalatorului **bifează „Add python.exe to PATH”**, apoi apasă *Install Now*.
-2. **Descarcă Agenți Hub:** pe pagina proiectului apasă butonul verde **Code**, apoi **Download ZIP**.
+2. **Descarcă BuzzzHub:** pe pagina proiectului apasă butonul verde **Code**, apoi **Download ZIP**.
 3. **Dezarhivează** ZIP-ul: click dreapta, apoi *Extract All…*. Pune folderul unde vrei, de exemplu în `Documente`.
-4. Deschide folderul și dă **dublu-click pe `instaleaza.bat`**. Scriptul instalează singura dependență (`pywebview`) și pune pe Desktop o scurtătură **Agenti Hub**.
+4. Deschide folderul și dă **dublu-click pe `instaleaza.bat`**. Scriptul instalează singura dependență (`pywebview`) și pune pe Desktop o scurtătură **BuzzzHub**.
    - Dacă Windows zice „Windows protected your PC”, apasă **More info**, apoi **Run anyway**. Se întâmplă pentru că fișierul vine de pe internet.
-5. Deschide **Agenti Hub** de pe Desktop. Gata! 🎉
+5. Deschide **BuzzzHub** de pe Desktop. Gata! 🎉
 
 > Ai `git`? Atunci poți clona repo-ul în loc de pașii 2–3:
-> `git clone https://github.com/andrei-petrache/agenti-hub.git`
+> `git clone https://github.com/andrei-petrache/buzzzhub.git`
 
 **Sesiuni din WSL:** dacă rulezi Claude Code și în WSL (Ubuntu), aplicația le găsește singură.
 
 ### 🍎 macOS
 
 1. **Instalează Python** de pe https://www.python.org/downloads/macos/. Merge și cel din Homebrew (`brew install python`).
-2. **Descarcă Agenți Hub:** butonul verde **Code**, apoi **Download ZIP**. Safari îl dezarhivează singur în *Descărcări* (Downloads).
+2. **Descarcă BuzzzHub:** butonul verde **Code**, apoi **Download ZIP**. Safari îl dezarhivează singur în *Descărcări* (Downloads).
 3. Mută folderul unde vrei, de exemplu în *Documente*.
 4. **Dublu-click pe `porneste.command`.**
    - Prima dată macOS poate spune că fișierul e de la un „dezvoltator neidentificat”. Fă **click dreapta** pe fișier, alege **Open**, apoi încă o dată **Open**. Trebuie făcut o singură dată.
    - La prima pornire durează cam un minut: scriptul își face un mediu Python separat (`.venv`) și instalează `pywebview`. Data viitoare pornește imediat.
-5. Se deschide fereastra **Agenți Hub**. 🎉
+5. Se deschide fereastra **BuzzzHub**. 🎉
 
 Dacă dublu-click-ul nu merge, deschide **Terminal** în folderul aplicației și scrie:
 
@@ -69,7 +69,7 @@ bash porneste.command
 
 ## English
 
-Agenți Hub is a small desktop app that shows all your **Claude Code** sessions, grouped by project. It never sends anything to the internet. It only reads the files Claude Code already keeps on your disk. (The interface is in Romanian.)
+BuzzzHub is a small desktop app that shows all your **Claude Code** sessions, grouped by project. It never sends anything to the internet. It only reads the files Claude Code already keeps on your disk. (The interface is in Romanian.)
 
 ### You need
 
@@ -80,8 +80,8 @@ Agenți Hub is a small desktop app that shows all your **Claude Code** sessions,
 
 1. Install Python from https://www.python.org/downloads/windows/ and **tick "Add python.exe to PATH"**.
 2. On the project page click the green **Code** button, then **Download ZIP**, and extract it.
-3. Double-click **`instaleaza.bat`**. It installs `pywebview` and creates an **Agenti Hub** shortcut on your Desktop. If SmartScreen warns you, click **More info**, then **Run anyway**.
-4. Open **Agenti Hub** from the Desktop.
+3. Double-click **`instaleaza.bat`**. It installs `pywebview` and creates an **BuzzzHub** shortcut on your Desktop. If SmartScreen warns you, click **More info**, then **Run anyway**.
+4. Open **BuzzzHub** from the Desktop.
 
 ### 🍎 macOS
 

@@ -1,4 +1,4 @@
-"""Agenți Hub — panou local cu toate sesiunile Claude Code, grupate pe proiecte.
+"""BuzzzHub — panou local cu toate sesiunile Claude Code, grupate pe proiecte.
 
 Citește transcrierile din ~/.claude/projects (Windows + WSL), doar citire.
 Pornire:  python server.py   ->  http://127.0.0.1:4777
@@ -510,7 +510,7 @@ def trimite(sid, text):
     if a["pornita"] and a["nume_live"]:
         RELEU.mkdir(exist_ok=True)
         cine = citeste_config().get("numele_tau") or os.environ.get("USERNAME") or os.environ.get("USER") or "utilizator"
-        corp = f"[de la {cine}, prin Agenți Hub]\n" + text
+        corp = f"[de la {cine}, prin BuzzzHub]\n" + text
         try:
             r = subprocess.run(
                 [CLAUDE, "-p", "--model", "haiku", "--no-session-persistence",
@@ -608,7 +608,7 @@ def main():
             pass
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     url = f"http://127.0.0.1:{PORT}"
-    print(f"Agenți Hub pornit: {url}   (Ctrl+C ca să-l oprești)")
+    print(f"BuzzzHub pornit: {url}   (Ctrl+C ca să-l oprești)")
     print("Citesc din:", *[str(r) for r in radacini_cached()], sep="\n  ")
     if "--fara-browser" not in sys.argv:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()

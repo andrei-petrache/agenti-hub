@@ -1,5 +1,5 @@
 #!/bin/bash
-# Agenți Hub pe macOS: dublu-click pe acest fișier.
+# BuzzzHub pe macOS: dublu-click pe acest fișier.
 # Prima dată își face un mediu Python separat (.venv) și instalează pywebview; apoi doar pornește.
 cd "$(dirname "$0")" || exit 1
 

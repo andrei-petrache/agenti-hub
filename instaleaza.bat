@@ -1,5 +1,5 @@
 @echo off
-rem Agenti Hub pe Windows: instaleaza pywebview si pune scurtatura pe Desktop.
+rem BuzzzHub pe Windows: instaleaza pywebview si pune scurtatura pe Desktop.
 cd /d "%~dp0"
 where python >nul 2>nul
 if errorlevel 1 (
@@ -19,5 +19,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0creeaza-scurtatura.ps1
 where claude >nul 2>nul
 if errorlevel 1 echo Atentie: nu gasesc comanda "claude" in PATH; starile live si mesajele nu vor merge.
 echo.
-echo Gata! Deschide "Agenti Hub" de pe Desktop.
+echo Gata! Deschide "BuzzzHub" de pe Desktop.
 pause
