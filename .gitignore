@@ -1,13 +1,17 @@
-# configurarea ta locală (ID-uri de sesiuni, nume de proiecte) — pornește din proiecte.exemplu.json
+# your local settings (session ids, project names), created from config.example.json
+config.json
+# settings and message log of older versions (migrated automatically)
 proiecte.json
-# jurnalul mesajelor trimise din aplicație
 mesaje.jsonl
-# folderul de lucru al releului de mesaje
 releu/
-# profilul ferestrei WebView2
+# log of the messages sent from the app
+messages.jsonl
+# scratch folder of the message relay and the terminal scripts
+relay/
+# WebView2 window profile
 .webview/
 buzzzhub.log
-# mediul Python creat de porneste.command (macOS)
+# Python environment created by start.command (macOS)
 .venv/
 __pycache__/
 *.pyc

@@ -1,26 +1,27 @@
-"""Date inventate pentru modul demo (capturi de ecran, prezentări): python server.py --demo"""
+"""Made-up data for demo mode (screenshots, presentations): python server.py --demo"""
 import time
 
 
-def _iso(sec_in_urma):
-    return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.time() - sec_in_urma)) + ".000Z"
+def _iso(seconds_ago):
+    return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.time() - seconds_ago)) + ".000Z"
 
 
-def _agent(id_, titlu, proiect, status, activitate, varsta, prompt, text, feed, subagenti=(), pornita=True,
-           branch="main", fel="terminal", intrebare=None):
-    acum = time.time()
+def _agent(id_, title, project, status, activity, age, prompt, text, feed, subagents=(), running=True,
+           branch="main", mode="terminal", asks=None):
+    now = time.time()
     return {
-        "id": id_, "titlu": titlu, "are_titlu": True, "proiect": proiect,
-        "cwd": f"C:\\Users\\demo\\{proiect.lower().replace(' ', '-')}", "branch": branch,
-        "model": "claude-opus-4", "wsl": False, "pornita": pornita, "nume_live": titlu,
-        "fel": fel if pornita else None, "intrebare": intrebare, "cwd_start": None, "job": id_[-8:],
-        "mtime": acum - varsta, "varsta": varsta, "status": status, "activitate": activitate,
-        "ultimul_prompt": prompt, "ultimul_text": text,
-        "feed": [{"ts": _iso(s), "tip": t, "text": x, "tool": tool}
-                 for s, t, x, tool in sorted(feed, key=lambda e: -e[0])],          # cronologic, ca în realitate
-        "subagenti": [{"id": f"s{i}", "descriere": d, "tip": "general-purpose", "terminat": f, "mtime": acum - v,
-                       "varsta": v, "ce": None if f else (rest[0] if rest else "lucrează…"), "unealta": None}
-                      for i, (d, f, v, *rest) in enumerate(subagenti)],
+        "id": id_, "title": title, "has_title": True, "project": project,
+        "cwd": f"C:\\Users\\demo\\{project.lower().replace(' ', '-')}", "cwd_start": None, "branch": branch,
+        "model": "claude-opus-5-5", "wsl": False, "running": running, "live_name": title,
+        "mode": mode if running else None, "pid": None, "job": id_[-8:], "asks": asks,
+        "mtime": now - age, "age": age, "status": status, "activity": activity,
+        "last_prompt": prompt, "last_text": text,
+        "feed": [{"ts": _iso(s), "kind": k, "text": x, "tool": tool}
+                 for s, k, x, tool in sorted(feed, key=lambda e: -e[0])],          # chronological, like real data
+        "subagents": [{"id": f"s{i}", "description": d, "type": "general-purpose", "done": done,
+                       "mtime": now - a, "age": a,
+                       "now": None if done else {"tool": rest[0], "text": rest[1]} if rest else None}
+                      for i, (d, done, a, *rest) in enumerate(subagents)],
     }
 
 
@@ -28,70 +29,73 @@ def _id(n):
     return f"00000000-0000-4000-8000-{n:012d}"
 
 
-def stare():
-    P = "Magazin online"
-    agenti = [
-        _agent(_id(1), "ops", P, "lucreaza", "rulează Deploy pe staging", 4,
-               "coordonează echipa: backend face plata, frontend coșul, review verifică",
-               "Am împărțit sprintul: backend pe plăți, frontend pe coș. Pornesc deploy-ul pe staging.",
-               [(9, "tool", "Deploy pe staging", "Bash"), (40, "text", "Backend a terminat endpoint-ul de plată, îl pun pe staging.", None),
-                (95, "tool", "→ backend: plata e pe staging, verifică logurile", "SendMessage"),
-                (300, "tu", "coordonează echipa: backend face plata, frontend coșul", None)],
-               subagenti=[("Verifică config staging", False, 20, "citește staging.yaml"),
-                          ("Testează plata pe staging", False, 8, "rulează npm run e2e"),
-                          ("Rezumat PR-uri deschise", True, 900)]),
-        _agent(_id(9), "cercetare", P, "lucreaza", "caută pe web plăți cu cardul în UE", 3,
-               "află ce cere legea pentru plăți cu cardul", "Am găsit regulile PSD2, mai verific SCA.",
-               [(3, "tool", "reguli SCA plăți online 2026", "WebSearch"),
-                (60, "text", "Am găsit regulile PSD2, mai verific SCA.", None)]),
-        _agent(_id(2), "backend", P, "lucreaza", "editează payments.py", 2,
-               "implementează plata cu cardul",
-               "Endpoint-ul /pay e gata, scriu testele pentru rambursări.",
-               [(2, "tool", "payments.py", "Edit"), (30, "tool", "Rulează testele", "Bash"),
-                (70, "text", "Testele de plată trec. Mai am rambursările.", None),
-                (120, "tool", "→ review: PR #42 e gata de verificat", "SendMessage")], branch="feat/plati"),
-        _agent(_id(3), "frontend", P, "asteapta", "rulează în fundal, liberă — deschide-o în terminal ca s-o vezi", 240,
-               "fă pagina de coș", "Pagina de coș e gata și testată pe mobil. Vrei să adaug și cupoane?",
-               [(240, "text", "Pagina de coș e gata și testată pe mobil.", None),
-                (300, "tool", "Screenshot coș pe mobil", "Bash"), (600, "tool", "Cart.tsx", "Write")],
-               branch="feat/cos", fel="fundal"),
-        _agent(_id(4), "review", P, "blocat", "așteaptă să-i aprobi o acțiune — deschide-l în terminal ca să-i răspunzi", 600,
-               "verifică PR-urile echipei", "Încep cu PR #42 de la backend.",
-               [(600, "tool", "gh pr checkout 42", "Bash"), (650, "text", "Încep cu PR #42 de la backend.", None)],
-               fel="fundal", intrebare="aprobare"),
-        _agent(_id(5), "docs", P, "doarme", "doarme", 5 * 3600,
-               "scrie ghidul de instalare", "Ghidul e gata în docs/instalare.md.",
-               [(5 * 3600, "text", "Ghidul e gata în docs/instalare.md.", None)], pornita=False),
-        _agent(_id(6), "site", "Site prezentare", "lucreaza", "scrie index.html", 6,
-               "refă prima pagină", "Refac secțiunea de sus cu poza nouă.",
+def state():
+    P = "Online shop"
+    tool = lambda name, text: {"k": "tool", "tool": name, "text": text}
+    agents = [
+        _agent(_id(1), "ops", P, "working", tool("Bash", "Deploy to staging"), 4,
+               "coordinate the team: backend does payments, frontend the cart, review checks",
+               "I split the sprint: backend on payments, frontend on the cart. Deploying to staging.",
+               [(9, "tool", "Deploy to staging", "Bash"),
+                (40, "text", "Backend finished the payment endpoint, putting it on staging.", None),
+                (95, "tool", "→ backend: payments are on staging, check the logs", "SendMessage"),
+                (300, "you", "coordinate the team: backend does payments, frontend the cart", None)],
+               subagents=[("Check staging config", False, 20, "Read", "staging.yaml"),
+                          ("Test payments on staging", False, 8, "Bash", "npm run e2e"),
+                          ("Summarise open PRs", True, 900)]),
+        _agent(_id(2), "backend", P, "working", tool("Edit", "payments.py"), 2,
+               "implement card payments",
+               "The /pay endpoint is done, writing the refund tests.",
+               [(2, "tool", "payments.py", "Edit"), (30, "tool", "Run the tests", "Bash"),
+                (70, "text", "Payment tests pass. Refunds are next.", None),
+                (120, "tool", "→ review: PR #42 is ready for review", "SendMessage")], branch="feat/payments"),
+        _agent(_id(9), "research", P, "working", tool("WebSearch", "SCA rules for online payments 2026"), 3,
+               "find out what the law requires for card payments", "Found the PSD2 rules, checking SCA now.",
+               [(3, "tool", "SCA rules for online payments 2026", "WebSearch"),
+                (60, "text", "Found the PSD2 rules, checking SCA now.", None)]),
+        _agent(_id(3), "frontend", P, "waiting", {"k": "idle", "mode": "background"}, 240,
+               "build the cart page", "The cart page is done and tested on mobile. Shall I add coupons?",
+               [(240, "text", "The cart page is done and tested on mobile.", None),
+                (300, "tool", "Screenshot of the cart on mobile", "Bash"), (600, "tool", "Cart.tsx", "Write")],
+               branch="feat/cart", mode="background"),
+        _agent(_id(4), "review", P, "stuck", {"k": "asks", "kind": "approval", "mode": "background"}, 600,
+               "review the team's PRs", "Starting with PR #42 from backend.",
+               [(600, "tool", "gh pr checkout 42", "Bash"), (650, "text", "Starting with PR #42 from backend.", None)],
+               mode="background", asks="approval"),
+        _agent(_id(5), "docs", P, "sleeping", {"k": "closed"}, 5 * 3600,
+               "write the install guide", "The guide is ready in docs/install.md.",
+               [(5 * 3600, "text", "The guide is ready in docs/install.md.", None)], running=False),
+        _agent(_id(6), "site", "Landing page", "working", tool("Write", "index.html"), 6,
+               "redo the home page", "Redoing the top section with the new photo.",
                [(6, "tool", "index.html", "Write")]),
-        _agent(_id(7), "verificare", "Site prezentare", "asteapta", "pornită, te așteaptă", 900,
-               "verifică site-ul pe mobil", "Totul arată bine, două imagini sunt prea mari.",
-               [(900, "text", "Totul arată bine, două imagini sunt prea mari.", None)]),
-        _agent(_id(8), "nivel-3", "Joc platformer", "doarme", "sesiune închisă", 30 * 3600,
-               "fă nivelul 3", "Nivelul 3 e gata.", [], pornita=False),
+        _agent(_id(7), "check", "Landing page", "waiting", {"k": "idle", "mode": "terminal"}, 900,
+               "check the site on mobile", "Everything looks fine, two images are too large.",
+               [(900, "text", "Everything looks fine, two images are too large.", None)]),
+        _agent(_id(8), "level-3", "Platformer game", "sleeping", {"k": "closed"}, 30 * 3600,
+               "make level 3", "Level 3 is done.", [], running=False),
     ]
-    legaturi = [
-        ("ops", "backend", 34, 95, "plata e pe staging, verifică logurile"),
-        ("ops", "frontend", 28, 400, "după coș, fă pagina de checkout"),
-        ("backend", "ops", 22, 60, "endpoint-ul /pay e gata"),
-        ("backend", "review", 9, 120, "PR #42 e gata de verificat"),
-        ("frontend", "ops", 17, 240, "coșul e gata"),
-        ("frontend", "backend", 11, 2000, "ce format are răspunsul de la /cart?"),
-        ("review", "backend", 7, 3000, "două observații la PR #40"),
-        ("review", "ops", 5, 3500, "PR #40 aprobat"),
-        ("ops", "review", 6, 700, "uită-te la #42 cu prioritate"),
-        ("Tu", "ops", 4, 300, "coordonează echipa"),
-        ("verificare", "site", 3, 900, "două imagini sunt prea mari"),
-        ("site", "verificare", 2, 1200, "am refăcut prima pagină, verifici?"),
+    links = [
+        ("ops", "backend", 34, 95, "payments are on staging, check the logs"),
+        ("ops", "frontend", 28, 400, "after the cart, build the checkout page"),
+        ("backend", "ops", 22, 60, "the /pay endpoint is done"),
+        ("backend", "review", 9, 120, "PR #42 is ready for review"),
+        ("frontend", "ops", 17, 240, "the cart is done"),
+        ("frontend", "backend", 11, 2000, "what does the /cart response look like?"),
+        ("review", "backend", 7, 3000, "two comments on PR #40"),
+        ("review", "ops", 5, 3500, "PR #40 approved"),
+        ("ops", "review", 6, 700, "look at #42 first"),
+        ("research", "backend", 3, 500, "SCA needs a second factor above 30 EUR"),
+        ("@you", "ops", 4, 300, "coordinate the team"),
+        ("check", "site", 3, 900, "two images are too large"),
+        ("site", "check", 2, 1200, "I redid the home page, can you check?"),
     ]
-    leg = [{"de": a, "la": b, "n": n, "ultim": _iso(s), "recent": [{"ts": _iso(s), "text": t}]}
-           for a, b, n, s, t in legaturi]
-    proiecte = [
-        {"nume": P, "emoji": "🛒", "culoare": "#f2a65a", "descriere": "ops, backend, frontend, review, docs"},
-        {"nume": "Site prezentare", "emoji": "🌐", "culoare": "#8fb996", "descriere": "site + verificare"},
-        {"nume": "Joc platformer", "emoji": "🎮", "culoare": "#b48ac7", "descriere": "nivele și grafică"},
+    link_list = [{"from": a, "to": b, "n": n, "last": _iso(s), "recent": [{"ts": _iso(s), "text": t}]}
+                 for a, b, n, s, t in links]
+    projects = [
+        {"name": P, "emoji": "🛒", "color": "#f2a65a", "description": "ops, backend, frontend, review, research"},
+        {"name": "Landing page", "emoji": "🌐", "color": "#8fb996", "description": "site + check"},
+        {"name": "Platformer game", "emoji": "🎮", "color": "#b48ac7", "description": "levels and art"},
     ]
-    for p in proiecte:
-        p["agenti"] = [a for a in agenti if a["proiect"] == p["nume"]]
-    return {"acum": time.time(), "proiecte": proiecte, "legaturi": leg, "live_ok": True}
+    for p in projects:
+        p["agents"] = [a for a in agents if a["project"] == p["name"]]
+    return {"now": time.time(), "projects": projects, "links": link_list, "live_ok": True}

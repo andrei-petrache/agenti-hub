@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ro">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,8 +15,8 @@
   :root:not([data-theme]){ --bg:#211c19; --card:#2b2521; --ink:#f3e9df; --muted:#b0a297; --line:#3b332d;
          --shadow:0 2px 0 #3b332d, 0 8px 24px rgba(0,0,0,.3); }
 }
-/* 🌙 Noapte cu stele: indigo adânc, accente neon */
-:root[data-theme="noapte"]{
+/* 🌙 Starry night: deep indigo, neon accents */
+:root[data-theme="night"]{
   --bg:#141331; --card:#1f1d45; --ink:#ecebff; --muted:#a3a0d6; --line:#2f2c63;
   --orange:#ff9ec7; --work:#ff9ec7; --wait:#7fe0ff; --sleep:#6f6ba8; --stuck:#ffd36e;
   --shadow:0 2px 0 #2f2c63, 0 10px 30px rgba(0,0,0,.45);
@@ -29,7 +29,7 @@
              radial-gradient(ellipse at 80% -10%, #3b2b7a 0%, transparent 55%),
              radial-gradient(ellipse at 0% 110%, #2a1f5c 0%, transparent 50%), #141331;
 }
-/* 🍵 Matcha: verde pastel, liniștit, ca un caiet */
+/* 🍵 Matcha: pastel green, calm, like a notebook */
 :root[data-theme="matcha"]{
   --bg:#eef4e6; --card:#fbfdf7; --ink:#2c3a2a; --muted:#728370; --line:#dbe6cf;
   --orange:#6aa36f; --work:#e0894f; --wait:#4f9fc4; --sleep:#a9b7a3; --stuck:#d6a83c;
@@ -41,10 +41,11 @@ body{margin:0;background:var(--body-bg, var(--bg));background-attachment:fixed;c
 .themes{display:inline-flex;gap:2px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:2px}
 .themes button{border:none;background:none;padding:4px 8px;border-radius:9px;font-size:16px;line-height:1}
 .themes button.on{background:color-mix(in srgb,var(--orange) 25%,transparent)}
-[data-theme="noapte"] .ag svg .m-body,[data-theme="noapte"] .map .m-body{filter:drop-shadow(0 0 7px #ffffff35)}
-[data-theme="noapte"] .p-blocat{color:var(--stuck)}
-[data-theme="noapte"] .ag h3,[data-theme="noapte"] .proj h3,[data-theme="noapte"] .hello{text-shadow:0 0 18px #ff9ec755}
-header{display:flex;align-items:center;gap:14px;padding:18px 28px;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line)}
+#langs button{font-size:12px;font-weight:900;padding:5px 8px}
+[data-theme="night"] .ag svg .m-body,[data-theme="night"] .map .m-body{filter:drop-shadow(0 0 7px #ffffff35)}
+[data-theme="night"] .p-stuck{color:var(--stuck)}
+[data-theme="night"] .ag h3,[data-theme="night"] .proj h3,[data-theme="night"] .hello{text-shadow:0 0 18px #ff9ec755}
+header{display:flex;align-items:center;gap:14px;padding:18px 28px;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line);flex-wrap:wrap}
 header h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.3px}
 header .crumb{color:var(--muted);font-weight:700}
 header .sp{flex:1}
@@ -58,7 +59,7 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .hello{font-size:26px;font-weight:800;margin:6px 0 4px}
 .sub{color:var(--muted);margin:0 0 22px}
 
-/* proiecte */
+/* projects */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
 .proj{background:var(--card);border-radius:22px;padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;border:2px solid transparent;position:relative;overflow:hidden}
 .proj:hover{transform:translateY(-3px);border-color:var(--c)}
@@ -70,9 +71,9 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .minis svg{width:40px;height:40px}
 .counts{display:flex;gap:10px;font-size:13px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
-.d-lucreaza{background:var(--work)} .d-asteapta{background:var(--wait)} .d-blocat{background:var(--stuck)} .d-doarme{background:var(--sleep)}
+.d-working{background:var(--work)} .d-waiting{background:var(--wait)} .d-stuck{background:var(--stuck)} .d-sleeping{background:var(--sleep)}
 
-/* agenți */
+/* agents */
 .agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
 .ag{background:var(--card);border-radius:22px;padding:16px 18px 18px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;transition:transform .15s}
 .ag:hover{transform:translateY(-2px);border-color:var(--line)}
@@ -81,16 +82,17 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .ag .top svg{width:76px;height:76px;flex:none}
 .ag h3{margin:0;font-size:18px;word-break:break-word}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;margin-top:4px}
-.p-lucreaza{background:color-mix(in srgb,var(--work) 18%,transparent);color:var(--work)}
-.p-asteapta{background:color-mix(in srgb,var(--wait) 18%,transparent);color:var(--wait)}
-.p-blocat{background:color-mix(in srgb,var(--stuck) 22%,transparent);color:#b98418}
-.p-doarme{background:color-mix(in srgb,var(--sleep) 25%,transparent);color:var(--muted)}
+.p-working{background:color-mix(in srgb,var(--work) 18%,transparent);color:var(--work)}
+.p-waiting{background:color-mix(in srgb,var(--wait) 18%,transparent);color:var(--wait)}
+.p-stuck{background:color-mix(in srgb,var(--stuck) 22%,transparent);color:#b98418}
+.p-sleeping{background:color-mix(in srgb,var(--sleep) 25%,transparent);color:var(--muted)}
+.p-asks{background:#ff6b8a;color:#fff;animation:pulse 1.6s infinite}
 .act{margin:12px 0 6px;font-size:14px;background:var(--bg);border-radius:12px;padding:8px 11px;min-height:38px;word-break:break-word}
 .meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
 .subs{font-size:12px;color:var(--muted);margin-top:6px}
 .section-t{font-weight:800;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:28px 0 12px}
 
-/* panou */
+/* panel */
 .panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--card);box-shadow:-10px 0 40px rgba(0,0,0,.12);transform:translateX(105%);transition:transform .25s;z-index:10;display:flex;flex-direction:column}
 .panel.open{transform:none}
 .panel .ph{display:flex;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
@@ -102,21 +104,21 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .feed li{display:flex;gap:9px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px;word-break:break-word}
 .feed .ic{flex:none;width:22px;text-align:center}
 .feed .tm{color:var(--muted);flex:none;font-size:11px;width:40px;padding-top:2px}
-.feed .tu{font-weight:700}
+.feed .you{font-weight:700}
 .kv{font-size:13px;display:grid;grid-template-columns:80px 1fr;gap:4px 10px;word-break:break-all}
 .kv b{color:var(--muted);font-weight:700}
 .x{margin-left:auto;font-size:18px;border:none;background:none}
 .empty{color:var(--muted);text-align:center;padding:50px 0}
 .empty svg{width:110px;height:110px}
 
-/* mascota */
+/* mascot */
 .m-body{transform-origin:50px 88px}
-.st-lucreaza .m-body{animation:bob .7s ease-in-out infinite}
-.st-lucreaza .m-star{animation:spin 2.2s linear infinite;transform-origin:50px 17px}
-.st-asteapta .m-arm{animation:wave 1.2s ease-in-out infinite;transform-origin:78px 62px}
-.st-asteapta .m-eyes{animation:blink 4s infinite;transform-origin:50px 54px}
-.st-doarme .m-body{animation:breathe 3.5s ease-in-out infinite}
-.st-blocat .m-body{animation:wobble 2s ease-in-out infinite}
+.st-working .m-body{animation:bob .7s ease-in-out infinite}
+.st-working .m-star{animation:spin 2.2s linear infinite;transform-origin:50px 17px}
+.st-waiting .m-arm{animation:wave 1.2s ease-in-out infinite;transform-origin:78px 62px}
+.st-waiting .m-eyes{animation:blink 4s infinite;transform-origin:50px 54px}
+.st-sleeping .m-body{animation:breathe 3.5s ease-in-out infinite}
+.st-stuck .m-body{animation:wobble 2s ease-in-out infinite}
 .m-z{animation:zz 2.4s ease-in-out infinite;opacity:0}
 .m-z2{animation-delay:1.2s}
 @keyframes bob{50%{transform:translateY(-5px) scaleY(1.03)}}
@@ -125,9 +127,9 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes breathe{50%{transform:scale(1.035,.97)}}
 @keyframes wobble{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
-.st-lucreaza .m-led{animation:led 1s steps(2) infinite}
+.st-working .m-led{animation:led 1s steps(2) infinite}
 .m-cursor{animation:led 1s steps(2) infinite}
-.st-asteapta .m-led{animation:pulse 2s infinite}
+.st-waiting .m-led{animation:pulse 2s infinite}
 .m-steam{animation:steam 2s ease-in-out infinite}
 @keyframes led{50%{opacity:.25}}
 @keyframes steam{0%{opacity:0;transform:translateY(3px)}40%{opacity:.9}100%{opacity:0;transform:translateY(-4px)}}
@@ -135,78 +137,78 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 @keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(8px,-14px)}}
 @media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
 
-/* 🏡 atelier: fiecare agent are camera lui și se mută între birou, terminal, raft, fereastră și cutia poștală */
-#atelier{position:relative;margin-top:14px}
-.etaj{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:18px;align-items:start}
-.camera{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .15s}
-.camera:hover{transform:translateY(-2px)}
-.camera.sel{border-color:var(--orange)}
-.camera.intreaba{border-color:#ff6b8a;box-shadow:0 0 0 4px color-mix(in srgb,#ff6b8a 22%,transparent),var(--shadow)}
-.camera.primit .scena,.camera.buzzing .scena{animation:buzz .6s linear}
-.cam-top{display:flex;align-items:center;gap:8px;padding:10px 14px 6px}
-.cam-top .nume{font-weight:800;font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cam-top .pill{margin-top:0}
-.scena{position:relative;height:200px;overflow:hidden}
-.perete{position:absolute;inset:0 0 30% 0;background:color-mix(in srgb,var(--c) 12%,var(--card))}
-.podea{position:absolute;inset:70% 0 0 0;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--c) 18%,var(--bg)) 0 44px,color-mix(in srgb,var(--c) 28%,var(--bg)) 44px 46px)}
+/* 🏡 workshop: every agent has a room and walks between mailbox, terminal, desk, window and shelf */
+#workshop{position:relative;margin-top:14px}
+.floor{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:18px;align-items:start}
+.room{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .15s}
+.room:hover{transform:translateY(-2px)}
+.room.sel{border-color:var(--orange)}
+.room.asking{border-color:#ff6b8a;box-shadow:0 0 0 4px color-mix(in srgb,#ff6b8a 22%,transparent),var(--shadow)}
+.room.got-mail .scene,.room.buzzing .scene{animation:buzz .6s linear}
+.room-top{display:flex;align-items:center;gap:8px;padding:10px 14px 6px}
+.room-top .name{font-weight:800;font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-top .pill{margin-top:0}
+.scene{position:relative;height:200px;overflow:hidden}
+.wall{position:absolute;inset:0 0 30% 0;background:color-mix(in srgb,var(--c) 12%,var(--card))}
+.planks{position:absolute;inset:70% 0 0 0;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--c) 18%,var(--bg)) 0 44px,color-mix(in srgb,var(--c) 28%,var(--bg)) 44px 46px)}
 .prop{position:absolute;bottom:30%;transform:translateX(-50%);opacity:.7;transition:opacity .3s,filter .3s}
-.camera[data-z="terminal"] .p-terminal,.camera[data-z="birou"] .p-birou,.camera[data-z="raft"] .p-raft,
-.camera[data-z="fereastra"] .p-fereastra,.camera[data-z="posta"] .p-posta{opacity:1;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--c) 80%,transparent))}
-.p-posta{left:9%;font-size:30px;line-height:1}
+.room[data-z="terminal"] .p-terminal,.room[data-z="desk"] .p-desk,.room[data-z="shelf"] .p-shelf,
+.room[data-z="window"] .p-window,.room[data-z="mail"] .p-mail{opacity:1;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--c) 80%,transparent))}
+.p-mail{left:9%;font-size:30px;line-height:1}
 .p-terminal{left:27%;width:66px}
-.p-terminal .ecran{height:46px;background:#1d2030;border-radius:7px;border:3px solid #3b3f52;padding:4px 5px;font:700 7.5px/1.25 ui-monospace,Consolas,monospace;color:#7ef0c8;overflow:hidden;word-break:break-all}
-.p-terminal .picior{width:12px;height:8px;background:#3b3f52;margin:0 auto}
-.p-birou{left:48%;width:118px}
-.p-birou .monitor{width:58px;height:38px;margin:0 auto;background:#25283a;border-radius:6px;border:3px solid #c9ccd6;padding:5px 5px;overflow:hidden}
-.p-birou .monitor i{display:block;height:3px;border-radius:2px;background:#7fd0ff;margin:0 0 3px;opacity:.85}
-.camera[data-z="birou"].lucreaza .p-birou .monitor i{animation:scrie 1.4s steps(6) infinite}
-.camera[data-z="birou"].lucreaza .p-birou .monitor i:nth-child(2){animation-delay:.35s;background:#ffd36e}
-.camera[data-z="birou"].lucreaza .p-birou .monitor i:nth-child(3){animation-delay:.7s;background:#ff9ec7}
-@keyframes scrie{0%{width:10%}100%{width:100%}}
-.p-birou .masa{height:9px;background:#b07a52;border-radius:4px;margin-top:4px}
-.p-birou .picioare{display:flex;justify-content:space-between;padding:0 8px}.p-birou .picioare b{width:6px;height:22px;background:#8a5a3c;display:block}
-.p-fereastra{left:67%;bottom:auto;top:12%;width:58px;height:46px;border-radius:8px;border:4px solid color-mix(in srgb,var(--c) 45%,#fff);
+.p-terminal .screen{height:46px;background:#1d2030;border-radius:7px;border:3px solid #3b3f52;padding:4px 5px;font:700 7.5px/1.25 ui-monospace,Consolas,monospace;color:#7ef0c8;overflow:hidden;word-break:break-all}
+.p-terminal .stand{width:12px;height:8px;background:#3b3f52;margin:0 auto}
+.p-desk{left:48%;width:118px}
+.p-desk .monitor{width:58px;height:38px;margin:0 auto;background:#25283a;border-radius:6px;border:3px solid #c9ccd6;padding:5px 5px;overflow:hidden}
+.p-desk .monitor i{display:block;height:3px;border-radius:2px;background:#7fd0ff;margin:0 0 3px;opacity:.85}
+.room[data-z="desk"].working .p-desk .monitor i{animation:typing 1.4s steps(6) infinite}
+.room[data-z="desk"].working .p-desk .monitor i:nth-child(2){animation-delay:.35s;background:#ffd36e}
+.room[data-z="desk"].working .p-desk .monitor i:nth-child(3){animation-delay:.7s;background:#ff9ec7}
+@keyframes typing{0%{width:10%}100%{width:100%}}
+.p-desk .top{height:9px;background:#b07a52;border-radius:4px;margin-top:4px}
+.p-desk .legs{display:flex;justify-content:space-between;padding:0 8px}.p-desk .legs b{width:6px;height:22px;background:#8a5a3c;display:block}
+.p-window{left:67%;bottom:auto;top:12%;width:58px;height:46px;border-radius:8px;border:4px solid color-mix(in srgb,var(--c) 45%,#fff);
   background:linear-gradient(#9fd3f5,#d8efff);overflow:hidden}
-.p-fereastra::after{content:"";position:absolute;left:8px;top:16px;width:22px;height:8px;border-radius:8px;background:#fff;box-shadow:14px -5px 0 -1px #fff;animation:nor 9s linear infinite}
-[data-theme="noapte"] .p-fereastra{background:linear-gradient(#1a1850,#3b2b7a)}
-[data-theme="noapte"] .p-fereastra::after{background:#fff6c0;width:10px;height:10px;box-shadow:none;left:34px;top:8px;animation:none}
-@keyframes nor{from{transform:translateX(-30px)}to{transform:translateX(60px)}}
-.p-raft{left:87%;width:48px;height:78px;background:#8a5a3c;border-radius:4px;padding:4px;display:flex;flex-direction:column;justify-content:space-around}
-.p-raft b{display:block;height:14px;border-radius:1px;background:repeating-linear-gradient(90deg,#e97a7a 0 6px,#6fb1e0 6px 11px,#8cc56b 11px 16px,#e6b34a 16px 21px,#d98fc2 21px 26px,transparent 26px 28px)}
+.p-window::after{content:"";position:absolute;left:8px;top:16px;width:22px;height:8px;border-radius:8px;background:#fff;box-shadow:14px -5px 0 -1px #fff;animation:cloud 9s linear infinite}
+[data-theme="night"] .p-window{background:linear-gradient(#1a1850,#3b2b7a)}
+[data-theme="night"] .p-window::after{background:#fff6c0;width:10px;height:10px;box-shadow:none;left:34px;top:8px;animation:none}
+@keyframes cloud{from{transform:translateX(-30px)}to{transform:translateX(60px)}}
+.p-shelf{left:87%;width:48px;height:78px;background:#8a5a3c;border-radius:4px;padding:4px;display:flex;flex-direction:column;justify-content:space-around}
+.p-shelf b{display:block;height:14px;border-radius:1px;background:repeating-linear-gradient(90deg,#e97a7a 0 6px,#6fb1e0 6px 11px,#8cc56b 11px 16px,#e6b34a 16px 21px,#d98fc2 21px 26px,transparent 26px 28px)}
 .bot{position:absolute;bottom:7%;left:48%;width:86px;transform:translateX(-50%);transition:left 1.3s ease-in-out;z-index:2}
 .bot .masc svg{width:86px;height:86px;display:block}
-.bot.merge .masc{animation:mers .3s ease-in-out infinite}
-@keyframes mers{50%{transform:translateY(-7px) rotate(4deg)}}
-.balon{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;
+.bot.walking .masc{animation:walk .3s ease-in-out infinite}
+@keyframes walk{50%{transform:translateY(-7px) rotate(4deg)}}
+.speech{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;
   padding:4px 9px;font-size:11.5px;font-weight:700;line-height:1.25;width:max-content;max-width:200px;box-shadow:0 3px 8px rgba(0,0,0,.08);word-break:break-word}
-.balon:empty{display:none}
-.bot[data-z="posta"] .balon,.bot[data-z="terminal"] .balon{left:0;transform:none}
-.bot[data-z="raft"] .balon,.bot[data-z="fereastra"] .balon{left:auto;right:0;transform:none}
-.camera.intreaba .balon{background:#ff6b8a;color:#fff;border-color:#ff6b8a}
-.efect{position:absolute;top:2px;right:-6px;font-size:21px;animation:pluteste 1.6s ease-in-out infinite}
-@keyframes pluteste{50%{transform:translateY(-6px) rotate(-8deg)}}
-.pitici-h{font-size:12px;color:var(--muted);font-weight:800;padding:8px 14px 0;border-top:1px dashed var(--line)}
-.pitici{display:flex;gap:4px;flex-wrap:wrap;padding:4px 10px 12px}
-.pitic{display:flex;flex-direction:column;align-items:center;width:72px;font-size:10px;text-align:center;color:var(--muted);line-height:1.15}
-.pitic svg{width:38px;height:38px}
-.pitic .ce{color:var(--work);font-weight:800;margin-top:1px}
-.pitic.gata{opacity:.45;filter:grayscale(.6)}
-.pitic.gata svg{width:28px;height:28px}
-.avion{position:absolute;left:0;top:0;font-size:24px;pointer-events:none;z-index:6}
-.dormitor{margin-top:22px;background:color-mix(in srgb,#2a2660 8%,var(--card));border-radius:22px;box-shadow:var(--shadow);padding:12px 16px}
-.dormitor h4{margin:0 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-.paturi{display:flex;flex-wrap:wrap;gap:6px}
-.patut{width:92px;text-align:center;font-size:11px;cursor:pointer;border-radius:12px;padding:4px 2px;word-break:break-word}
-.patut:hover{background:var(--bg)} .patut.sel{outline:2px solid var(--orange)}
-.patut svg{width:54px;height:54px}
-.gol{color:var(--muted);text-align:center;padding:30px 0}
+.speech:empty{display:none}
+.bot[data-z="mail"] .speech,.bot[data-z="terminal"] .speech{left:0;transform:none}
+.bot[data-z="shelf"] .speech,.bot[data-z="window"] .speech{left:auto;right:0;transform:none}
+.room.asking .speech{background:#ff6b8a;color:#fff;border-color:#ff6b8a}
+.effect{position:absolute;top:2px;right:-6px;font-size:21px;animation:float 1.6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px) rotate(-8deg)}}
+.crew-h{font-size:12px;color:var(--muted);font-weight:800;padding:8px 14px 0;border-top:1px dashed var(--line)}
+.crew-list{display:flex;gap:4px;flex-wrap:wrap;padding:4px 10px 12px}
+.minion{display:flex;flex-direction:column;align-items:center;width:72px;font-size:10px;text-align:center;color:var(--muted);line-height:1.15}
+.minion svg{width:38px;height:38px}
+.minion .now{color:var(--work);font-weight:800;margin-top:1px}
+.minion.done{opacity:.45;filter:grayscale(.6)}
+.minion.done svg{width:28px;height:28px}
+.envelope{position:absolute;left:0;top:0;font-size:24px;pointer-events:none;z-index:6}
+.dorm{margin-top:22px;background:color-mix(in srgb,#2a2660 8%,var(--card));border-radius:22px;box-shadow:var(--shadow);padding:12px 16px}
+.dorm h4{margin:0 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.beds{display:flex;flex-wrap:wrap;gap:6px}
+.bed{width:92px;text-align:center;font-size:11px;cursor:pointer;border-radius:12px;padding:4px 2px;word-break:break-word}
+.bed:hover{background:var(--bg)} .bed.sel{outline:2px solid var(--orange)}
+.bed svg{width:54px;height:54px}
+.nobody{color:var(--muted);text-align:center;padding:30px 0}
 
-/* tab-uri */
+/* tabs */
 .tabs{display:inline-flex;background:var(--card);border-radius:14px;padding:4px;box-shadow:var(--shadow);margin-bottom:6px}
 .tabs button{border:none;border-radius:10px;padding:7px 16px;font-weight:800;color:var(--muted);background:none}
 .tabs button.on{background:var(--orange);color:#fff}
 
-/* hartă */
+/* map */
 .map{background:var(--card);border-radius:22px;box-shadow:var(--shadow);margin-top:14px;position:relative;overflow:hidden}
 .map svg.g{width:100%;height:auto;display:block}
 .map .node{cursor:pointer}
@@ -218,10 +220,10 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .tip b{display:block;margin-bottom:4px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:12px 18px;border-top:1px solid var(--line)}
 
-/* mesaj */
+/* message box */
 .compose textarea{width:100%;min-height:80px;resize:vertical;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
 .compose textarea:focus{outline:none;border-color:var(--orange)}
-.compose .row{display:flex;gap:10px;align-items:center;margin-top:8px}
+.compose .row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .compose .send{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:800}
 .compose .send:disabled{opacity:.5;cursor:wait}
 .compose .buzz{background:#ffc43d;color:#3b2f2a;border-color:#e8a900;font-weight:900;letter-spacing:.3px}
@@ -235,39 +237,41 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .compose .hint{font-size:12px;color:var(--muted);flex:1 1 100%}
 .compose .res{font-size:13px;margin-top:8px;border-radius:10px;padding:7px 10px}
 .res.ok{background:color-mix(in srgb,#7cc576 18%,transparent)} .res.err{background:color-mix(in srgb,#e97a7a 20%,transparent)}
-.p-intrebare{background:#ff6b8a;color:#fff;animation:pulse 1.6s infinite}
 .ask{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,#ff6b8a 16%,transparent);border:1.5px solid #ff6b8a;border-radius:14px;padding:10px 12px;margin:0 0 12px}
 .ask p{margin:0;flex:1;font-size:13px}
 .term{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:800;white-space:nowrap}
 .term:disabled{opacity:.5;cursor:wait}
-.somn{background:color-mix(in srgb,var(--sleep) 30%,var(--card));font-weight:800;white-space:nowrap}
-.somn:disabled{opacity:.5;cursor:wait}
-.compose .row{flex-wrap:wrap}
+.sleep{background:color-mix(in srgb,var(--sleep) 30%,var(--card));font-weight:800;white-space:nowrap}
+.sleep:disabled{opacity:.5;cursor:wait}
 .on-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7cc576;box-shadow:0 0 0 3px color-mix(in srgb,#7cc576 25%,transparent)}
 </style>
 </head>
 <body>
 <header>
-  <button class="back" id="back" hidden>← proiecte</button>
+  <button class="back" id="back" hidden></button>
   <h1>🐝 BuzzzHub</h1>
   <span class="crumb" id="crumb"></span>
   <span class="sp"></span>
   <span class="live"><i></i><span id="upd">live</span></span>
-  <span class="themes" id="mascote" title="Mascote">
-    <button data-m="slime" title="Bulgărași">🟠</button>
-    <button data-m="robot" title="Roboței dev">🤖</button>
-    <button data-m="animal" title="Animăluțe cu pasiuni">🦊</button>
+  <span class="themes" id="langs">
+    <button data-l="en">EN</button>
+    <button data-l="ro">RO</button>
   </span>
-  <span class="themes" id="themes" title="Temă">
-    <button data-th="" title="Cremă (urmează tema sistemului)">🍑</button>
-    <button data-th="noapte" title="Noapte cu stele">🌙</button>
-    <button data-th="matcha" title="Matcha">🍵</button>
+  <span class="themes" id="mascots">
+    <button data-m="slime">🟠</button>
+    <button data-m="robot">🤖</button>
+    <button data-m="animal">🦊</button>
   </span>
-  <select id="zile" title="Ce sesiuni arăt">
-    <option value="1">ultima zi</option>
-    <option value="3" selected>ultimele 3 zile</option>
-    <option value="7">ultima săptămână</option>
-    <option value="30">ultima lună</option>
+  <span class="themes" id="themes">
+    <button data-th="">🍑</button>
+    <button data-th="night">🌙</button>
+    <button data-th="matcha">🍵</button>
+  </span>
+  <select id="days">
+    <option value="1"></option>
+    <option value="3" selected></option>
+    <option value="7"></option>
+    <option value="30"></option>
   </select>
 </header>
 <main id="main"></main>
@@ -275,88 +279,277 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 
 <script>
 const $ = s => document.querySelector(s);
-let DATA = null, PROJ = null, SEL = null, TAB = 'atelier', DRAFT = {}, SENDING = false, LASTRES = null;
-try { PROJ = localStorage.getItem('proj'); $('#zile').value = localStorage.getItem('zile') || '3'; TAB = localStorage.getItem('tab') || 'atelier'; } catch(e){}
-/* link direct: #p=Proiect&s=<id sesiune> */
-{ const q = new URLSearchParams(location.hash.slice(1)); if (q.get('tab')) TAB = q.get('tab'); if (q.get('th')) { try{ localStorage.setItem('tema', q.get('th')); }catch(e){} } if (q.get('m')) { try{ localStorage.setItem('mascote', q.get('m')); }catch(e){} } }
-{ const h = new URLSearchParams(location.hash.slice(1)); if (h.get('p')) PROJ = h.get('p'); if (h.get('s')) SEL = h.get('s'); }
-
-const STATUS = {
-  lucreaza:{t:'lucrează', e:'⚡'}, asteapta:{t:'te așteaptă', e:'👋'},
-  blocat:{t:'blocat?', e:'😅'}, doarme:{t:'doarme', e:'💤'}
+const store = {
+  get(k, old){ try{ return localStorage.getItem(k) ?? (old ? localStorage.getItem(old) : null); }catch(e){ return null; } },
+  set(k, v){ try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(e){} },
 };
-const PALETA = ['#e8875b','#f2a65a','#e97a7a','#d98fc2','#9b8ce0','#6fb1e0','#5cc0a8','#8cc56b','#e6b34a','#c99572'];
-function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return PALETA[h%PALETA.length]}
+
+/* ---------- languages: every text the user sees lives here ---------- */
+const I18N = {
+en: {
+  back:'← projects', lang:'Language', mascots:'Mascots', m_slime:'Blobs', m_robot:'Dev robots', m_animal:'Animals with hobbies',
+  theme:'Theme', th_cream:'Cream (follows the system theme)', th_night:'Starry night', th_matcha:'Matcha',
+  days:'Which sessions to show', d1:'last day', d3:'last 3 days', d7:'last week', d30:'last month', server_down:'server stopped?',
+  st_working:'working', st_waiting:'waiting for you', st_stuck:'stuck?', st_sleeping:'sleeping',
+  asks_question:'🙋 has a question', asks_approval:'✋ needs approval',
+  greet:['Good night','Good morning','Good afternoon','Good evening'], pick:'{g}! Pick a project',
+  summary:'{w} working now · {a} waiting for you · {s} maybe stuck · {z} sleeping',
+  all:'All', all_desc:'every agent, from every project', other:'Other', other_desc:'sessions that match no project',
+  no_recent:'no recent agents', proj_sub:'{n} sessions · {r} running now',
+  tab_workshop:'🏡 Workshop', tab_agents:'🐣 Agents', tab_map:'🕸️ Links', awake:'Awake', asleep:'Asleep',
+  none_period:'No agents in this period.', in_bg:'👻 in background', in_term:'🖥️ in a terminal',
+  n_subs:'🐣 {n} sub-agents', n_active:'{n} active',
+  verbs:{Bash:'runs', PowerShell:'runs', Read:'reads', Edit:'edits', Write:'writes', Grep:'searches', Glob:'looks for files',
+    Agent:'sent a sub-agent', SendMessage:'messages', WebSearch:'searches the web', WebFetch:'reads the page',
+    Artifact:'publishes', ToolSearch:'loads tools', Skill:'uses a skill'},
+  act_thinking:'thinking…', act_subagents:'working with sub-agents', act_done:'finished — waiting for you', act_sleeping:'sleeping',
+  act_stopped_at:'stopped at: {what} (maybe waiting for a permission)', act_no_reply:'left without a reply (interrupted?)',
+  act_busy:'working…', act_question:'has a question for you', act_approval:'waiting for you to approve an action',
+  act_answer_bg:' — open it in a terminal to answer', act_answer_term:' — answer it in its window',
+  act_idle_bg:'runs in the background, free — open it in a terminal to see it', act_idle_term:'open in a terminal, waiting for you',
+  act_untouched:'open, but untouched for {h} h', act_untouched_term:'open in a terminal, but untouched for {h} h', act_closed:'session closed',
+  speech_question:'I have a question for you!', speech_approval:'I need your approval!',
+  crew:'🐣 crew: {a} working · {d} done', sub_working:'working…', sub_waiting:'waiting',
+  all_asleep:'Every agent in this project is asleep. Wake one up from the dorm.', dorm:'🌙 Dorm · {n}',
+  bg_title:'runs in the background', term_title_short:'open in a terminal',
+  you:'You', map_empty:"This project's agents haven't written to each other yet.",
+  legend1:'➜ arrow = who wrote to whom · thickness = how many messages', legend2:'● moving dot = a message in the last 15 min',
+  legend3:'session running', legend4:'click an agent = details + message', n_messages:'{n} messages',
+  close:'close',
+  mode_wsl:"WSL sessions can't get messages from here, but you can open them in a terminal.",
+  mode_bg:'Runs in the background: the message arrives as if from a teammate (~10 s). To see it and answer its questions: 🖥️ Terminal.',
+  mode_term:'Open in a terminal: the message arrives as if from a teammate (~10 s). 🖥️ Terminal brings its window to the front.',
+  mode_closed:'Closed. ✈️ Send: I wake it in the background with your message. 🖥️ Terminal: I wake it and open it in a window (with your message, if you wrote one).',
+  btn_show:'🖥️ Show window', btn_open:'🖥️ Open in terminal', btn_wake:'🖥️ Wake in terminal', btn_answer:'🖥️ Answer in terminal',
+  ask_question:'It asked you a question.', ask_approval:'It is waiting for you to approve an action.',
+  ask_bg:"It runs in the background, so you can't see it anywhere until you open it.", ask_term:'Answer it in its window.',
+  ask_wait:"It won't move until you answer.",
+  write:'Write a message', placeholder:'e.g. when you finish, give me a short summary',
+  btn_sleep:'😴 Put to sleep', sleep_hint:'Stops the agent. The conversation is kept and you can wake it any time.',
+  term_hint:'Opens the session in a terminal window where you can see it and answer',
+  buzz_ok:'Shake it and ask for a short update', buzz_no:'Only for running sessions',
+  sending:'sending…', send:'Send ✈️',
+  last_req:'Your last request', last_said:'Last thing it said', recent:'What it did recently', subs:'Sub-agents', details:'Details',
+  k_project:'project', k_folder:'folder', k_branch:'branch', k_model:'model', k_session:'session', k_active:'active',
+  new_project:'➕ new project…', automatic:'↺ automatic',
+  from_any:'From any terminal:', bg_session:'(the background session)', plain_new:'alone starts a new session.',
+  no_server:'The server is not responding.',
+  sleep_confirm:'Put "{t}" to sleep?\n\n{where} The conversation is kept; wake it any time from BuzzzHub.{warn}',
+  sleep_bg:'The background session stops.', sleep_term:'Claude closes in its terminal window.',
+  sleep_warn:'\n\n⚠️ It is working right now: it stops halfway through.',
+  buzz_text:'Buzzz! 🐝 How is it going? Give me a short update (2–3 lines): what you are working on now and whether you are stuck on anything.',
+  new_project_prompt:'Name of the new project:',
+  ago_s:'{n}s ago', ago_m:'{n} min ago', ago_h:'{n} h ago', ago_d:'{n} days ago',
+  robot:'🤖 dev robot · writes {l}', hobby:'hobby',
+  animals:{cat:'cat', fox:'fox', bear:'bear', bunny:'bunny', frog:'frog', panda:'panda', owl:'owl', penguin:'penguin', dog:'puppy', hamster:'hamster'},
+  hobbies:{headphones:'music', coffee:'coffee', laptop:'code', gamepad:'games', book:'reading', beret:'painting', chef:'cooking',
+    plant:'gardening', glasses:'studying', beanie:'hiking', guitar:'guitar', camera:'photos'},
+  msg:{
+    not_found:"Can't find the session (reload).", no_claude:"Can't find the claude command in PATH.",
+    wsl_no_msg:"WSL sessions can't get messages from here.", empty:'Empty message.',
+    relay_failed:'The relay failed: {err}', relayed:'Sent through the relay.',
+    relayed_asks:'Sent through the relay. Note: it has an open question, so it reads your message only after you answer (🖥️ Open in terminal).',
+    bg_started:'The session started in the background.', bg_started_msg:'The session started in the background with your message.',
+    not_trusted:"The folder {dir} is not marked as trusted for Claude, so I can't start the session in the background. Press 🖥️ Terminal: confirm there once and it works.",
+    not_started:'The session did not start: {out}', start_failed:"Couldn't start the session: {err}",
+    already_asleep:'Already asleep (not running).', stop_failed:"It didn't stop: {err}",
+    no_process:"Can't find the session's process any more (reload).",
+    slept:'Put to sleep. The conversation is saved; wake it any time with 🖥️ Terminal or a message.',
+    slept_term:'Put to sleep. The conversation is saved; wake it any time with 🖥️ Terminal or a message. The terminal window stays open; you can close it.',
+    focused:'It is already open in a terminal: I brought its window to the front.',
+    in_other_terminal:"It is already open in an interactive terminal, so I can't take it over from here. Look for it in the taskbar (session “{name}”). Plain «claude» starts a new session; for an old one you need «claude --resume {id}».",
+    wsl_unknown:"I don't know which WSL distribution the session is in.", wsl_opened:'Opened the WSL session in {term}.',
+    opened_interactive:'Opened it in {term} (interactive; if you close the window, it stops).',
+    woke_opened:'Woke it in the background and opened it in {term}.',
+    woke_opened_msg:'Woke it in the background and opened it in {term}. Your message has already reached it.',
+    opened:'Opened it in {term}.', term_failed:"Couldn't open the terminal: {err}", demo:'Demo mode: nothing is sent.',
+  },
+},
+ro: {
+  back:'← proiecte', lang:'Limba', mascots:'Mascote', m_slime:'Bulgărași', m_robot:'Roboței dev', m_animal:'Animăluțe cu pasiuni',
+  theme:'Temă', th_cream:'Cremă (urmează tema sistemului)', th_night:'Noapte cu stele', th_matcha:'Matcha',
+  days:'Ce sesiuni arăt', d1:'ultima zi', d3:'ultimele 3 zile', d7:'ultima săptămână', d30:'ultima lună', server_down:'server oprit?',
+  st_working:'lucrează', st_waiting:'te așteaptă', st_stuck:'blocat?', st_sleeping:'doarme',
+  asks_question:'🙋 te întreabă', asks_approval:'✋ cere aprobare',
+  greet:['Noapte bună','Bună dimineața','Bună ziua','Bună seara'], pick:'{g}! Alege un proiect',
+  summary:'{w} lucrează acum · {a} te așteaptă · {s} poate blocați · {z} dorm',
+  all:'Toate', all_desc:'toți agenții, din toate proiectele', other:'Diverse', other_desc:'sesiuni care nu se potrivesc la niciun proiect',
+  no_recent:'niciun agent recent', proj_sub:'{n} sesiuni · {r} pornite acum',
+  tab_workshop:'🏡 Atelier', tab_agents:'🐣 Agenți', tab_map:'🕸️ Legături', awake:'Treji', asleep:'Dorm',
+  none_period:'Niciun agent în perioada asta.', in_bg:'👻 în fundal', in_term:'🖥️ în terminal',
+  n_subs:'🐣 {n} sub-agenți', n_active:'{n} activi',
+  verbs:{Bash:'rulează', PowerShell:'rulează', Read:'citește', Edit:'editează', Write:'scrie', Grep:'caută', Glob:'caută fișiere',
+    Agent:'a trimis un sub-agent', SendMessage:'trimite mesaj', WebSearch:'caută pe web', WebFetch:'citește pagina',
+    Artifact:'publică', ToolSearch:'încarcă unelte', Skill:'folosește skill'},
+  act_thinking:'se gândește…', act_subagents:'lucrează cu sub-agenți', act_done:'a terminat — te așteaptă', act_sleeping:'doarme',
+  act_stopped_at:'s-a oprit la: {what} (poate așteaptă permisiune)', act_no_reply:'a rămas fără răspuns (întrerupt?)',
+  act_busy:'lucrează…', act_question:'te întreabă ceva', act_approval:'așteaptă să-i aprobi o acțiune',
+  act_answer_bg:' — deschide-l în terminal ca să-i răspunzi', act_answer_term:' — răspunde-i în fereastra lui',
+  act_idle_bg:'rulează în fundal, liberă — deschide-o în terminal ca s-o vezi', act_idle_term:'pornită într-un terminal, te așteaptă',
+  act_untouched:'deschisă, dar neatinsă de {h} h', act_untouched_term:'deschisă într-un terminal, dar neatinsă de {h} h', act_closed:'sesiune închisă',
+  speech_question:'Am o întrebare pentru tine!', speech_approval:'Am nevoie de aprobarea ta!',
+  crew:'🐣 echipa lui: {a} la treabă · {d} au terminat', sub_working:'lucrează…', sub_waiting:'așteaptă',
+  all_asleep:'Toți agenții din proiect dorm. Trezește unul din dormitor.', dorm:'🌙 Dormitor · {n}',
+  bg_title:'rulează în fundal', term_title_short:'deschisă într-un terminal',
+  you:'Tu', map_empty:'Agenții din proiectul ăsta nu și-au scris încă unul altuia.',
+  legend1:'➜ săgeata = cine cui a scris · grosimea = câte mesaje', legend2:'● bulina care curge = mesaj în ultimele 15 min',
+  legend3:'sesiune pornită', legend4:'click pe un agent = detalii + mesaj', n_messages:'{n} mesaje',
+  close:'închide',
+  mode_wsl:'Sesiunile din WSL nu primesc mesaje de aici, dar le poți deschide în terminal.',
+  mode_bg:'Rulează în fundal: mesajul ajunge ca de la un coleg (~10 s). Ca s-o vezi și să-i răspunzi la întrebări: 🖥️ Terminal.',
+  mode_term:'E deschisă într-un terminal: mesajul ajunge ca de la un coleg (~10 s). 🖥️ Terminal îți aduce fereastra ei în față.',
+  mode_closed:'E închisă. ✈️ Trimite: o trezesc în fundal cu mesajul tău. 🖥️ Terminal: o trezesc și o deschid într-o fereastră (cu mesajul, dacă ai scris unul).',
+  btn_show:'🖥️ Arată fereastra', btn_open:'🖥️ Deschide în terminal', btn_wake:'🖥️ Trezește în terminal', btn_answer:'🖥️ Răspunde în terminal',
+  ask_question:'Ți-a pus o întrebare.', ask_approval:'Așteaptă să-i aprobi o acțiune.',
+  ask_bg:'Rulează în fundal, deci n-o vezi nicăieri până nu o deschizi.', ask_term:'Răspunde-i în fereastra lui.',
+  ask_wait:'Până nu-i răspunzi, stă pe loc.',
+  write:'Scrie-i un mesaj', placeholder:'ex: după ce termini, dă-mi un rezumat scurt',
+  btn_sleep:'😴 Pune la somn', sleep_hint:'Oprește agentul. Conversația rămâne salvată și îl trezești oricând.',
+  term_hint:'Deschide sesiunea într-o fereastră de terminal în care o vezi și îi poți răspunde',
+  buzz_ok:'Scutură-l și cere-i un update scurt', buzz_no:'Merge doar la sesiunile pornite',
+  sending:'se trimite…', send:'Trimite ✈️',
+  last_req:'Ultima ta cerere', last_said:'Ultimul lucru spus', recent:'Ce a făcut recent', subs:'Sub-agenți', details:'Detalii',
+  k_project:'proiect', k_folder:'folder', k_branch:'branch', k_model:'model', k_session:'sesiune', k_active:'activ',
+  new_project:'➕ proiect nou…', automatic:'↺ automat',
+  from_any:'Din orice terminal:', bg_session:'(sesiunea din fundal)', plain_new:'simplu pornește o sesiune nouă.',
+  no_server:'Serverul nu răspunde.',
+  sleep_confirm:'Pui la somn „{t}”?\n\n{where} Conversația rămâne salvată; îl trezești oricând din BuzzzHub.{warn}',
+  sleep_bg:'Se oprește sesiunea din fundal.', sleep_term:'Se închide Claude din fereastra lui de terminal.',
+  sleep_warn:'\n\n⚠️ Lucrează chiar acum: se oprește la jumătatea a ce face.',
+  buzz_text:'Buzzz! 🐝 Ce faci? Dă-mi un update scurt (2–3 rânduri): la ce lucrezi acum și dacă ești blocat în ceva.',
+  new_project_prompt:'Numele proiectului nou:',
+  ago_s:'acum {n}s', ago_m:'acum {n} min', ago_h:'acum {n} h', ago_d:'acum {n} zile',
+  robot:'🤖 roboțel · scrie în {l}', hobby:'pasiune',
+  animals:{cat:'pisică', fox:'vulpe', bear:'urs', bunny:'iepuraș', frog:'broscuță', panda:'panda', owl:'bufniță', penguin:'pinguin', dog:'cățel', hamster:'hamster'},
+  hobbies:{headphones:'muzică', coffee:'cafea', laptop:'cod', gamepad:'jocuri', book:'citit', beret:'pictură', chef:'gătit',
+    plant:'grădinărit', glasses:'studiu', beanie:'drumeții', guitar:'chitară', camera:'foto'},
+  msg:{
+    not_found:'Nu găsesc sesiunea (reîncarcă).', no_claude:'Nu găsesc comanda claude în PATH.',
+    wsl_no_msg:'Sesiunile din WSL nu pot primi mesaje de aici.', empty:'Mesaj gol.',
+    relay_failed:'Releul a eșuat: {err}', relayed:'Trimis prin releu.',
+    relayed_asks:'Trimis prin releu. Atenție: are o întrebare deschisă, așa că îți citește mesajul abia după ce îi răspunzi (🖥️ Deschide în terminal).',
+    bg_started:'Sesiunea a pornit în fundal.', bg_started_msg:'Sesiunea a pornit în fundal cu mesajul tău.',
+    not_trusted:'Folderul {dir} nu e marcat ca sigur pentru Claude, așa că nu pot porni sesiunea în fundal. Apasă 🖥️ Terminal: acolo confirmi o dată și merge.',
+    not_started:'Sesiunea nu a pornit: {out}', start_failed:'Nu am putut porni sesiunea: {err}',
+    already_asleep:'Doarme deja (nu e pornită).', stop_failed:'Nu s-a oprit: {err}',
+    no_process:'Nu mai găsesc procesul sesiunii (reîncarcă).',
+    slept:'Am pus-o la somn. Conversația e salvată; o trezești oricând cu 🖥️ Terminal sau cu un mesaj.',
+    slept_term:'Am pus-o la somn. Conversația e salvată; o trezești oricând cu 🖥️ Terminal sau cu un mesaj. Fereastra de terminal rămâne deschisă; o poți închide.',
+    focused:'E deja deschisă într-un terminal: ți-am adus fereastra în față.',
+    in_other_terminal:'E deja deschisă într-un terminal interactiv, așa că n-o pot prelua de aici. Caut-o în bara de activități (sesiunea „{name}”). «claude» simplu pornește o sesiune nouă; pentru una veche e nevoie de «claude --resume {id}».',
+    wsl_unknown:'Nu știu în ce distribuție WSL e sesiunea.', wsl_opened:'Am deschis sesiunea din WSL în {term}.',
+    opened_interactive:'Am deschis-o în {term} (interactiv; dacă închizi fereastra, se oprește).',
+    woke_opened:'Am trezit-o în fundal și am deschis-o în {term}.',
+    woke_opened_msg:'Am trezit-o în fundal și am deschis-o în {term}. Mesajul tău a ajuns deja la ea.',
+    opened:'Am deschis-o în {term}.', term_failed:'Nu am putut deschide terminalul: {err}', demo:'În modul demo nu trimit nimic.',
+  },
+},
+};
+let LANG = store.get('lang') || ((navigator.language || 'en').toLowerCase().startsWith('ro') ? 'ro' : 'en');
+const fill = (s, p) => String(s).replace(/\{(\w+)\}/g, (m, k) => p && p[k] != null ? p[k] : m);
+const t = (k, p) => fill(I18N[LANG][k] ?? I18N.en[k] ?? k, p);
+
+/* ---------- state ---------- */
+let DATA = null, PROJ = store.get('proj'), SEL = null, DRAFT = {}, SENDING = false, LASTRES = null;
+const OLD_TAB = {atelier:'workshop', agenti:'agents', harta:'map'};
+let TAB = store.get('tab'); TAB = OLD_TAB[TAB] || TAB || 'workshop';
+$('#days').value = store.get('days', 'zile') || '3';
+/* deep link: #p=Project&s=<session id>&tab=workshop|agents|map&th=night&m=robot&lang=en */
+{ const q = new URLSearchParams(location.hash.slice(1));
+  if (q.get('p')) PROJ = q.get('p'); if (q.get('s')) SEL = q.get('s'); if (q.get('tab')) TAB = q.get('tab');
+  if (q.has('th')) store.set('theme', q.get('th')); if (q.get('m')) store.set('mascots', q.get('m'));
+  if (I18N[q.get('lang')]) LANG = q.get('lang'); }
+
+const STATUS_EMOJI = {working:'⚡', waiting:'👋', stuck:'😅', sleeping:'💤'};
+const statusText = s => `${STATUS_EMOJI[s]} ${t('st_' + s)}`;
+const PALETTE = ['#e8875b','#f2a65a','#e97a7a','#d98fc2','#9b8ce0','#6fb1e0','#5cc0a8','#8cc56b','#e6b34a','#c99572'];
+function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return PALETTE[h%PALETTE.length]}
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const projName = n => n === '@other' ? t('other') : n === '*' ? t('all') : n;
+const who = n => n === '@you' ? t('you') : n;
 
 function ago(sec){
-  if (sec < 60) return 'acum ' + Math.max(1,Math.round(sec)) + 's';
-  if (sec < 3600) return 'acum ' + Math.round(sec/60) + ' min';
-  if (sec < 86400) return 'acum ' + Math.round(sec/3600) + ' h';
-  return 'acum ' + Math.round(sec/86400) + ' zile';
+  if (sec < 60) return t('ago_s', {n: Math.max(1, Math.round(sec))});
+  if (sec < 3600) return t('ago_m', {n: Math.round(sec/60)});
+  if (sec < 86400) return t('ago_h', {n: Math.round(sec/3600)});
+  return t('ago_d', {n: Math.round(sec/86400)});
 }
-const hhmm = ts => ts ? new Date(ts).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'}) : '';
+const hhmm = ts => ts ? new Date(ts).toLocaleTimeString(LANG === 'ro' ? 'ro-RO' : 'en-GB', {hour:'2-digit', minute:'2-digit'}) : '';
+const toolText = (tool, text) => `${I18N[LANG].verbs[tool] || tool} ${text || ''}`.trim();
 
-/* ---------- mascote: 3 familii (bulgărași, roboței, animăluțe cu pasiuni) ---------- */
-let MASCOTE = 'slime';
-try { MASCOTE = localStorage.getItem('mascote') || 'slime'; } catch(e){}
+/* activity code from the server -> text */
+function activity(a){
+  const x = a.activity || {};
+  switch (x.k){
+    case 'tool': return toolText(x.tool, x.text);
+    case 'stopped_at': return t('act_stopped_at', {what: toolText(x.tool, x.text)});
+    case 'asks': return t(x.kind === 'approval' ? 'act_approval' : 'act_question') + t(x.mode === 'background' ? 'act_answer_bg' : 'act_answer_term');
+    case 'idle': return t(x.mode === 'background' ? 'act_idle_bg' : 'act_idle_term');
+    case 'untouched': return t(x.mode === 'terminal' ? 'act_untouched_term' : 'act_untouched', {h: x.h});
+    default: return t('act_' + (x.k || 'sleeping'));
+  }
+}
+function resultText(r){ return r.msg ? fill(I18N[LANG].msg[r.msg] || I18N.en.msg[r.msg] || r.msg, r.p) : (r.info || ''); }
+
+/* ---------- mascots: 3 families (blobs, dev robots, animals with hobbies) ---------- */
+let MASCOTS = store.get('mascots', 'mascote') || 'slime';
 function hashN(s, salt){ let h = salt * 2654435761 >>> 0; for (const c of String(s||'')) h = (Math.imul(h ^ c.charCodeAt(0), 2246822519) >>> 0); h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d) >>> 0; h ^= h >>> 12; h = Math.imul(h, 0x297a2d39) >>> 0; h ^= h >>> 15; return h >>> 0; }
-function shade(hex, f){ // f<0 = mai închis, f>0 = mai deschis
+function shade(hex, f){ // f<0 = darker, f>0 = lighter
   const n = parseInt(hex.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
   const m = v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f);
   return '#' + [m(r), m(g), m(b)].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
-/* ochi + gură după stare (aceleași coordonate pentru toate familiile) */
+/* eyes + mouth by status (same coordinates for every family) */
 function face(s, ink = '#3b2f2a', mouthInk = ink, glint = '#fff'){
-  const eyes = s === 'doarme'
+  const eyes = s === 'sleeping'
     ? `<path d="M34 55q5 4 10 0M56 55q5 4 10 0" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`
-    : s === 'lucreaza'
+    : s === 'working'
     ? `<g class="m-eyes"><ellipse cx="39" cy="54" rx="4" ry="5" fill="${ink}"/><ellipse cx="61" cy="54" rx="4" ry="5" fill="${ink}"/><circle cx="40.5" cy="52" r="1.5" fill="${glint}"/><circle cx="62.5" cy="52" r="1.5" fill="${glint}"/></g>`
     : `<g class="m-eyes"><circle cx="39" cy="54" r="4.5" fill="${ink}"/><circle cx="61" cy="54" r="4.5" fill="${ink}"/><circle cx="40.5" cy="52.3" r="1.6" fill="${glint}"/><circle cx="62.5" cy="52.3" r="1.6" fill="${glint}"/></g>`;
-  const mouth = s === 'lucreaza' ? `<path d="M45 64q5 3 10 0" stroke="${mouthInk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
-    : s === 'asteapta' ? `<path d="M43 63q7 7 14 0z" fill="${mouthInk}"/>`
-    : s === 'blocat' ? `<path d="M44 66q6-4 12 0" stroke="${mouthInk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+  const mouth = s === 'working' ? `<path d="M45 64q5 3 10 0" stroke="${mouthInk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+    : s === 'waiting' ? `<path d="M43 63q7 7 14 0z" fill="${mouthInk}"/>`
+    : s === 'stuck' ? `<path d="M44 66q6-4 12 0" stroke="${mouthInk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
     : `<circle cx="50" cy="65" r="2.3" fill="${mouthInk}"/>`;
   return eyes + mouth;
 }
 const BLUSH = `<circle cx="31" cy="62" r="5" fill="#ff8fa3" opacity=".45"/><circle cx="69" cy="62" r="5" fill="#ff8fa3" opacity=".45"/>`;
 function extras(s){
-  return s === 'doarme'
+  return s === 'sleeping'
     ? `<text class="m-z" x="76" y="30" font-size="13" font-weight="900" fill="#b9aea6">z</text><text class="m-z m-z2" x="84" y="22" font-size="10" font-weight="900" fill="#b9aea6">z</text>`
-    : s === 'blocat' ? `<path d="M80 36q4 6 0 9q-4-3 0-9z" fill="#8fc8f0"/>` : '';
+    : s === 'stuck' ? `<path d="M80 36q4 6 0 9q-4-3 0-9z" fill="#8fc8f0"/>` : '';
 }
 const wrap = (s, inner, after = '') => `<svg viewBox="0 0 100 100" class="st-${s}" aria-hidden="true">
   <ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".07"/><g class="m-body">${inner}</g>${extras(s)}${after}</svg>`;
 
-/* 1 · bulgăraș cu steluță */
+/* 1 · blob with a star */
 function slime(color, s){
   const star = `<g class="m-star"><path d="M50 7 L52.2 14.8 L60 17 L52.2 19.2 L50 27 L47.8 19.2 L40 17 L47.8 14.8 Z" fill="${color}" stroke="#fff" stroke-width="1.2"/></g>`;
-  const arm = s === 'asteapta' ? `<g class="m-arm"><ellipse cx="82" cy="56" rx="6" ry="9" fill="${color}" transform="rotate(25 82 56)"/></g>`
+  const arm = s === 'waiting' ? `<g class="m-arm"><ellipse cx="82" cy="56" rx="6" ry="9" fill="${color}" transform="rotate(25 82 56)"/></g>`
     : `<ellipse cx="80" cy="66" rx="5" ry="7" fill="${color}"/>`;
   return wrap(s, `<line x1="50" y1="25" x2="50" y2="32" stroke="${color}" stroke-width="3" stroke-linecap="round"/>${star}
     <ellipse cx="20" cy="66" rx="5" ry="7" fill="${color}"/>${arm}
     <path d="M50 30c19 0 32 13 32 32c0 17-12 27-32 27S18 79 18 62c0-19 13-32 32-32z" fill="${color}"/>
     <ellipse cx="42" cy="40" rx="9" ry="5" fill="#fff" opacity=".28"/>${BLUSH}${face(s)}
-    ${s === 'lucreaza' ? `<rect x="30" y="80" width="40" height="8" rx="3" fill="#3b2f2a" opacity=".18"/>` : ''}`);
+    ${s === 'working' ? `<rect x="30" y="80" width="40" height="8" rx="3" fill="#3b2f2a" opacity=".18"/>` : ''}`);
 }
 
-/* 2 · roboțel dev: ecran pe față, antenă cu led, plăcuță cu limbajul preferat */
-const LIMBAJE = ['JS','PY','RS','GO','TS','C#','KT','SQL','C++','RB','SH','λ'];
+/* 2 · dev robot: screen face, antenna with an LED, a badge with its favourite language */
+const LANGUAGES = ['JS','PY','RS','GO','TS','C#','KT','SQL','C++','RB','SH','λ'];
 function robot(color, s, seed){
-  const lang = LIMBAJE[hashN(seed, 3) % LIMBAJE.length];
-  const twin = hashN(seed, 5) % 3 === 0;         // unii au două antene
-  const scr = '#25283a', led = s === 'lucreaza' ? '#7ef0c8' : s === 'asteapta' ? '#7fd0ff' : s === 'blocat' ? '#ffd36e' : '#8a8fa3';
+  const lang = LANGUAGES[hashN(seed, 3) % LANGUAGES.length];
+  const twin = hashN(seed, 5) % 3 === 0;         // some have two antennae
+  const scr = '#25283a', led = s === 'working' ? '#7ef0c8' : s === 'waiting' ? '#7fd0ff' : s === 'stuck' ? '#ffd36e' : '#8a8fa3';
   const ant = twin
     ? `<line x1="38" y1="30" x2="34" y2="18" stroke="${shade(color,-.3)}" stroke-width="2.5"/><circle class="m-led" cx="34" cy="16" r="3.6" fill="${led}"/>
        <line x1="62" y1="30" x2="66" y2="18" stroke="${shade(color,-.3)}" stroke-width="2.5"/><circle class="m-led" cx="66" cy="16" r="3.6" fill="${led}"/>`
     : `<line x1="50" y1="30" x2="50" y2="17" stroke="${shade(color,-.3)}" stroke-width="2.5"/><circle class="m-led" cx="50" cy="14" r="4.5" fill="${led}"/>`;
-  const arm = s === 'asteapta'
+  const arm = s === 'waiting'
     ? `<g class="m-arm"><rect x="80" y="44" width="8" height="18" rx="4" fill="${shade(color,-.15)}" transform="rotate(25 82 56)"/></g>`
     : `<rect x="80" y="58" width="7" height="15" rx="3.5" fill="${shade(color,-.15)}"/>`;
-  const code = s === 'lucreaza'
+  const code = s === 'working'
     ? `<text x="50" y="69.5" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-size="7" font-weight="700" fill="#7ef0c8" opacity=".9">&lt;/&gt;<tspan class="m-cursor">▍</tspan></text>` : '';
-  const ink = s === 'doarme' ? '#8a8fa3' : '#7ef0c8';
+  const ink = s === 'sleeping' ? '#8a8fa3' : '#7ef0c8';
   return wrap(s, `${ant}
     <rect x="13" y="58" width="7" height="15" rx="3.5" fill="${shade(color,-.15)}"/>${arm}
     <rect x="36" y="78" width="28" height="13" rx="4" fill="${shade(color,-.12)}"/>
@@ -365,35 +558,33 @@ function robot(color, s, seed){
     <circle cx="18" cy="55" r="4" fill="${shade(color,-.25)}"/><circle cx="82" cy="55" r="4" fill="${shade(color,-.25)}"/>
     <rect x="25" y="39" width="50" height="33" rx="10" fill="${scr}"/>
     <rect x="28" y="41" width="18" height="4" rx="2" fill="#fff" opacity=".12"/>
-    ${s === 'lucreaza' ? '' : face(s, ink, ink, scr)}
-    ${s === 'lucreaza' ? `<g class="m-eyes"><rect x="35" y="49" width="8" height="8" rx="2" fill="${ink}"/><rect x="57" y="49" width="8" height="8" rx="2" fill="${ink}"/></g>${code}` : ''}`);
+    ${s === 'working' ? '' : face(s, ink, ink, scr)}
+    ${s === 'working' ? `<g class="m-eyes"><rect x="35" y="49" width="8" height="8" rx="2" fill="${ink}"/><rect x="57" y="49" width="8" height="8" rx="2" fill="${ink}"/></g>${code}` : ''}`);
 }
 
-/* 3 · animăluțe, fiecare cu o pasiune */
-const ANIMALE = {
-  pisica:  {fur:'#f2a65a', in:'#ffd6b0', ears:'cat'},
-  vulpe:   {fur:'#ee7f45', in:'#fff3e6', ears:'fox', muzzle:'#fff3e6'},
-  urs:     {fur:'#b07a52', in:'#e8c39e', ears:'round', muzzle:'#e8c39e'},
-  iepuras: {fur:'#e9e2f0', in:'#ffc4d6', ears:'bunny'},
-  broscuta:{fur:'#8cc56b', in:'#c8eab0', ears:'frog'},
+/* 3 · animals, each with a hobby (the order decides who gets what, keep it) */
+const ANIMALS = {
+  cat:     {fur:'#f2a65a', in:'#ffd6b0', ears:'cat'},
+  fox:     {fur:'#ee7f45', in:'#fff3e6', ears:'fox', muzzle:'#fff3e6'},
+  bear:    {fur:'#b07a52', in:'#e8c39e', ears:'round', muzzle:'#e8c39e'},
+  bunny:   {fur:'#e9e2f0', in:'#ffc4d6', ears:'bunny'},
+  frog:    {fur:'#8cc56b', in:'#c8eab0', ears:'frog'},
   panda:   {fur:'#f7f5f0', in:'#3b2f2a', ears:'panda'},
-  bufnita: {fur:'#9b7bc9', in:'#d9c8f2', ears:'owl'},
-  pinguin: {fur:'#4a5a78', in:'#fff', ears:'none', facePatch:'#fff'},
-  catel:   {fur:'#d9a066', in:'#7a5236', ears:'dog'},
+  owl:     {fur:'#9b7bc9', in:'#d9c8f2', ears:'owl'},
+  penguin: {fur:'#4a5a78', in:'#fff', ears:'none', facePatch:'#fff'},
+  dog:     {fur:'#d9a066', in:'#7a5236', ears:'dog'},
   hamster: {fur:'#f3c27a', in:'#fff1d6', ears:'small'},
 };
-const PASIUNI = ['casti','cafea','laptop','gamepad','carte','beret','bucatar','planta','ochelari','caciula','chitara','camera'];
-const PASIUNE_TXT = {casti:'muzică', cafea:'cafea', laptop:'cod', gamepad:'jocuri', carte:'citit', beret:'pictură', bucatar:'gătit',
-  planta:'grădinărit', ochelari:'studiu', caciula:'drumeții', chitara:'chitară', camera:'foto'};
+const HOBBIES = ['headphones','coffee','laptop','gamepad','book','beret','chef','plant','glasses','beanie','guitar','camera'];
 function animalOf(seed){
-  const k = Object.keys(ANIMALE); const a = k[hashN(seed, 7) % k.length];
-  return {nume: a, ...ANIMALE[a], pasiune: PASIUNI[hashN(seed, 11) % PASIUNI.length]};
+  const k = Object.keys(ANIMALS); const a = k[hashN(seed, 7) % k.length];
+  return {name: a, ...ANIMALS[a], hobby: HOBBIES[hashN(seed, 11) % HOBBIES.length]};
 }
-function ears(t, fur, inn){
-  switch (t){
+function ears(kind, fur, inn){
+  switch (kind){
     case 'cat': return `<path d="M24 44 L28 18 L46 34Z" fill="${fur}"/><path d="M76 44 L72 18 L54 34Z" fill="${fur}"/><path d="M29 36 L30 24 L40 33Z" fill="${inn}"/><path d="M71 36 L70 24 L60 33Z" fill="${inn}"/>`;
     case 'fox': return `<path d="M22 46 L24 12 L48 32Z" fill="${fur}"/><path d="M78 46 L76 12 L52 32Z" fill="${fur}"/><path d="M27 36 L27 20 L40 31Z" fill="#3b2f2a" opacity=".75"/><path d="M73 36 L73 20 L60 31Z" fill="#3b2f2a" opacity=".75"/>`;
-    case 'round': case 'small': { const r = t === 'small' ? 7 : 10;
+    case 'round': case 'small': { const r = kind === 'small' ? 7 : 10;
       return `<circle cx="27" cy="33" r="${r}" fill="${fur}"/><circle cx="73" cy="33" r="${r}" fill="${fur}"/><circle cx="27" cy="33" r="${r-4}" fill="${inn}"/><circle cx="73" cy="33" r="${r-4}" fill="${inn}"/>`; }
     case 'bunny': return `<ellipse cx="38" cy="16" rx="7" ry="18" fill="${fur}"/><ellipse cx="62" cy="16" rx="7" ry="18" fill="${fur}"/><ellipse cx="38" cy="17" rx="3.5" ry="13" fill="${inn}"/><ellipse cx="62" cy="17" rx="3.5" ry="13" fill="${inn}"/>`;
     case 'frog': return `<circle cx="36" cy="33" r="11" fill="${fur}"/><circle cx="64" cy="33" r="11" fill="${fur}"/>`;
@@ -403,31 +594,31 @@ function ears(t, fur, inn){
     default: return '';
   }
 }
-/* accesorii: unele stau pe cap (deasupra), altele în față (jos) */
-function pasiune(p, s, color){
-  const work = s === 'lucreaza';
+/* accessories: some sit on the head (top), others in front (front) */
+function accessory(p, s, color){
+  const work = s === 'working';
   switch (p){
-    case 'casti': return {top:`<path d="M20 58 Q20 22 50 22 Q80 22 80 58" fill="none" stroke="#3b2f2a" stroke-width="5" stroke-linecap="round"/>
+    case 'headphones': return {top:`<path d="M20 58 Q20 22 50 22 Q80 22 80 58" fill="none" stroke="#3b2f2a" stroke-width="5" stroke-linecap="round"/>
       <rect x="13" y="50" width="12" height="18" rx="5" fill="${color}"/><rect x="75" y="50" width="12" height="18" rx="5" fill="${color}"/>`,
       after: work ? `<text class="m-z" x="84" y="30" font-size="13" fill="${color}">♪</text><text class="m-z m-z2" x="8" y="34" font-size="11" fill="${color}">♫</text>` : ''};
-    case 'cafea': return {front:`<rect x="62" y="70" width="16" height="17" rx="3" fill="#fff" stroke="#3b2f2a" stroke-width="1.6"/>
+    case 'coffee': return {front:`<rect x="62" y="70" width="16" height="17" rx="3" fill="#fff" stroke="#3b2f2a" stroke-width="1.6"/>
       <path d="M78 74 q6 0 6 5 q0 5 -6 5" fill="none" stroke="#3b2f2a" stroke-width="1.6"/><rect x="62" y="70" width="16" height="5" fill="#8a5a3c"/>
       ${work ? `<path class="m-steam" d="M67 66 q-3 -4 0 -8 M73 66 q-3 -4 0 -8" stroke="#b9aea6" stroke-width="1.6" fill="none" stroke-linecap="round"/>` : ''}`};
     case 'laptop': return {front:`<path d="M30 74 L70 74 L74 88 L26 88Z" fill="#c9ccd6"/><rect x="33" y="66" width="34" height="10" rx="2" fill="#3b3f52"/>
       <text x="50" y="74" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-size="6.5" font-weight="800" fill="#7ef0c8">&lt;/&gt;${work ? '<tspan class="m-cursor">▍</tspan>' : ''}</text>`};
     case 'gamepad': return {front:`<rect x="32" y="74" width="36" height="14" rx="7" fill="#5b5f7a"/><rect x="38" y="79" width="7" height="2.4" fill="#fff"/><rect x="40.3" y="76.7" width="2.4" height="7" fill="#fff"/>
       <circle cx="58" cy="79" r="2" fill="#ff8fa3"/><circle cx="63" cy="82" r="2" fill="#7fd0ff"/>`};
-    case 'carte': return {front:`<path d="M30 76 Q40 72 50 77 Q60 72 70 76 L70 90 Q60 86 50 90 Q40 86 30 90Z" fill="${color}"/>
+    case 'book': return {front:`<path d="M30 76 Q40 72 50 77 Q60 72 70 76 L70 90 Q60 86 50 90 Q40 86 30 90Z" fill="${color}"/>
       <path d="M50 77 L50 90" stroke="#fff" stroke-width="1.4"/><path d="M34 80 L46 80 M34 84 L44 84 M54 80 L66 80 M54 84 L64 84" stroke="#fff" stroke-width="1.2" opacity=".8"/>`};
     case 'beret': return {top:`<ellipse cx="44" cy="30" rx="22" ry="8" fill="${color}" transform="rotate(-10 44 30)"/><circle cx="46" cy="21" r="2.6" fill="${color}"/>`,
       front:`<ellipse cx="70" cy="82" rx="12" ry="8" fill="#f3e2c3"/><circle cx="65" cy="80" r="2" fill="#e97a7a"/><circle cx="70" cy="78" r="2" fill="#6fb1e0"/><circle cx="75" cy="81" r="2" fill="#8cc56b"/>`};
-    case 'bucatar': return {top:`<rect x="34" y="22" width="32" height="10" rx="2" fill="#fff" stroke="#e0d8cf"/>
+    case 'chef': return {top:`<rect x="34" y="22" width="32" height="10" rx="2" fill="#fff" stroke="#e0d8cf"/>
       <circle cx="38" cy="18" r="8" fill="#fff"/><circle cx="50" cy="13" r="9" fill="#fff"/><circle cx="62" cy="18" r="8" fill="#fff"/>`};
-    case 'planta': return {top:`<path d="M50 30 L50 18" stroke="#5aa05a" stroke-width="2.4" stroke-linecap="round"/>
+    case 'plant': return {top:`<path d="M50 30 L50 18" stroke="#5aa05a" stroke-width="2.4" stroke-linecap="round"/>
       <path d="M50 22 Q40 14 36 20 Q42 26 50 22Z" fill="#7cc576"/><path d="M50 19 Q60 10 65 16 Q58 23 50 19Z" fill="#8fd77f"/>`};
-    case 'ochelari': return {face:`<circle cx="39" cy="54" r="8.5" fill="none" stroke="#3b2f2a" stroke-width="2"/><circle cx="61" cy="54" r="8.5" fill="none" stroke="#3b2f2a" stroke-width="2"/><path d="M47.5 54 L52.5 54" stroke="#3b2f2a" stroke-width="2"/>`};
-    case 'caciula': return {top:`<path d="M24 40 Q24 18 50 18 Q76 18 76 40Z" fill="${color}"/><rect x="22" y="36" width="56" height="8" rx="4" fill="${shade(color,-.2)}"/><circle cx="50" cy="15" r="5" fill="#fff"/>`};
-    case 'chitara': return {front:`<g transform="rotate(35 72 86)"><rect x="70.5" y="64" width="3" height="16" fill="#8a5a3c"/><rect x="69.5" y="60" width="5" height="5" rx="1" fill="#5c3b26"/>
+    case 'glasses': return {face:`<circle cx="39" cy="54" r="8.5" fill="none" stroke="#3b2f2a" stroke-width="2"/><circle cx="61" cy="54" r="8.5" fill="none" stroke="#3b2f2a" stroke-width="2"/><path d="M47.5 54 L52.5 54" stroke="#3b2f2a" stroke-width="2"/>`};
+    case 'beanie': return {top:`<path d="M24 40 Q24 18 50 18 Q76 18 76 40Z" fill="${color}"/><rect x="22" y="36" width="56" height="8" rx="4" fill="${shade(color,-.2)}"/><circle cx="50" cy="15" r="5" fill="#fff"/>`};
+    case 'guitar': return {front:`<g transform="rotate(35 72 86)"><rect x="70.5" y="64" width="3" height="16" fill="#8a5a3c"/><rect x="69.5" y="60" width="5" height="5" rx="1" fill="#5c3b26"/>
       <circle cx="72" cy="88" r="7.5" fill="#e8a25e"/><circle cx="72" cy="82" r="5.5" fill="#e8a25e"/><circle cx="72" cy="86" r="2" fill="#3b2f2a"/></g>`};
     case 'camera': return {front:`<rect x="34" y="72" width="32" height="18" rx="4" fill="#3b3f52"/><rect x="40" y="69" width="9" height="4" rx="1" fill="#3b3f52"/>
       <circle cx="50" cy="81" r="6" fill="#7fd0ff" stroke="#fff" stroke-width="1.6"/>${work ? `<circle class="m-led" cx="61" cy="76" r="1.6" fill="#ff8fa3"/>` : ''}`};
@@ -435,8 +626,8 @@ function pasiune(p, s, color){
   return {};
 }
 function animal(color, s, seed){
-  const a = animalOf(seed), acc = pasiune(a.pasiune, s, color);
-  const paw = s === 'asteapta' ? `<g class="m-arm"><ellipse cx="83" cy="56" rx="6" ry="8" fill="${a.fur}" transform="rotate(25 83 56)"/></g>`
+  const a = animalOf(seed), acc = accessory(a.hobby, s, color);
+  const paw = s === 'waiting' ? `<g class="m-arm"><ellipse cx="83" cy="56" rx="6" ry="8" fill="${a.fur}" transform="rotate(25 83 56)"/></g>`
     : `<ellipse cx="80" cy="74" rx="6" ry="6" fill="${a.fur}"/>`;
   const extraFace =
       a.ears === 'panda' ? `<ellipse cx="39" cy="55" rx="7" ry="8" fill="#3b2f2a" opacity=".85" transform="rotate(-15 39 55)"/><ellipse cx="61" cy="55" rx="7" ry="8" fill="#3b2f2a" opacity=".85" transform="rotate(15 61 55)"/>`
@@ -451,7 +642,7 @@ function animal(color, s, seed){
     <ellipse cx="50" cy="58" rx="31" ry="29" fill="${a.fur}" stroke="${shade(a.fur,-.14)}" stroke-width="1.3"/>
     ${acc.top || ''}
     <ellipse cx="42" cy="40" rx="9" ry="4.5" fill="#fff" opacity=".22"/>
-    ${extraFace}${a.ears === 'pinguin' ? '' : BLUSH}${muzzle}
+    ${extraFace}${a.ears === 'none' ? '' : BLUSH}${muzzle}
     ${face(s, pandaEyes ? '#fff' : '#3b2f2a', '#3b2f2a', pandaEyes ? '#3b2f2a' : '#fff')}
     ${a.ears === 'none' ? `<path d="M46 59 L54 59 L50 63Z" fill="#f2a65a"/>` : ''}
     ${acc.face || ''}${acc.front || ''}`, acc.after || '');
@@ -459,38 +650,54 @@ function animal(color, s, seed){
 
 function mascot(color, status, seed){
   seed = seed || color;
-  if (MASCOTE === 'robot') return robot(color, status, seed);
-  if (MASCOTE === 'animal') return animal(color, status, seed);
+  if (MASCOTS === 'robot') return robot(color, status, seed);
+  if (MASCOTS === 'animal') return animal(color, status, seed);
   return slime(color, status);
 }
-const EMOJI_ANIMAL = {pisica:'🐱', vulpe:'🦊', urs:'🐻', iepuras:'🐰', broscuta:'🐸', panda:'🐼', bufnita:'🦉', pinguin:'🐧', catel:'🐶', hamster:'🐹'};
+const ANIMAL_EMOJI = {cat:'🐱', fox:'🦊', bear:'🐻', bunny:'🐰', frog:'🐸', panda:'🐼', owl:'🦉', penguin:'🐧', dog:'🐶', hamster:'🐹'};
 function persona(seed){
-  if (MASCOTE === 'robot') return `🤖 roboțel · scrie în ${LIMBAJE[hashN(seed, 3) % LIMBAJE.length]}`;
-  if (MASCOTE === 'animal'){ const a = animalOf(seed); return `${EMOJI_ANIMAL[a.nume]} ${a.nume.replace('pisica','pisică').replace('iepuras','iepuraș').replace('broscuta','broscuță').replace('bufnita','bufniță').replace('catel','cățel')} · pasiune: ${PASIUNE_TXT[a.pasiune]}`; }
+  if (MASCOTS === 'robot') return t('robot', {l: LANGUAGES[hashN(seed, 3) % LANGUAGES.length]});
+  if (MASCOTS === 'animal'){ const a = animalOf(seed); return `${ANIMAL_EMOJI[a.name]} ${I18N[LANG].animals[a.name]} · ${t('hobby')}: ${I18N[LANG].hobbies[a.hobby]}`; }
   return '';
 }
-function setMascote(m){
-  MASCOTE = m;
-  document.querySelectorAll('#mascote button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
-  try{ localStorage.setItem('mascote', m); }catch(e){}
-  const pinfo = document.querySelector('#panel');
-  if (pinfo) pinfo.dataset.id = '';
+function setMascots(m){
+  MASCOTS = m;
+  document.querySelectorAll('#mascots button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  store.set('mascots', m);
+  const panel = $('#panel'); if (panel) panel.dataset.id = '';
+  render();
+}
+
+/* ---------- static texts (header) ---------- */
+function setLang(l){
+  LANG = l; store.set('lang', l);
+  document.documentElement.lang = l;
+  document.querySelectorAll('#langs button').forEach(b => b.classList.toggle('on', b.dataset.l === l));
+  $('#back').textContent = t('back');
+  $('#langs').title = t('lang');
+  $('#mascots').title = t('mascots');
+  [['slime','m_slime'],['robot','m_robot'],['animal','m_animal']].forEach(([m,k]) => $(`#mascots [data-m="${m}"]`).title = t(k));
+  $('#themes').title = t('theme');
+  [['','th_cream'],['night','th_night'],['matcha','th_matcha']].forEach(([th,k]) => $(`#themes [data-th="${th}"]`).title = t(k));
+  $('#days').title = t('days');
+  [...$('#days').options].forEach(o => o.textContent = t('d' + o.value));
+  const panel = $('#panel'); if (panel) panel.dataset.id = '';
+  const ws = $('#workshop'); if (ws) ws.dataset.lang = '';
   render();
 }
 
 async function load(){
   try{
-    const z = $('#zile').value;
-    const r = await fetch('/api/stare?zile=' + z, {cache:'no-store'});
+    const r = await fetch('/api/state?days=' + $('#days').value, {cache:'no-store'});
     DATA = await r.json();
-    $('#upd').textContent = 'live · ' + new Date().toLocaleTimeString('ro-RO');
+    $('#upd').textContent = 'live · ' + new Date().toLocaleTimeString(LANG === 'ro' ? 'ro-RO' : 'en-GB');
     render();
-  }catch(e){ $('#upd').textContent = 'server oprit?'; }
+  }catch(e){ $('#upd').textContent = t('server_down'); }
 }
 
 function render(){
   if (!DATA) return;
-  const p = PROJ && DATA.proiecte.find(x => x.nume === PROJ);
+  const p = PROJ && DATA.projects.find(x => x.name === PROJ);
   if (PROJ && !p && PROJ !== '*') { PROJ = null; }
   const tipOn = $('#tip') && $('#tip').style.display === 'block';
   if (!tipOn) PROJ ? renderProject() : renderHome();
@@ -498,28 +705,28 @@ function render(){
 }
 
 function counts(list){
-  const c = {lucreaza:0, asteapta:0, blocat:0, doarme:0};
+  const c = {working:0, waiting:0, stuck:0, sleeping:0};
   list.forEach(a => c[a.status]++);
   return c;
 }
 
 function renderHome(){
   $('#back').hidden = true; $('#crumb').textContent = '';
-  const all = DATA.proiecte.flatMap(p => p.agenti);
+  const all = DATA.projects.flatMap(p => p.agents);
   const c = counts(all);
-  const ore = new Date().getHours();
-  const salut = ore < 5 ? 'Noapte bună' : ore < 12 ? 'Bună dimineața' : ore < 18 ? 'Bună ziua' : 'Bună seara';
-  let h = `<div class="hello">${salut}! Alege un proiect</div>
-    <p class="sub">${c.lucreaza} lucrează acum · ${c.asteapta} te așteaptă · ${c.blocat} poate blocați · ${c.doarme} dorm</p><div class="grid">`;
-  const proj = [...DATA.proiecte, {nume:'*', emoji:'🌈', culoare:'#e8875b', descriere:'toți agenții, din toate proiectele', agenti: all}];
-  for (const p of proj){
-    if (!p.agenti.length && p.nume !== '*') { /* proiect gol: tot îl arăt, mai stins */ }
-    const cc = counts(p.agenti);
-    const minis = p.agenti.slice(0, 8).map(a => mascot(hue(a.titlu), a.status, a.titlu)).join('');
-    h += `<div class="proj" style="--c:${p.culoare};${p.agenti.length?'':'opacity:.55'}" data-p="${esc(p.nume)}">
-      <div class="em">${p.emoji}</div><h3>${p.nume === '*' ? 'Toate' : esc(p.nume)}</h3><p>${esc(p.descriere)}</p>
-      <div class="minis">${minis || '<span class="sub" style="margin:0">niciun agent recent</span>'}</div>
-      <div class="counts">${Object.entries(cc).filter(([,n])=>n).map(([k,n]) => `<span><span class="dot d-${k}"></span>${n} ${STATUS[k].t}</span>`).join('')}</div>
+  const hour = new Date().getHours();
+  const g = I18N[LANG].greet[hour < 5 ? 0 : hour < 12 ? 1 : hour < 18 ? 2 : 3];
+  let h = `<div class="hello">${t('pick', {g})}</div>
+    <p class="sub">${t('summary', {w:c.working, a:c.waiting, s:c.stuck, z:c.sleeping})}</p><div class="grid">`;
+  const projects = [...DATA.projects, {name:'*', emoji:'🌈', color:'#e8875b', description:t('all_desc'), agents: all}];
+  for (const p of projects){
+    const cc = counts(p.agents);
+    const minis = p.agents.slice(0, 8).map(a => mascot(hue(a.title), a.status, a.title)).join('');
+    const desc = p.name === '@other' ? t('other_desc') : p.description;
+    h += `<div class="proj" style="--c:${p.color};${p.agents.length?'':'opacity:.55'}" data-p="${esc(p.name)}">
+      <div class="em">${p.emoji}</div><h3>${esc(projName(p.name))}</h3><p>${esc(desc)}</p>
+      <div class="minis">${minis || `<span class="sub" style="margin:0">${t('no_recent')}</span>`}</div>
+      <div class="counts">${Object.entries(cc).filter(([,n])=>n).map(([k,n]) => `<span><span class="dot d-${k}"></span>${n} ${t('st_' + k)}</span>`).join('')}</div>
     </div>`;
   }
   $('#main').innerHTML = h + '</div>';
@@ -527,220 +734,220 @@ function renderHome(){
 }
 
 function pill(a){
-  if (a.intrebare) return `<span class="pill p-intrebare">${a.intrebare==='aprobare'?'✋ cere aprobare':'🙋 te întreabă'}</span>`;
-  return `<span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span>`;
+  if (a.asks) return `<span class="pill p-asks">${t(a.asks === 'approval' ? 'asks_approval' : 'asks_question')}</span>`;
+  return `<span class="pill p-${a.status}">${statusText(a.status)}</span>`;
 }
 
 function card(a){
-  const subsActive = a.subagenti.filter(s => !s.terminat && s.varsta < 300).length;
+  const subsActive = a.subagents.filter(s => !s.done && s.age < 300).length;
   return `<div class="ag ${SEL===a.id?'sel':''}" data-id="${a.id}">
-    <div class="top">${mascot(hue(a.titlu), a.status, a.titlu)}
-      <div><h3>${esc(a.titlu)}</h3>
+    <div class="top">${mascot(hue(a.title), a.status, a.title)}
+      <div><h3>${esc(a.title)}</h3>
       ${pill(a)}
-      ${persona(a.titlu) ? `<div class="persona">${esc(persona(a.titlu))}</div>` : ''}</div></div>
-    <div class="act">${esc(a.activitate)}</div>
-    <div class="meta">${a.pornita?`<span><span class="on-dot"></span> ${a.fel==='fundal'?'👻 în fundal':'🖥️ în terminal'}</span>`:''}<span>🕒 ${ago(a.varsta)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(a.proiect)}</span>`:''}</div>
-    ${a.subagenti.length ? `<div class="subs">🐣 ${a.subagenti.length} sub-agenți${subsActive?` · <b style="color:var(--work)">${subsActive} activi</b>`:''}</div>` : ''}
+      ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div></div>
+    <div class="act">${esc(activity(a))}</div>
+    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}</div>
+    ${a.subagents.length ? `<div class="subs">${t('n_subs', {n: a.subagents.length})}${subsActive?` · <b style="color:var(--work)">${t('n_active', {n: subsActive})}</b>`:''}</div>` : ''}
   </div>`;
 }
 
 function renderProject(){
-  const p = PROJ === '*' ? {nume:'Toate', emoji:'🌈', agenti: DATA.proiecte.flatMap(x => x.agenti).sort((a,b)=>a.varsta-b.varsta)}
-                         : DATA.proiecte.find(x => x.nume === PROJ);
-  $('#back').hidden = false; $('#crumb').textContent = '/ ' + p.emoji + ' ' + p.nume;
-  const treji = p.agenti.filter(a => a.status !== 'doarme');
-  const dorm = p.agenti.filter(a => a.status === 'doarme');
-  const ord = {lucreaza:1, blocat:2, asteapta:3};
-  const rang = a => a.intrebare ? 0 : ord[a.status];
-  treji.sort((a,b) => rang(a)-rang(b) || a.varsta-b.varsta);
-  const nPornite = p.agenti.filter(a => a.pornita).length;
-  let h = `<div class="hello">${p.emoji} ${esc(p.nume)}</div><p class="sub">${p.agenti.length} sesiuni · ${nPornite} pornite acum</p>
-    <div class="tabs"><button data-t="atelier" class="${TAB==='atelier'?'on':''}">🏡 Atelier</button><button data-t="agenti" class="${TAB==='agenti'?'on':''}">🐣 Agenți</button><button data-t="harta" class="${TAB==='harta'?'on':''}">🕸️ Legături</button></div>`;
-  if (TAB === 'atelier') return renderAtelier(p, h);
-  if (TAB === 'harta') {
-    $('#main').innerHTML = h + harta(p);
+  const p = PROJ === '*' ? {name:'*', emoji:'🌈', agents: DATA.projects.flatMap(x => x.agents).sort((a,b)=>a.age-b.age)}
+                         : DATA.projects.find(x => x.name === PROJ);
+  $('#back').hidden = false; $('#crumb').textContent = '/ ' + p.emoji + ' ' + projName(p.name);
+  const awake = p.agents.filter(a => a.status !== 'sleeping');
+  const asleep = p.agents.filter(a => a.status === 'sleeping');
+  const order = {working:1, stuck:2, waiting:3};
+  const rank = a => a.asks ? 0 : order[a.status];
+  awake.sort((a,b) => rank(a)-rank(b) || a.age-b.age);
+  const nRunning = p.agents.filter(a => a.running).length;
+  let h = `<div class="hello">${p.emoji} ${esc(projName(p.name))}</div><p class="sub">${t('proj_sub', {n: p.agents.length, r: nRunning})}</p>
+    <div class="tabs"><button data-t="workshop" class="${TAB==='workshop'?'on':''}">${t('tab_workshop')}</button><button data-t="agents" class="${TAB==='agents'?'on':''}">${t('tab_agents')}</button><button data-t="map" class="${TAB==='map'?'on':''}">${t('tab_map')}</button></div>`;
+  if (TAB === 'workshop') return renderWorkshop(p, h);
+  if (TAB === 'map') {
+    $('#main').innerHTML = h + linkMap(p);
     bindTabs(); bindMap(); return;
   }
-  if (!p.agenti.length) h += `<div class="empty">${mascot('#e8875b','doarme')}<p>Niciun agent în perioada asta.</p></div>`;
-  if (treji.length) h += `<div class="section-t">Treji</div><div class="agents">${treji.map(card).join('')}</div>`;
-  if (dorm.length) h += `<div class="section-t">Dorm</div><div class="agents">${dorm.map(card).join('')}</div>`;
+  if (!p.agents.length) h += `<div class="empty">${mascot('#e8875b','sleeping')}<p>${t('none_period')}</p></div>`;
+  if (awake.length) h += `<div class="section-t">${t('awake')}</div><div class="agents">${awake.map(card).join('')}</div>`;
+  if (asleep.length) h += `<div class="section-t">${t('asleep')}</div><div class="agents">${asleep.map(card).join('')}</div>`;
   $('#main').innerHTML = h;
   bindTabs();
   document.querySelectorAll('.ag').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
 }
 
-/* ---------- 🏡 atelier: camere cu agenții la treabă (totul din transcrieri locale, zero tokeni) ---------- */
-const ZONE = {posta:12, terminal:28, birou:48, fereastra:68, raft:84};
-const UNELTE_ZONA = {Bash:'terminal', PowerShell:'terminal', Monitor:'terminal', TaskStop:'terminal',
-  Edit:'birou', Write:'birou', NotebookEdit:'birou', Read:'raft', Grep:'raft', Glob:'raft',
-  WebSearch:'fereastra', WebFetch:'fereastra', SendMessage:'posta', ListAgents:'posta', SendToProject:'posta'};
-const EFECT = {terminal:'⌨️', birou:'✏️', raft:'🔍', fereastra:'🌐', posta:'✉️'};
-let ATL = {seen:null};
+/* ---------- 🏡 workshop: rooms with the agents at work (all from local transcripts, zero tokens) ---------- */
+const ZONE_X = {mail:12, terminal:28, desk:48, window:68, shelf:84};
+const TOOL_ZONE = {Bash:'terminal', PowerShell:'terminal', Monitor:'terminal', TaskStop:'terminal',
+  Edit:'desk', Write:'desk', NotebookEdit:'desk', Read:'shelf', Grep:'shelf', Glob:'shelf',
+  WebSearch:'window', WebFetch:'window', SendMessage:'mail', ListAgents:'mail', SendToProject:'mail'};
+const ZONE_EFFECT = {terminal:'⌨️', desk:'✏️', shelf:'🔍', window:'🌐', mail:'✉️'};
+let WS = {seen:null};
 
-function uneltaCurenta(a){
+function currentTool(a){
   const l = a.feed[a.feed.length - 1];
-  return a.status === 'lucreaza' && l && l.tip === 'tool' ? l : null;
+  return a.status === 'working' && l && l.kind === 'tool' ? l : null;
 }
-function zona(a){
-  const t = uneltaCurenta(a);
-  if (!t) return 'birou';
-  if (t.tool && t.tool.startsWith('mcp__claude-in-chrome')) return 'fereastra';
-  return UNELTE_ZONA[t.tool] || 'birou';
+function zone(a){
+  const tl = currentTool(a);
+  if (!tl) return 'desk';
+  if (tl.tool && tl.tool.startsWith('mcp__claude-in-chrome')) return 'window';
+  return TOOL_ZONE[tl.tool] || 'desk';
 }
-function efect(a, z){
-  if (a.intrebare) return a.intrebare === 'aprobare' ? '✋' : '❓';
-  if (a.status === 'asteapta') return '☕';
-  if (a.status === 'blocat') return '😅';
-  const t = uneltaCurenta(a);
-  if (!t) return a.subagenti.some(s => !s.terminat && s.varsta < 120) ? '🐣' : '💭';
-  if (t.tool === 'Agent' || t.tool === 'Workflow') return '🐣';
-  return EFECT[z] || '⚙️';
+function effect(a, z){
+  if (a.asks) return a.asks === 'approval' ? '✋' : '❓';
+  if (a.status === 'waiting') return '☕';
+  if (a.status === 'stuck') return '😅';
+  const tl = currentTool(a);
+  if (!tl) return a.subagents.some(s => !s.done && s.age < 120) ? '🐣' : '💭';
+  if (tl.tool === 'Agent' || tl.tool === 'Workflow') return '🐣';
+  return ZONE_EFFECT[z] || '⚙️';
 }
-function balon(a){
-  if (a.intrebare) return a.intrebare === 'aprobare' ? 'Am nevoie de aprobarea ta!' : 'Am o întrebare pentru tine!';
-  const u = uneltaCurenta(a);
-  const t = u && u.text ? u.text : (a.activitate || '');
-  return t.length > 70 ? t.slice(0, 69) + '…' : t;
+function speech(a){
+  if (a.asks) return t(a.asks === 'approval' ? 'speech_approval' : 'speech_question');
+  const tl = currentTool(a);
+  const s = tl && tl.text ? tl.text : activity(a);
+  return s.length > 70 ? s.slice(0, 69) + '…' : s;
 }
-const CAMERA = `<div class="cam-top"><span class="nume"></span><span class="pillw"></span></div>
-  <div class="scena"><div class="perete"></div><div class="podea"></div>
-    <div class="prop p-posta">📮</div>
-    <div class="prop p-terminal"><div class="ecran"></div><div class="picior"></div></div>
-    <div class="prop p-fereastra"></div>
-    <div class="prop p-birou"><div class="monitor"><i style="width:80%"></i><i style="width:55%"></i><i style="width:68%"></i></div><div class="masa"></div><div class="picioare"><b></b><b></b></div></div>
-    <div class="prop p-raft"><b></b><b></b><b></b><b></b></div>
-    <div class="bot"><div class="balon"></div><div class="masc"></div><div class="efect"></div></div>
-  </div><div class="echipa"></div>`;
+const ROOM = `<div class="room-top"><span class="name"></span><span class="pillw"></span></div>
+  <div class="scene"><div class="wall"></div><div class="planks"></div>
+    <div class="prop p-mail">📮</div>
+    <div class="prop p-terminal"><div class="screen"></div><div class="stand"></div></div>
+    <div class="prop p-window"></div>
+    <div class="prop p-desk"><div class="monitor"><i style="width:80%"></i><i style="width:55%"></i><i style="width:68%"></i></div><div class="top"></div><div class="legs"><b></b><b></b></div></div>
+    <div class="prop p-shelf"><b></b><b></b><b></b><b></b></div>
+    <div class="bot"><div class="speech"></div><div class="masc"></div><div class="effect"></div></div>
+  </div><div class="crew"></div>`;
 
-function piticiHtml(a){
-  const subs = a.subagenti;
+function crewHtml(a){
+  const subs = a.subagents;
   if (!subs.length) return '';
-  const activi = subs.filter(s => !s.terminat);
-  const gata = subs.filter(s => s.terminat);
-  const pe = (s) => {
-    const st = s.terminat ? 'doarme' : s.varsta < 90 ? 'lucreaza' : 'asteapta';
-    const ce = s.ce || (s.varsta < 90 ? 'lucrează…' : 'așteaptă');
-    return `<div class="pitic ${s.terminat?'gata':''}" title="${esc(s.descriere + (s.ce ? ' — ' + s.ce : ''))}">
-      ${mascot(hue(s.descriere), st, s.descriere)}<span>${esc(s.descriere.length > 26 ? s.descriere.slice(0,25)+'…' : s.descriere)}</span>
-      ${s.terminat ? '' : `<span class="ce">${esc(ce.length > 30 ? ce.slice(0,29)+'…' : ce)}</span>`}</div>`;
+  const active = subs.filter(s => !s.done);
+  const done = subs.filter(s => s.done);
+  const one = (s) => {
+    const st = s.done ? 'sleeping' : s.age < 90 ? 'working' : 'waiting';
+    const now = s.now ? toolText(s.now.tool, s.now.text) : t(s.age < 90 ? 'sub_working' : 'sub_waiting');
+    const d = s.description;
+    return `<div class="minion ${s.done?'done':''}" title="${esc(d + (s.now ? ' — ' + now : ''))}">
+      ${mascot(hue(d), st, d)}<span>${esc(d.length > 26 ? d.slice(0,25)+'…' : d)}</span>
+      ${s.done ? '' : `<span class="now">${esc(now.length > 30 ? now.slice(0,29)+'…' : now)}</span>`}</div>`;
   };
-  const arat = [...activi, ...gata.slice(0, Math.max(0, 6 - activi.length))];
-  const rest = subs.length - arat.length;
-  return `<div class="pitici-h">🐣 echipa lui: ${activi.length} la treabă · ${gata.length} au terminat</div>
-    <div class="pitici">${arat.map(pe).join('')}${rest > 0 ? `<div class="pitic"><span style="font-size:20px;margin-top:8px">+${rest}</span></div>` : ''}</div>`;
+  const shown = [...active, ...done.slice(0, Math.max(0, 6 - active.length))];
+  const rest = subs.length - shown.length;
+  return `<div class="crew-h">${t('crew', {a: active.length, d: done.length})}</div>
+    <div class="crew-list">${shown.map(one).join('')}${rest > 0 ? `<div class="minion"><span style="font-size:20px;margin-top:8px">+${rest}</span></div>` : ''}</div>`;
 }
 
-function updateCamera(el, a){
-  const c = hue(a.titlu), z = zona(a);
+function updateRoom(el, a){
+  const c = hue(a.title), z = zone(a);
   el.style.setProperty('--c', c);
-  el.dataset.nume = a.titlu; el.dataset.live = a.nume_live || '';
-  el.dataset.z = a.status === 'lucreaza' ? z : '';
+  el.dataset.name = a.title; el.dataset.live = a.live_name || '';
+  el.dataset.z = a.status === 'working' ? z : '';
   el.classList.toggle('sel', SEL === a.id);
-  el.classList.toggle('intreaba', !!a.intrebare);
-  el.classList.toggle('lucreaza', a.status === 'lucreaza');
-  el.querySelector('.nume').textContent = a.titlu;
-  el.querySelector('.pillw').innerHTML = pill(a) + (a.fel ? ` <span title="${a.fel==='fundal'?'rulează în fundal':'deschisă într-un terminal'}">${a.fel==='fundal'?'👻':'🖥️'}</span>` : '');
+  el.classList.toggle('asking', !!a.asks);
+  el.classList.toggle('working', a.status === 'working');
+  el.querySelector('.name').textContent = a.title;
+  el.querySelector('.pillw').innerHTML = pill(a) + (a.mode ? ` <span title="${t(a.mode==='background'?'bg_title':'term_title_short')}">${a.mode==='background'?'👻':'🖥️'}</span>` : '');
   const bot = el.querySelector('.bot');
   if (bot.dataset.z !== z){
-    if (bot.dataset.z){ bot.classList.add('merge'); clearTimeout(bot._t); bot._t = setTimeout(() => bot.classList.remove('merge'), 1300); }
-    bot.dataset.z = z; bot.style.left = ZONE[z] + '%';
+    if (bot.dataset.z){ bot.classList.add('walking'); clearTimeout(bot._t); bot._t = setTimeout(() => bot.classList.remove('walking'), 1300); }
+    bot.dataset.z = z; bot.style.left = ZONE_X[z] + '%';
   }
-  const m = el.querySelector('.masc'), mk = a.status + '|' + MASCOTE;
-  if (m.dataset.k !== mk){ m.dataset.k = mk; m.innerHTML = mascot(c, a.status, a.titlu); }
-  el.querySelector('.efect').textContent = efect(a, z);
-  el.querySelector('.balon').textContent = balon(a);
-  const t = uneltaCurenta(a);
-  el.querySelector('.ecran').textContent = z === 'terminal' && t ? '$ ' + t.text : '$ _';
-  const ech = el.querySelector('.echipa'), eh = piticiHtml(a), ek = MASCOTE + eh;
-  if (ech.dataset.k !== ek){ ech.dataset.k = ek; ech.innerHTML = eh; }
+  const m = el.querySelector('.masc'), mk = a.status + '|' + MASCOTS;
+  if (m.dataset.k !== mk){ m.dataset.k = mk; m.innerHTML = mascot(c, a.status, a.title); }
+  el.querySelector('.effect').textContent = effect(a, z);
+  el.querySelector('.speech').textContent = speech(a);
+  const tl = currentTool(a);
+  el.querySelector('.screen').textContent = z === 'terminal' && tl ? '$ ' + tl.text : '$ _';
+  const crew = el.querySelector('.crew'), ch = crewHtml(a), ck = MASCOTS + ch;
+  if (crew.dataset.k !== ck){ crew.dataset.k = ck; crew.innerHTML = ch; }
 }
 
-function renderAtelier(p, head){
-  let root = $('#atelier');
-  if (!root || root.dataset.p !== p.nume || root.dataset.m !== MASCOTE){
-    $('#main').innerHTML = `<div id="ahead"></div><div id="atelier"><div class="etaj"></div><div class="gol" hidden></div><div class="dorm"></div></div>`;
-    root = $('#atelier'); root.dataset.p = p.nume; root.dataset.m = MASCOTE; ATL = {seen:null};
+function renderWorkshop(p, head){
+  let root = $('#workshop');
+  if (!root || root.dataset.p !== p.name || root.dataset.m !== MASCOTS || root.dataset.lang !== LANG){
+    $('#main').innerHTML = `<div id="whead"></div><div id="workshop"><div class="floor"></div><div class="nobody" hidden></div><div class="dorm-wrap"></div></div>`;
+    root = $('#workshop'); root.dataset.p = p.name; root.dataset.m = MASCOTS; root.dataset.lang = LANG; WS = {seen:null};
   }
-  $('#ahead').innerHTML = head; bindTabs();
-  const etaj = root.querySelector('.etaj');
-  const treji = p.agenti.filter(a => a.status !== 'doarme');
-  const ids = new Set(treji.map(a => a.id));
-  etaj.querySelectorAll('.camera').forEach(el => { if (!ids.has(el.dataset.id)) el.remove(); });
-  // ordinea: cine are nevoie de tine primul, apoi cine lucrează
-  const rang = a => a.intrebare ? 0 : a.status === 'blocat' ? 1 : a.status === 'lucreaza' ? 2 : 3;
-  treji.sort((a, b) => rang(a) - rang(b) || a.titlu.localeCompare(b.titlu));
-  treji.forEach((a, i) => {
-    let el = etaj.querySelector(`.camera[data-id="${a.id}"]`);
+  $('#whead').innerHTML = head; bindTabs();
+  const floor = root.querySelector('.floor');
+  const awake = p.agents.filter(a => a.status !== 'sleeping');
+  const ids = new Set(awake.map(a => a.id));
+  floor.querySelectorAll('.room').forEach(el => { if (!ids.has(el.dataset.id)) el.remove(); });
+  // order: whoever needs you first, then whoever is working
+  const rank = a => a.asks ? 0 : a.status === 'stuck' ? 1 : a.status === 'working' ? 2 : 3;
+  awake.sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+  awake.forEach((a, i) => {
+    let el = floor.querySelector(`.room[data-id="${a.id}"]`);
     if (!el){
-      el = document.createElement('div'); el.className = 'camera'; el.dataset.id = a.id; el.innerHTML = CAMERA;
+      el = document.createElement('div'); el.className = 'room'; el.dataset.id = a.id; el.innerHTML = ROOM;
       el.onclick = () => { SEL = a.id; LASTRES = null; render(); };
     }
-    if (etaj.children[i] !== el) etaj.insertBefore(el, etaj.children[i] || null);
-    updateCamera(el, a);
+    if (floor.children[i] !== el) floor.insertBefore(el, floor.children[i] || null);
+    updateRoom(el, a);
   });
-  const gol = root.querySelector('.gol');
-  gol.hidden = treji.length > 0;
-  if (!treji.length) gol.innerHTML = `${mascot('#e8875b','doarme')}<p>Toți agenții din proiect dorm. Trezește unul din dormitor.</p>`;
-  const dorm = p.agenti.filter(a => a.status === 'doarme');
-  const dk = MASCOTE + SEL + dorm.map(a => a.id).join();
-  const d = root.querySelector('.dorm');
+  const nobody = root.querySelector('.nobody');
+  nobody.hidden = awake.length > 0;
+  if (!awake.length) nobody.innerHTML = `${mascot('#e8875b','sleeping')}<p>${t('all_asleep')}</p>`;
+  const asleep = p.agents.filter(a => a.status === 'sleeping');
+  const dk = MASCOTS + SEL + asleep.map(a => a.id).join();
+  const d = root.querySelector('.dorm-wrap');
   if (d.dataset.k !== dk){
     d.dataset.k = dk;
-    d.innerHTML = dorm.length ? `<div class="dormitor"><h4>🌙 Dormitor · ${dorm.length}</h4><div class="paturi">${dorm.map(a =>
-      `<div class="patut ${SEL===a.id?'sel':''}" data-id="${a.id}" title="${esc(a.titlu)} · ${esc(ago(a.varsta))}">${mascot(hue(a.titlu), 'doarme', a.titlu)}<div>${esc(a.titlu.length > 24 ? a.titlu.slice(0,23)+'…' : a.titlu)}</div></div>`).join('')}</div></div>` : '';
-    d.querySelectorAll('.patut').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
+    d.innerHTML = asleep.length ? `<div class="dorm"><h4>${t('dorm', {n: asleep.length})}</h4><div class="beds">${asleep.map(a =>
+      `<div class="bed ${SEL===a.id?'sel':''}" data-id="${a.id}" title="${esc(a.title)} · ${esc(ago(a.age))}">${mascot(hue(a.title), 'sleeping', a.title)}<div>${esc(a.title.length > 24 ? a.title.slice(0,23)+'…' : a.title)}</div></div>`).join('')}</div></div>` : '';
+    d.querySelectorAll('.bed').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
   }
-  avioane();
+  envelopes();
 }
 
-/* mesajele noi zboară ca plicuri de la o cameră la alta (Tu = de sus) */
-function avioane(){
-  const edges = DATA.legaturi || [];
-  if (!ATL.seen){ ATL.seen = {}; edges.forEach(e => ATL.seen[e.de + '→' + e.la] = e.ultim); return; }
+/* new messages fly as envelopes from one room to another (You = from the top) */
+function envelopes(){
+  const edges = DATA.links || [];
+  if (!WS.seen){ WS.seen = {}; edges.forEach(e => WS.seen[e.from + '→' + e.to] = e.last); return; }
   edges.forEach(e => {
-    const k = e.de + '→' + e.la;
-    if (e.ultim && e.ultim !== ATL.seen[k]){
-      ATL.seen[k] = e.ultim;
-      if (Date.now() - new Date(e.ultim).getTime() < 180000) zboara(e.de, e.la);
+    const k = e.from + '→' + e.to;
+    if (e.last && e.last !== WS.seen[k]){
+      WS.seen[k] = e.last;
+      if (Date.now() - new Date(e.last).getTime() < 180000) fly(e.from, e.to);
     }
   });
 }
-function zboara(de, la){
-  const root = $('#atelier'); if (!root) return;
-  const gaseste = n => [...root.querySelectorAll('.camera')].find(c => c.dataset.nume === n || (c.dataset.live && c.dataset.live === n));
-  const A = de === 'Tu' ? null : gaseste(de), B = gaseste(la);
-  if (!B || (!A && de !== 'Tu')) return;
+function fly(from, to){
+  const root = $('#workshop'); if (!root) return;
+  const find = n => [...root.querySelectorAll('.room')].find(c => c.dataset.name === n || (c.dataset.live && c.dataset.live === n));
+  const A = from === '@you' ? null : find(from), B = find(to);
+  if (!B || (!A && from !== '@you')) return;
   const rr = root.getBoundingClientRect();
   const pt = el => { const r = el.querySelector('.bot').getBoundingClientRect(); return {x: r.left + r.width/2 - rr.left - 12, y: r.top + r.height/3 - rr.top}; };
   const a = A ? pt(A) : {x: rr.width/2, y: -30}, b = pt(B);
-  const av = document.createElement('div'); av.className = 'avion'; av.textContent = '✉️';
-  root.appendChild(av);
+  const env = document.createElement('div'); env.className = 'envelope'; env.textContent = '✉️';
+  root.appendChild(env);
   const mx = (a.x + b.x)/2, my = Math.min(a.y, b.y) - 90;
-  const anim = av.animate([
+  const anim = env.animate([
     {transform:`translate(${a.x}px,${a.y}px) scale(.5)`, opacity:0},
     {transform:`translate(${(a.x+mx)/2}px,${(a.y+my)/2}px) scale(1) rotate(-12deg)`, opacity:1, offset:.3},
     {transform:`translate(${mx}px,${my}px) scale(1.25) rotate(8deg)`, opacity:1, offset:.55},
     {transform:`translate(${b.x}px,${b.y}px) scale(.7)`, opacity:1}], {duration:2000, easing:'ease-in-out'});
-  anim.onfinish = () => { av.remove(); B.classList.add('primit'); setTimeout(() => B.classList.remove('primit'), 700); };
+  anim.onfinish = () => { env.remove(); B.classList.add('got-mail'); setTimeout(() => B.classList.remove('got-mail'), 700); };
 }
 
 function bindTabs(){
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; try{ localStorage.setItem('tab', TAB); }catch(e){} render(); });
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; store.set('tab', TAB); render(); });
 }
 
-/* ---------- hartă: cine cui scrie ---------- */
-function harta(p){
-  const all = DATA.proiecte.flatMap(x => x.agenti);
-  const inProj = new Set(p.agenti.map(a => a.titlu));
-  const byName = n => all.find(a => a.titlu === n || a.nume_live === n);
-  const edges = DATA.legaturi.filter(e => inProj.has(e.de) || inProj.has(e.la) ||
-      (e.de === 'Tu' && inProj.has(e.la)) || PROJ === '*');
+/* ---------- links map: who writes to whom ---------- */
+function linkMap(p){
+  const all = DATA.projects.flatMap(x => x.agents);
+  const inProj = new Set(p.agents.map(a => a.title));
+  const byName = n => all.find(a => a.title === n || a.live_name === n);
+  const edges = DATA.links.filter(e => inProj.has(e.from) || inProj.has(e.to) || PROJ === '*');
   const names = [];
   const add = n => { if (n && !names.includes(n)) names.push(n); };
-  p.agenti.filter(a => a.pornita).forEach(a => add(a.titlu));
-  edges.forEach(e => { add(e.de); add(e.la); });
-  const ring = names.includes('Tu') ? ['Tu', ...names.filter(n => n !== 'Tu')] : names;
-  if (!ring.length) return `<div class="map"><div class="empty">${mascot('#e8875b','doarme')}<p>Agenții din proiectul ăsta nu și-au scris încă unul altuia.</p></div></div>`;
+  p.agents.filter(a => a.running).forEach(a => add(a.title));
+  edges.forEach(e => { add(e.from); add(e.to); });
+  const ring = names.includes('@you') ? ['@you', ...names.filter(n => n !== '@you')] : names;
+  if (!ring.length) return `<div class="map"><div class="empty">${mascot('#e8875b','sleeping')}<p>${t('map_empty')}</p></div></div>`;
   const W = 1000, H = Math.max(560, 300 + ring.length * 22), cx = W/2, cy = H/2, R = Math.min(W, H)/2 - 95;
   const pos = {};
   ring.forEach((n, i) => {
@@ -751,14 +958,14 @@ function harta(p){
   const now = Date.now();
   let es = '', ls = '';
   edges.forEach((e, i) => {
-    const a = pos[e.de], b = pos[e.la]; if (!a || !b) return;
+    const a = pos[e.from], b = pos[e.to]; if (!a || !b) return;
     const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
-    const nx = -dy/L, ny = dx/L, off = 34;               // curbă: dus și întors nu se suprapun
+    const nx = -dy/L, ny = dx/L, off = 34;               // curved, so there and back don't overlap
     const r0 = 52, x1 = a.x + dx/L*r0, y1 = a.y + dy/L*r0, x2 = b.x - dx/L*(r0+6), y2 = b.y - dy/L*(r0+6);
     const mx = (a.x+b.x)/2 + nx*off, my = (a.y+b.y)/2 + ny*off;
-    const col = e.de === 'Tu' ? '#e8875b' : hue(e.de);
+    const col = e.from === '@you' ? '#e8875b' : hue(e.from);
     const w = 1.5 + 5 * Math.log(1+e.n) / Math.log(1+maxN);
-    const fresh = e.ultim && (now - new Date(e.ultim).getTime()) < 15*60*1000;
+    const fresh = e.last && (now - new Date(e.last).getTime()) < 15*60*1000;
     const d = `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
     es += `<path class="edge" data-i="${i}" d="${d}" stroke="${col}" stroke-width="${w}" marker-end="url(#ar-${i})"/>
       <marker id="ar-${i}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${col}"/></marker>`;
@@ -768,23 +975,23 @@ function harta(p){
   let ns = '';
   for (const n of names){
     const {x, y} = pos[n];
-    if (n === 'Tu'){
+    if (n === '@you'){
       ns += `<g class="node" transform="translate(${x-40},${y-40})"><circle cx="40" cy="40" r="38" fill="var(--bg)" stroke="var(--orange)" stroke-width="3"/>
         <text x="40" y="42" text-anchor="middle" dominant-baseline="central" style="font-size:40px">🙋</text>
-        <text x="40" y="104" text-anchor="middle" style="font-size:15px">Tu</text></g>`;
+        <text x="40" y="104" text-anchor="middle" style="font-size:15px">${t('you')}</text></g>`;
       continue;
     }
     const a = byName(n);
-    const st = a ? a.status : 'doarme';
-    const out = a && !inProj.has(a.titlu) ? ` <tspan style="fill:var(--muted);font-weight:600">· ${esc(a.proiect)}</tspan>` : '';
+    const st = a ? a.status : 'sleeping';
+    const out = a && !inProj.has(a.title) ? ` <tspan style="fill:var(--muted);font-weight:600">· ${esc(projName(a.project))}</tspan>` : '';
     ns += `<g class="node" data-id="${a ? a.id : ''}" transform="translate(${x-55},${y-60})">
       ${mascot(hue(n), st, n).replace('<svg', '<svg width="110" height="110"')}
       <text x="55" y="124" text-anchor="middle" style="font-size:15px">${esc(n.length > 22 ? n.slice(0,21)+'…' : n)}${out}</text>
-      ${a && a.pornita ? `<circle cx="88" cy="22" r="6" fill="#7cc576" stroke="var(--card)" stroke-width="2"/>` : ''}</g>`;
+      ${a && a.running ? `<circle cx="88" cy="22" r="6" fill="#7cc576" stroke="var(--card)" stroke-width="2"/>` : ''}</g>`;
   }
   window._edges = edges;
   return `<div class="map"><svg class="g" viewBox="0 0 ${W} ${H}">${es}${ls}${ns}</svg><div class="tip" id="tip"></div>
-    <div class="legend"><span>➜ săgeata = cine cui a scris · grosimea = câte mesaje</span><span>● bulina care curge = mesaj în ultimele 15 min</span><span><span class="on-dot"></span> sesiune pornită</span><span>click pe un agent = detalii + mesaj</span></div></div>`;
+    <div class="legend"><span>${t('legend1')}</span><span>${t('legend2')}</span><span><span class="on-dot"></span> ${t('legend3')}</span><span>${t('legend4')}</span></div></div>`;
 }
 
 function bindMap(){
@@ -792,7 +999,7 @@ function bindMap(){
   document.querySelectorAll('.map .edge').forEach(el => {
     el.onmousemove = ev => {
       const e = window._edges[+el.dataset.i], r = box.getBoundingClientRect();
-      tip.innerHTML = `<b>${esc(e.de)} → ${esc(e.la)} · ${e.n} mesaje</b>` +
+      tip.innerHTML = `<b>${esc(who(e.from))} → ${esc(who(e.to))} · ${t('n_messages', {n: e.n})}</b>` +
         e.recent.slice().reverse().map(m => `<div>${hhmm(m.ts)} · ${esc(m.text)}</div>`).join('');
       tip.style.display = 'block';
       tip.style.left = Math.min(ev.clientX - r.left + 14, r.width - 350) + 'px';
@@ -805,12 +1012,20 @@ function bindMap(){
   });
 }
 
+/* ---------- side panel: details, message, terminal, sleep ---------- */
+async function post(path, body){
+  try{
+    const r = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...body, lang: LANG})});
+    return await r.json();
+  }catch(e){ return {ok:false, msg:null, info:t('no_server')}; }
+}
+
 function renderPanel(){
-  const a = DATA.proiecte.flatMap(p => p.agenti).find(x => x.id === SEL);
+  const a = DATA.projects.flatMap(p => p.agents).find(x => x.id === SEL);
   const P = $('#panel');
   if (!a){ P.classList.remove('open'); return; }
-  const ic = {tu:'🙋', text:'💬', tool:'🔧'};
-  const opts = DATA.proiecte.map(p => `<option ${p.nume===a.proiect?'selected':''}>${esc(p.nume)}</option>`).join('');
+  const ic = {you:'🙋', text:'💬', tool:'🔧'};
+  const opts = DATA.projects.filter(p => p.name !== '@other').map(p => `<option value="${esc(p.name)}" ${p.name===a.project?'selected':''}>${esc(p.name)}</option>`).join('');
   if (P.dataset.id !== a.id || !P.querySelector('#pinfo')){
     P.dataset.id = a.id;
     P.innerHTML = `<div id="pinfo" style="display:contents"></div>`;
@@ -819,108 +1034,89 @@ function renderPanel(){
   const ta = P.querySelector('#msg');
   if (ta) DRAFT[a.id] = ta.value;
   const hadFocus = ta && document.activeElement === ta;
-  const modTxt = a.wsl ? 'Sesiunile din WSL nu primesc mesaje de aici, dar le poți deschide în terminal.'
-    : a.pornita && a.fel === 'fundal' ? `Rulează în fundal: mesajul ajunge ca de la un coleg (~10 s). Ca s-o vezi și să-i răspunzi la întrebări: 🖥️ Terminal.`
-    : a.pornita ? `E deschisă într-un terminal: mesajul ajunge ca de la un coleg (~10 s). 🖥️ Terminal îți aduce fereastra ei în față.`
-    : `E închisă. ✈️ Trimite: o trezesc în fundal cu mesajul tău. 🖥️ Terminal: o trezesc și o deschid într-o fereastră (cu mesajul, dacă ai scris unul).`;
-  const termTxt = a.pornita && a.fel === 'terminal' ? '🖥️ Arată fereastra' : a.pornita ? '🖥️ Deschide în terminal' : '🖥️ Trezește în terminal';
-  P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.titlu), a.status, a.titlu)}
-      <div><h3 style="margin:0">${esc(a.titlu)}</h3>${pill(a)}
-        ${persona(a.titlu) ? `<div class="persona">${esc(persona(a.titlu))}</div>` : ''}</div>
-      <button class="x" id="close" title="închide">✕</button></div>
+  const modeTxt = a.wsl ? t('mode_wsl') : a.running && a.mode === 'background' ? t('mode_bg') : a.running ? t('mode_term') : t('mode_closed');
+  const termTxt = t(a.running && a.mode === 'terminal' ? 'btn_show' : a.running ? 'btn_open' : 'btn_wake');
+  P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.title), a.status, a.title)}
+      <div><h3 style="margin:0">${esc(a.title)}</h3>${pill(a)}
+        ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div>
+      <button class="x" id="close" title="${t('close')}">✕</button></div>
     <div class="pb">
-      ${a.intrebare ? `<div class="ask"><span style="font-size:26px">${a.intrebare==='aprobare'?'✋':'🙋'}</span>
-        <p><b>${a.intrebare==='aprobare'?'Așteaptă să-i aprobi o acțiune.':'Ți-a pus o întrebare.'}</b>
-        ${a.fel==='fundal'?'Rulează în fundal, deci n-o vezi nicăieri până nu o deschizi.':'Răspunde-i în fereastra lui.'}
-        Până nu-i răspunzi, stă pe loc.</p>
-        <button class="term" id="term2" ${SENDING?'disabled':''}>${a.fel==='fundal'?'🖥️ Răspunde în terminal':'🖥️ Arată fereastra'}</button></div>` : ''}
-      ${a.intrebare ? '' : `<div class="act">${a.pornita?'<span class="on-dot"></span> ':''}${esc(a.activitate)}</div>`}
-      <h4>Scrie-i un mesaj</h4>
+      ${a.asks ? `<div class="ask"><span style="font-size:26px">${a.asks==='approval'?'✋':'🙋'}</span>
+        <p><b>${t(a.asks==='approval'?'ask_approval':'ask_question')}</b>
+        ${t(a.mode==='background'?'ask_bg':'ask_term')} ${t('ask_wait')}</p>
+        <button class="term" id="term2" ${SENDING?'disabled':''}>${t(a.mode==='background'?'btn_answer':'btn_show')}</button></div>` : ''}
+      ${a.asks ? '' : `<div class="act">${a.running?'<span class="on-dot"></span> ':''}${esc(activity(a))}</div>`}
+      <h4>${t('write')}</h4>
       <div class="compose">
-        <textarea id="msg" placeholder="ex: după ce termini, dă-mi un rezumat scurt" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
-        <div class="row"><span class="hint">${modTxt}</span>
-          ${a.pornita && !a.wsl ? `<button class="somn" id="somn" ${SENDING?'disabled':''} title="Oprește agentul. Conversația rămâne salvată și îl trezești oricând.">😴 Pune la somn</button>` : ''}
-          <button class="term" id="term" ${SENDING?'disabled':''} title="Deschide sesiunea într-o fereastră de terminal în care o vezi și îi poți răspunde">${termTxt}</button>
-          <button class="buzz" id="buzz" ${!a.pornita||a.wsl||SENDING?'disabled':''} title="${a.pornita&&!a.wsl ? 'Scutură-l și cere-i un update scurt' : 'Merge doar la sesiunile pornite'}">🐝 BUZZ!</button>
-          <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${SENDING?'se trimite…':'Trimite ✈️'}</button></div>
-        ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(LASTRES.info)}</div>` : ''}
+        <textarea id="msg" placeholder="${esc(t('placeholder'))}" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
+        <div class="row"><span class="hint">${modeTxt}</span>
+          ${a.running && !a.wsl ? `<button class="sleep" id="sleep" ${SENDING?'disabled':''} title="${esc(t('sleep_hint'))}">${t('btn_sleep')}</button>` : ''}
+          <button class="term" id="term" ${SENDING?'disabled':''} title="${esc(t('term_hint'))}">${termTxt}</button>
+          <button class="buzz" id="buzz" ${!a.running||a.wsl||SENDING?'disabled':''} title="${esc(t(a.running&&!a.wsl ? 'buzz_ok' : 'buzz_no'))}">🐝 BUZZ!</button>
+          <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${t(SENDING ? 'sending' : 'send')}</button></div>
+        ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(resultText(LASTRES))}</div>` : ''}
       </div>
-      ${a.ultimul_prompt ? `<h4>Ultima ta cerere</h4><div class="bubble">${esc(a.ultimul_prompt)}</div>` : ''}
-      ${a.ultimul_text ? `<h4>Ultimul lucru spus</h4><div class="bubble">${esc(a.ultimul_text)}</div>` : ''}
-      <h4>Ce a făcut recent</h4>
-      <ul class="feed">${a.feed.slice().reverse().map(e => `<li><span class="tm">${hhmm(e.ts)}</span><span class="ic">${ic[e.tip]}</span>
-        <span class="${e.tip}">${e.tip==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>
-      ${a.subagenti.length ? `<h4>Sub-agenți</h4><ul class="feed">${a.subagenti.map(s => `<li><span class="ic">${s.terminat?'✅':(s.varsta<300?'⚡':'⏸️')}</span><span>${esc(s.descriere)} <span style="color:var(--muted)">· ${ago(s.varsta)}</span>${s.ce && !s.terminat ? `<br><span style="color:var(--work);font-weight:700">${esc(s.ce)}</span>` : ''}</span></li>`).join('')}</ul>` : ''}
-      <h4>Detalii</h4>
-      <div class="kv"><b>proiect</b><span><select id="mut">${opts}<option value="__nou__">➕ proiect nou…</option><option value="">↺ automat</option></select></span>
-        <b>folder</b><span>${esc(a.cwd)}</span><b>branch</b><span>${esc(a.branch||'—')}</span>
-        <b>model</b><span>${esc(a.model||'—')}</span><b>sesiune</b><span>${a.id}</span>
-        <b>activ</b><span>${ago(a.varsta)}</span></div>
-      <p class="sub" style="margin-top:14px;font-size:12px">Din orice terminal: ${a.pornita && a.fel==='fundal'
-        ? `<code>claude attach ${esc(a.job || a.id.slice(0,8))}</code> (sesiunea din fundal)`
-        : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> simplu pornește o sesiune nouă.</p>
+      ${a.last_prompt ? `<h4>${t('last_req')}</h4><div class="bubble">${esc(a.last_prompt)}</div>` : ''}
+      ${a.last_text ? `<h4>${t('last_said')}</h4><div class="bubble">${esc(a.last_text)}</div>` : ''}
+      <h4>${t('recent')}</h4>
+      <ul class="feed">${a.feed.slice().reverse().map(e => `<li><span class="tm">${hhmm(e.ts)}</span><span class="ic">${ic[e.kind]}</span>
+        <span class="${e.kind}">${e.kind==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>
+      ${a.subagents.length ? `<h4>${t('subs')}</h4><ul class="feed">${a.subagents.map(s => `<li><span class="ic">${s.done?'✅':(s.age<300?'⚡':'⏸️')}</span><span>${esc(s.description)} <span style="color:var(--muted)">· ${ago(s.age)}</span>${s.now && !s.done ? `<br><span style="color:var(--work);font-weight:700">${esc(toolText(s.now.tool, s.now.text))}</span>` : ''}</span></li>`).join('')}</ul>` : ''}
+      <h4>${t('details')}</h4>
+      <div class="kv"><b>${t('k_project')}</b><span><select id="move">${opts}<option value="__new__">${t('new_project')}</option><option value="" ${a.project==='@other'?'selected':''}>${t('automatic')}</option></select></span>
+        <b>${t('k_folder')}</b><span>${esc(a.cwd)}</span><b>${t('k_branch')}</b><span>${esc(a.branch||'—')}</span>
+        <b>${t('k_model')}</b><span>${esc(a.model||'—')}</span><b>${t('k_session')}</b><span>${a.id}</span>
+        <b>${t('k_active')}</b><span>${ago(a.age)}</span></div>
+      <p class="sub" style="margin-top:14px;font-size:12px">${t('from_any')} ${a.running && a.mode==='background'
+        ? `<code>claude attach ${esc(a.job || a.id.slice(0,8))}</code> ${t('bg_session')}`
+        : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> ${t('plain_new')}</p>
     </div>`;
   P.classList.add('open');
   P.querySelector('.pb').scrollTop = keepScroll;
-  const t2 = $('#msg');
-  if (hadFocus){ t2.focus(); t2.setSelectionRange(t2.value.length, t2.value.length); }
-  t2.oninput = () => DRAFT[a.id] = t2.value;
-  t2.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) $('#send').click(); };
-  const trimite = async (text, golesteCaseta) => {
+  const box = $('#msg');
+  if (hadFocus){ box.focus(); box.setSelectionRange(box.value.length, box.value.length); }
+  box.oninput = () => DRAFT[a.id] = box.value;
+  box.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) $('#send').click(); };
+  const run = async (path, body, clear) => {
     SENDING = true; LASTRES = null; renderPanel();
-    try{
-      const r = await fetch('/api/mesaj', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, text})});
-      LASTRES = await r.json();
-      if (LASTRES.ok && golesteCaseta){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
-    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
+    LASTRES = await post(path, body);
+    if (LASTRES.ok && clear){ DRAFT[a.id] = ''; const b = $('#msg'); if (b) b.value = ''; }
     SENDING = false; load();
   };
-  $('#send').onclick = () => { const text = t2.value.trim(); if (text && !SENDING) trimite(text, true); };
-  const deschide = async () => {
+  $('#send').onclick = () => { const text = box.value.trim(); if (text && !SENDING) run('/api/send', {id:a.id, text}, true); };
+  const open = () => {
     if (SENDING) return;
-    const text = a.pornita ? '' : t2.value.trim();     // la cele închise, mesajul pleacă odată cu trezirea
-    SENDING = true; LASTRES = null; renderPanel();
-    try{
-      const r = await fetch('/api/deschide', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, text})});
-      LASTRES = await r.json();
-      if (LASTRES.ok && text){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
-    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
-    SENDING = false; load();
+    const text = a.running ? '' : box.value.trim();     // for a closed session the message goes with the wake-up
+    run('/api/open', {id:a.id, text}, !!text);
   };
-  $('#term').onclick = deschide;
-  if ($('#somn')) $('#somn').onclick = async () => {
+  $('#term').onclick = open;
+  if ($('#term2')) $('#term2').onclick = open;
+  if ($('#sleep')) $('#sleep').onclick = () => {
     if (SENDING) return;
-    const unde = a.fel === 'fundal' ? 'Se oprește sesiunea din fundal.' : 'Se închide Claude din fereastra lui de terminal.';
-    const grija = a.status === 'lucreaza' ? '\n\n⚠️ Lucrează chiar acum: se oprește la jumătatea a ce face.' : '';
-    if (!confirm(`Pui la somn „${a.titlu}”?\n\n${unde} Conversația rămâne salvată; îl trezești oricând din BuzzzHub.${grija}`)) return;
-    SENDING = true; LASTRES = null; renderPanel();
-    try{
-      const r = await fetch('/api/somn', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id})});
-      LASTRES = await r.json();
-    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
-    SENDING = false; load();
+    const msg = t('sleep_confirm', {t: a.title, where: t(a.mode === 'background' ? 'sleep_bg' : 'sleep_term'),
+                                    warn: a.status === 'working' ? t('sleep_warn') : ''});
+    if (confirm(msg)) run('/api/sleep', {id:a.id}, false);
   };
-  if ($('#term2')) $('#term2').onclick = deschide;
   $('#buzz').onclick = () => {
     if (SENDING) return;
-    buzzEfect(a.id);
-    trimite('Buzzz! 🐝 Ce faci? Dă-mi un update scurt (2–3 rânduri): la ce lucrezi acum și dacă ești blocat în ceva.', false);
+    buzzEffect(a.id);
+    run('/api/send', {id:a.id, text: t('buzz_text')}, false);
   };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
-  $('#mut').onchange = async e => {
-    if (e.target.value === '__nou__'){
-      const nume = (prompt('Numele proiectului nou:') || '').trim();
-      if (!nume){ e.target.value = a.proiect; return; }
-      await fetch('/api/proiect', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, nume})});
+  $('#move').onchange = async e => {
+    if (e.target.value === '__new__'){
+      const name = (prompt(t('new_project_prompt')) || '').trim();
+      if (!name){ e.target.value = a.project; return; }
+      await post('/api/project', {id:a.id, name});
       return load();
     }
-    await fetch('/api/aloca', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, proiect:e.target.value})});
+    await post('/api/assign', {id:a.id, project:e.target.value});
     load();
   };
 }
 
-/* BUZZ!: un bâzâit scurt (sintetizat) + tot ce ține de agent se scutură */
-function buzzSunet(){
+/* BUZZ!: a short synthesised buzz + everything showing the agent shakes */
+function buzzSound(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const o = ctx.createOscillator(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
@@ -935,28 +1131,29 @@ function buzzSunet(){
     setTimeout(() => ctx.close(), 800);
   }catch(e){}
 }
-function buzzEfect(id){
-  buzzSunet();
-  const tinte = [$('#panel'), ...document.querySelectorAll(`.ag[data-id="${id}"], .node[data-id="${id}"], .camera[data-id="${id}"]`)];
-  tinte.forEach(el => { if (!el) return; el.classList.remove('buzzing'); void el.offsetWidth; el.classList.add('buzzing'); });
-  setTimeout(() => tinte.forEach(el => el && el.classList.remove('buzzing')), 700);
+function buzzEffect(id){
+  buzzSound();
+  const targets = [$('#panel'), ...document.querySelectorAll(`.ag[data-id="${id}"], .node[data-id="${id}"], .room[data-id="${id}"]`)];
+  targets.forEach(el => { if (!el) return; el.classList.remove('buzzing'); void el.offsetWidth; el.classList.add('buzzing'); });
+  setTimeout(() => targets.forEach(el => el && el.classList.remove('buzzing')), 700);
 }
 
-function save(){ try{ PROJ ? localStorage.setItem('proj', PROJ) : localStorage.removeItem('proj'); localStorage.setItem('zile', $('#zile').value);}catch(e){} }
+function save(){ store.set('proj', PROJ); store.set('days', $('#days').value); }
 $('#back').onclick = () => { PROJ = null; SEL = null; $('#panel').classList.remove('open'); save(); render(); };
-$('#zile').onchange = () => { save(); load(); };
+$('#days').onchange = () => { save(); load(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && SEL){ SEL = null; $('#panel').classList.remove('open'); render(); } });
-function setTheme(t){
-  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
-  document.querySelectorAll('#themes button').forEach(b => b.classList.toggle('on', b.dataset.th === (t || '')));
-  try{ localStorage.setItem('tema', t || ''); }catch(e){}
+function setTheme(th){
+  if (th) document.documentElement.dataset.theme = th; else delete document.documentElement.dataset.theme;
+  document.querySelectorAll('#themes button').forEach(b => b.classList.toggle('on', b.dataset.th === (th || '')));
+  store.set('theme', th || '');
 }
 document.querySelectorAll('#themes button').forEach(b => b.onclick = () => setTheme(b.dataset.th));
-let temaSalvata = ''; try{ temaSalvata = localStorage.getItem('tema') || ''; }catch(e){}
-setTheme(temaSalvata);
-document.querySelectorAll('#mascote button').forEach(b => b.onclick = () => setMascote(b.dataset.m));
-document.querySelectorAll('#mascote button').forEach(b => b.classList.toggle('on', b.dataset.m === MASCOTE));
-load(); setInterval(() => { if (!document.hidden && !document.querySelector('#mut:focus')) load(); }, 3000);
+document.querySelectorAll('#mascots button').forEach(b => b.onclick = () => setMascots(b.dataset.m));
+document.querySelectorAll('#mascots button').forEach(b => b.classList.toggle('on', b.dataset.m === MASCOTS));
+document.querySelectorAll('#langs button').forEach(b => b.onclick = () => setLang(b.dataset.l));
+setTheme({noapte:'night'}[store.get('theme', 'tema')] || store.get('theme', 'tema') || '');
+setLang(LANG);
+load(); setInterval(() => { if (!document.hidden && !document.querySelector('#move:focus')) load(); }, 3000);
 </script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "your_name": "",
+  "terminal": "auto",
+  "scan_wsl": true,
+  "extra_roots": [],
+  "shared_folders": [],
+  "projects": [
+    {
+      "name": "My app",
+      "emoji": "🚀",
+      "color": "#f2a65a",
+      "description": "backend, frontend, review",
+      "titles": ["backend", "frontend", "review"],
+      "keywords": ["my app"],
+      "paths": ["my-app"]
+    },
+    {
+      "name": "Website",
+      "emoji": "🌐",
+      "color": "#8fb996",
+      "description": "the landing page",
+      "titles": ["site"],
+      "keywords": ["landing page"],
+      "paths": ["website"]
+    }
+  ],
+  "assignments": {}
+}

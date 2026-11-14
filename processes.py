@@ -1,7 +1,7 @@
-"""Ce procese `claude` rulează acum pe PC și ce sesiune are fiecare (din linia de comandă).
+"""Which `claude` processes are running right now and which session each one has (from its command line).
 
-E plasa de siguranță pentru sesiunile care nu apar în `claude agents` (de ex. pornite dintr-un
-mediu „copil” al altei sesiuni). Doar citește lista de procese: fără tokeni, fără să pornească nimic.
+A safety net for sessions missing from `claude agents` (for example ones started from an environment
+that inherited another session's variables). It only reads the process list: no tokens, starts nothing.
 """
 import os
 import re
@@ -10,35 +10,31 @@ import time
 
 _cache = {"t": 0.0, "val": []}
 ARG = re.compile(r'(?:^|\s)(?:--resume|-r|--session-id)(?:=|\s+)(?:"([^"]+)"|(\S+))')
+SKIP = (" -p ", " --print ", " attach ", "--bg-pty-host", " agents ", " logs ", " stop ", " mcp ",
+        " --version ", " daemon ")
 
 
-def claude_procese():
-    """[(pid, linie_de_comandă)] pentru procesele claude interactive (fără -p, attach, gazde de fundal)."""
+def claude_processes():
+    """[(pid, command line)] for interactive claude processes (no -p, attach, background hosts, daemon)."""
     if time.time() - _cache["t"] < 4:
         return _cache["val"]
     try:
-        lst = _windows() if os.name == "nt" else _posix()
-    except Exception:          # orice eroare de sistem: mai bine nimic decât un panou căzut
-        lst = []
-    out = []
-    for pid, cmd in lst:
-        c = f" {cmd} "
-        if any(x in c for x in (" -p ", " --print ", " attach ", "--bg-pty-host", " agents ", " logs ",
-                                " stop ", " mcp ", " --version ", " daemon ")):
-            continue
-        out.append((pid, cmd))
+        found = _windows() if os.name == "nt" else _posix()
+    except Exception:          # any OS error: better nothing than a broken dashboard
+        found = []
+    out = [(pid, cmd) for pid, cmd in found if not any(x in f" {cmd} " for x in SKIP)]
     _cache.update(t=time.time(), val=out)
     return out
 
 
-def sesiuni():
-    """{argument --resume/--session-id (id sau nume): pid}."""
-    rez = {}
-    for pid, cmd in claude_procese():
+def sessions():
+    """{--resume / --session-id argument (id or name): pid}."""
+    out = {}
+    for pid, cmd in claude_processes():
         m = ARG.search(cmd)
         if m:
-            rez[(m.group(1) or m.group(2)).strip()] = pid
-    return rez
+            out[(m.group(1) or m.group(2)).strip()] = pid
+    return out
 
 
 # ---------------------------------------------------------------- Windows
@@ -87,10 +83,10 @@ def _windows():
             buf = ctypes.create_string_buffer(n.value)
             if nt.NtQueryInformationProcess(h, 60, buf, n.value, ctypes.byref(n)) != 0:
                 continue
-            lungime = ctypes.cast(buf, ctypes.POINTER(ctypes.c_ushort))[0]
+            length = ctypes.cast(buf, ctypes.POINTER(ctypes.c_ushort))[0]     # UNICODE_STRING.Length
             ptr = ctypes.cast(ctypes.addressof(buf) + ctypes.sizeof(ctypes.c_void_p),
-                              ctypes.POINTER(ctypes.c_void_p))[0]
-            out.append((pid, ctypes.wstring_at(ptr, lungime // 2)))
+                              ctypes.POINTER(ctypes.c_void_p))[0]             # UNICODE_STRING.Buffer
+            out.append((pid, ctypes.wstring_at(ptr, length // 2)))
         finally:
             k32.CloseHandle(h)
     return out
@@ -101,8 +97,7 @@ def _posix():
     r = subprocess.run(["ps", "-axo", "pid=,command="], capture_output=True, timeout=5)
     out = []
     for ln in r.stdout.decode("utf-8", "replace").splitlines():
-        ln = ln.strip()
-        pid, _, cmd = ln.partition(" ")
+        pid, _, cmd = ln.strip().partition(" ")
         if pid.isdigit() and re.search(r"(^|/)claude(\s|$)|claude-code|@anthropic-ai", cmd):
             out.append((int(pid), cmd))
     return out

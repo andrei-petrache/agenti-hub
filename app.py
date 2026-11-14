@@ -1,15 +1,15 @@
-"""BuzzzHub ca aplicație de desktop (fereastră proprie, fără browser).
+"""BuzzzHub as a desktop app (its own window, no browser).
 
-Pornește serverul local pe un port liber și îl afișează într-o fereastră WebView2.
-Rulează cu:  pythonw app.py   (fără consolă)  sau prin scurtătura de pe Desktop.
-Erorile ajung în buzzzhub.log, lângă fișier.
+Starts the local server on a free port and shows it in a WebView2 window (WebKit on macOS).
+Run with:  pythonw app.py   (no console)  or through the Desktop shortcut.
+Errors go to buzzzhub.log, next to this file.
 """
 import threading
 import traceback
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
-AICI = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parent
 
 
 def main():
@@ -26,11 +26,11 @@ def main():
         width=1320, height=860, min_size=(760, 520),
         background_color="#fbf6ef",
     )
-    icon = AICI / "buzzzhub.ico"
+    icon = HERE / "buzzzhub.ico"
     webview.start(
         icon=str(icon) if icon.exists() else None,
-        private_mode=False,                       # ține minte proiectul ales între porniri
-        storage_path=str(AICI / ".webview"),
+        private_mode=False,                       # remembers the chosen project, theme and language
+        storage_path=str(HERE / ".webview"),
     )
     srv.shutdown()
 
@@ -39,5 +39,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:
-        (AICI / "buzzzhub.log").write_text(traceback.format_exc(), encoding="utf-8")
+        (HERE / "buzzzhub.log").write_text(traceback.format_exc(), encoding="utf-8")
         raise

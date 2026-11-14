@@ -1,4 +1,4 @@
-"""Desenează albinuța BuzzzHub și o salvează ca buzzzhub.ico / buzzzhub.png — fără biblioteci externe."""
+"""Draws the BuzzzHub bee and saves it as buzzzhub.ico / buzzzhub.png, with no external libraries."""
 import math
 import struct
 import zlib
@@ -45,21 +45,21 @@ def seg_dist(x, y, x1, y1, x2, y2):
 
 
 def sample(x, y):
-    """Albinuța BuzzzHub: culoare (r,g,b,a) într-un punct din spațiul 100x100."""
+    """The BuzzzHub bee: (r,g,b,a) colour at a point of the 100x100 space."""
     col = None
-    # aripioare (în spate)
+    # wings (behind)
     for wx, rot in ((29, 0.5), (71, -0.5)):
         c, s_ = math.cos(rot), math.sin(rot)
         u, v = (x - wx) * c + (y - 30) * s_, -(x - wx) * s_ + (y - 30) * c
         if (u / 15) ** 2 + (v / 10) ** 2 <= 1:
             col = WING + (235,)
-    # antene
+    # antennae
     for (x1, y1, x2, y2) in ((42, 34, 35, 15), (58, 34, 65, 15)):
         if seg_dist(x, y, x1, y1, x2, y2) < 1.7:
             col = DARK + (255,)
         if math.hypot(x - x2, y - y2) < 4:
             col = DARK + (255,)
-    # corp
+    # body
     if ((x - 50) / 33) ** 2 + ((y - 60) / 31) ** 2 <= 1:
         col = YELLOW + (255,)
         if 73 <= y <= 79 or 84.5 <= y <= 90:
@@ -121,7 +121,7 @@ def main():
     out = Path(__file__).with_name("buzzzhub.ico")
     out.write_bytes(head + dirs + b"".join(imgs))
     Path(__file__).with_name("buzzzhub.png").write_bytes(imgs[-1])
-    print("scris", out)
+    print("wrote", out)
 
 
 if __name__ == "__main__":
