@@ -16,10 +16,11 @@ def _agent(id_, titlu, proiect, status, activitate, varsta, prompt, text, feed, 
         "fel": fel if pornita else None, "intrebare": intrebare, "cwd_start": None, "job": id_[-8:],
         "mtime": acum - varsta, "varsta": varsta, "status": status, "activitate": activitate,
         "ultimul_prompt": prompt, "ultimul_text": text,
-        "feed": [{"ts": _iso(s), "tip": t, "text": x, "tool": tool} for s, t, x, tool in feed],
+        "feed": [{"ts": _iso(s), "tip": t, "text": x, "tool": tool}
+                 for s, t, x, tool in sorted(feed, key=lambda e: -e[0])],          # cronologic, ca în realitate
         "subagenti": [{"id": f"s{i}", "descriere": d, "tip": "general-purpose", "terminat": f, "mtime": acum - v,
-                       "varsta": v, "ce": None if f else "citește staging.yaml", "unealta": None if f else "Read"}
-                      for i, (d, f, v) in enumerate(subagenti)],
+                       "varsta": v, "ce": None if f else (rest[0] if rest else "lucrează…"), "unealta": None}
+                      for i, (d, f, v, *rest) in enumerate(subagenti)],
     }
 
 
@@ -36,7 +37,13 @@ def stare():
                [(9, "tool", "Deploy pe staging", "Bash"), (40, "text", "Backend a terminat endpoint-ul de plată, îl pun pe staging.", None),
                 (95, "tool", "→ backend: plata e pe staging, verifică logurile", "SendMessage"),
                 (300, "tu", "coordonează echipa: backend face plata, frontend coșul", None)],
-               subagenti=[("Verifică config staging", False, 20), ("Rezumat PR-uri deschise", True, 900)]),
+               subagenti=[("Verifică config staging", False, 20, "citește staging.yaml"),
+                          ("Testează plata pe staging", False, 8, "rulează npm run e2e"),
+                          ("Rezumat PR-uri deschise", True, 900)]),
+        _agent(_id(9), "cercetare", P, "lucreaza", "caută pe web plăți cu cardul în UE", 3,
+               "află ce cere legea pentru plăți cu cardul", "Am găsit regulile PSD2, mai verific SCA.",
+               [(3, "tool", "reguli SCA plăți online 2026", "WebSearch"),
+                (60, "text", "Am găsit regulile PSD2, mai verific SCA.", None)]),
         _agent(_id(2), "backend", P, "lucreaza", "editează payments.py", 2,
                "implementează plata cu cardul",
                "Endpoint-ul /pay e gata, scriu testele pentru rambursări.",

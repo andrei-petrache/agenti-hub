@@ -3,9 +3,17 @@
 <h1 align="center">BuzzzHub 🐝</h1>
 
 <p align="center">Un panou mic de desktop pentru toți agenții <b>Claude Code</b> care lucrează în paralel pe PC-ul tău.<br>
-Alegi proiectul și vezi fiecare agent ca o mascotă mică: ce face acum, dacă te așteaptă, cui scrie. Îi poți și trimite mesaje.</p>
+Alegi proiectul și vezi fiecare agent ca o mascotă mică în camera lui: ce face acum, dacă te întreabă ceva, cui scrie.<br>
+Îl deschizi cu un click în terminal, îi trimiți mesaje sau îl pui la somn.</p>
+
+<p align="center"><a href="LICENSE"><img src="https://img.shields.io/badge/licen%C8%9Ba-MIT-f2a65a" alt="Licență MIT"></a>
+<img src="https://img.shields.io/badge/Windows%20%C2%B7%20macOS-desktop-8fb996" alt="Windows și macOS">
+<img src="https://img.shields.io/badge/Python-3.10%2B-6fb1e0" alt="Python 3.10+"></p>
 
 ---
+
+<p align="center"><img src="docs/atelier.png" alt="Atelierul unui proiect: fiecare agent în camera lui, la terminal, birou sau fereastră, cu echipa de sub-agenți dedesubt"></p>
+<p align="center"><i>🏡 Atelierul: fiecare agent treaz stă în camera lui și se mută după ce face (aici <b>ops</b> e la terminal, <b>backend</b> la birou, <b>cercetare</b> la fereastră). Sub cameră îi vezi echipa de sub-agenți. <b>review</b> are nevoie de aprobarea ta, așa că e primul.</i></p>
 
 <p align="center"><img src="docs/agenti.jpg" alt="Agenții unui proiect: cine lucrează, cine așteaptă, cine e blocat, plus panoul cu detalii"></p>
 <p align="center"><i>Agenții unui proiect (aici ca animăluțe cu pasiuni), fiecare cu starea lui. Panoul din dreapta arată ce face agentul; îi poți scrie sau îi poți da un <b>BUZZ!</b></i></p>
@@ -45,7 +53,7 @@ Alegi proiectul și vezi fiecare agent ca o mascotă mică: ce face acum, dacă 
 
 ## Cum funcționează
 
-Aplicația doar **citește**. Nu modifică nimic din `~/.claude`:
+Ca să afișeze, aplicația doar **citește** și nu modifică nimic din `~/.claude`. Pornește sau oprește ceva numai când apeși tu un buton (✈️ Trimite, 🐝 BUZZ!, 🖥️ Terminal, 😴 Pune la somn), și atunci folosește comenzile oficiale `claude`.
 
 | Ce arată | De unde vine |
 |---|---|
@@ -137,3 +145,14 @@ Ce nu se potrivește nicăieri ajunge în **Diverse**.
 - Sesiunile din WSL nu pot primi mesaje din aplicație, pentru că acolo rulează alt `claude`. Le poți deschide în terminal (`wsl.exe … claude --resume`).
 - O sesiune poate porni în fundal doar într-un folder pe care l-ai marcat ca sigur în Claude. Altfel aplicația o deschide interactiv în terminal, ca să confirmi o dată.
 - Un mesaj către o sesiune pornită costă puțin, pentru că pornește un releu scurt pe Haiku.
+
+## Ce costă
+
+Aproape nimic. Panoul, atelierul, stările, sub-agenții și harta se calculează din fișierele locale ale lui Claude și din lista de procese, fără tokeni. Consumă puțin doar:
+
+- **✈️ un mesaj sau 🐝 BUZZ!** către o sesiune pornită: un releu scurt `claude -p` pe Haiku îl duce;
+- **ce face agentul după aceea**: mesajul tău îl pune la treabă, la fel ca și cum i-ai fi scris direct.
+
+## Licență
+
+[MIT](LICENSE): îl poți folosi, copia, modifica și distribui liber, cu păstrarea notei de copyright.
