@@ -19,18 +19,26 @@ Alegi proiectul și vezi fiecare agent ca o mascotă mică: ce face acum, dacă 
 
 ## Ce face
 
-- **Proiecte.** Sesiunile sunt grupate pe proiecte după numele sesiunii sau după folder. Pe prima pagină vezi câți agenți lucrează în fiecare proiect.
+- **Proiecte.** Sesiunile sunt grupate pe proiecte după numele sesiunii, după folderul în care au lucrat cel mai mult sau după cuvinte-cheie din primele cereri. Pe prima pagină vezi câți agenți lucrează în fiecare proiect. Din panoul unui agent îl poți muta în alt proiect sau într-unul nou (➕ proiect nou…).
 - **Agenți.** Fiecare sesiune are o mascotă animată după stare:
   - ⚡ **lucrează**: țopăie, iar steluța se învârte. Vezi și ce rulează, de exemplu „rulează Run all tests”.
   - 👋 **te așteaptă**: a terminat și îți face cu mâna.
+  - 🙋 **te întreabă** / ✋ **cere aprobare**: agentul stă pe loc până îi răspunzi. Apare primul în listă, cu butonul **🖥️ Răspunde în terminal**.
   - 😅 **blocat?**: s-a oprit la o unealtă, poate așteaptă o permisiune.
   - 💤 **doarme**: sesiune închisă sau neatinsă de câteva ore.
+- **🏡 Atelier.** Fiecare agent treaz are camera lui: cutie poștală, terminal, birou, fereastră și raft cu cărți. Mascota se mută la locul potrivit pentru ce face acum: la terminal când rulează comenzi, la birou când scrie cod, la raft când citește sau caută, la fereastră când caută pe web, la poștă când trimite mesaje. Deasupra are un balon cu ce face. Sub cameră îi vezi echipa de sub-agenți, fiecare cu treaba lui. Mesajele noi dintre agenți zboară ca plicuri ✉️ de la o cameră la alta. Cine doarme stă în dormitor. Totul se calculează din fișierele locale, deci nu costă niciun token.
 - **Detalii.** Click pe un agent și vezi ultima ta cerere, ultimul lucru spus, ce a făcut recent (unelte, fișiere, mesaje), sub-agenții, branch-ul și comanda `claude --resume`.
 - **🕸️ Legături.** O hartă cu cine cui a scris (`SendMessage`). Grosimea săgeții arată câte mesaje au fost, iar bulina care curge arată un mesaj din ultimele 15 minute. Treci cu mouse-ul peste o săgeată ca să vezi ultimele mesaje.
 - **🐝 BUZZ!** Ca pe vremuri pe messenger: apeși **BUZZ!** și cardul agentului se scutură cu un bâzâit. Agentul primește un ghiont: „Buzzz! 🐝 Ce faci? Dă-mi un update scurt…”. E util când un agent pare blocat sau tace de mult. Merge doar la sesiunile pornite.
+- **🖥️ Terminal.** Orice agent se deschide cu un click într-o fereastră de terminal (implicit Git Bash, cu numele agentului în titlu), unde îl vezi și îi răspunzi:
+  - **sesiune închisă**: o trezește în fundal (cu mesajul tău, dacă ai scris unul) și o deschide cu `claude attach`;
+  - **sesiune în fundal**: o deschide cu `claude attach`. Dacă închizi fereastra, agentul lucrează mai departe și îl poți redeschide oricând;
+  - **sesiune deschisă deja într-un terminal**: îți aduce fereastra ei în față.
+  - Atenție: `claude` simplu pornește mereu o sesiune nouă. Pentru una veche e nevoie de `claude attach <id>` (fundal) sau `claude --resume <id>`.
+- **😴 Pune la somn.** Oprește un agent pornit: cel din fundal cu `claude stop`, cel dintr-un terminal închizându-i procesul `claude`. Conversația rămâne salvată și îl trezești oricând cu 🖥️ Terminal sau cu un mesaj. Îți cere confirmare, mai ales dacă agentul lucrează chiar atunci.
 - **✈️ Mesaje.** Poți scrie unui agent direct din aplicație:
   - **sesiune pornită**: mesajul ajunge în ea prin unealta oficială `SendMessage`, printr-un releu scurt `claude -p` pe Haiku. Agentul îl vede ca mesaj de la un coleg, deci nu e echivalent cu o aprobare de-a ta;
-  - **sesiune închisă**: o pornește în fundal cu mesajul tău (`claude --resume <id> --bg`).
+  - **sesiune închisă**: o pornește în fundal cu mesajul tău (`claude --resume <id> --bg`), păstrându-i numele. Dacă agentul îți pune apoi o întrebare, o vezi pe card și îi răspunzi din 🖥️ Terminal.
 - **🐾 Trei familii de mascote:** 🟠 bulgărași cu steluță, 🤖 roboței dev (ecran pe față, LED care clipește când lucrează, plăcuță cu limbajul preferat: JS, PY, RS, GO…) și 🦊 animăluțe cu pasiuni. Animăluțele sunt pisică, vulpe, urs, panda, bufniță, pinguin, iepuraș, broscuță, cățel sau hamster, fiecare cu o pasiune: muzică, cafea, cod, jocuri, citit, pictură, gătit, grădinărit, chitară, foto, drumeții. Fiecare agent își primește mereu aceeași mascotă, după nume.
 - **🎨 Trei teme:** 🍑 Cremă (urmează tema deschisă sau închisă a sistemului), 🌙 Noapte cu stele și 🍵 Matcha. Aplicația o ține minte pe cea aleasă.
 - Se actualizează singur la 3 secunde. Merge pe **Windows** (inclusiv cu sesiunile din WSL) și pe **macOS**.
@@ -43,6 +51,7 @@ Aplicația doar **citește**. Nu modifică nimic din `~/.claude`:
 |---|---|
 | sesiuni, activitate, ultimele mesaje | transcrierile `~/.claude/projects/*/*.jsonl`, citite incremental |
 | stare exactă pentru sesiunile pornite | `claude agents --json` |
+| sesiuni pornite care lipsesc din `claude agents` | lista proceselor `claude` (argumentul `--resume`), fără să pornească nimic |
 | sub-agenți | `<sesiune>/subagents/*.meta.json` |
 | legături | apelurile `SendMessage` din transcrieri. Adresele tehnice se traduc în nume din `~/.claude/sessions/*.json` și din mesajele primite. |
 
@@ -79,6 +88,8 @@ La prima pornire se creează `proiecte.json` din `proiecte.exemplu.json`. Fișie
 ```json
 {
   "numele_tau": "Ana",
+  "terminal": "auto",
+  "foldere_comune": [],
   "proiecte": [
     {
       "nume": "Aplicația mea",
@@ -86,6 +97,7 @@ La prima pornire se creează `proiecte.json` din `proiecte.exemplu.json`. Fișie
       "culoare": "#f2a65a",
       "descriere": "backend, frontend, review",
       "titluri": ["backend", "frontend", "review"],
+      "cuvinte": ["aplicatia mea"],
       "cai": ["aplicatia-mea"]
     }
   ],
@@ -94,7 +106,10 @@ La prima pornire se creează `proiecte.json` din `proiecte.exemplu.json`. Fișie
 ```
 
 - `titluri`: numele sesiunilor (dat cu `/rename`) care țin de proiect.
-- `cai`: bucăți din folderul de lucru al sesiunii.
+- `cuvinte`: cuvinte-cheie căutate în numele sesiunii și în primele cereri (fără diacritice, ex. „bucataria”). Numele proiectului contează automat.
+- `cai`: bucăți din folderul de lucru al sesiunii. Contează folderul în care sesiunea a stat cel mai mult; folderul de acasă, Temp și `.claude` sunt ignorate.
+- `foldere_comune`: foldere în care pornești sesiuni din mai multe proiecte (ex. `D:/claude`). Contează doar dacă nimic altceva nu se potrivește.
+- `terminal`: `auto` (Git Bash, apoi Windows Terminal, apoi cmd), `gitbash`, `wt` sau `cmd`.
 - `alocari`: mutările manuale, salvate automat când alegi alt proiect din panoul unui agent.
 - `numele_tau`: apare în mesajele trimise („de la …, prin BuzzzHub”).
 - `cauta_wsl` / `radacini_extra`: unde mai caută transcrieri.
@@ -109,6 +124,8 @@ Ce nu se potrivește nicăieri ajunge în **Diverse**.
 | `instaleaza.bat` / `porneste.bat` | instalare și pornire pe Windows |
 | `porneste.command` | instalare (într-un `.venv`) și pornire pe macOS |
 | `server.py` | serverul local: citește sesiunile, calculează stările și legăturile, trimite mesaje |
+| `procese.py` | găsește procesele `claude` care rulează și sesiunea fiecăruia (plasă de siguranță pentru stare) |
+| `terminal.py` | deschide un agent într-o fereastră de terminal (Git Bash / Windows Terminal / cmd / Terminal pe macOS) |
 | `index.html` | toată interfața (HTML/CSS/JS fără dependențe, mascote SVG) |
 | `fa_iconita.py` | desenează iconița `buzzzhub.ico` / `buzzzhub.png` din cod, fără biblioteci |
 | `proiecte.exemplu.json` | configurare de pornire |
@@ -117,5 +134,6 @@ Ce nu se potrivește nicăieri ajunge în **Diverse**.
 
 - Pe macOS l-am scris să meargă, dar nu l-am testat încă pe un Mac real. Dacă ceva nu merge, deschide un issue.
 - Starea din WSL e estimată, nu exactă.
-- Sesiunile din WSL nu pot primi mesaje din aplicație, pentru că acolo rulează alt `claude`.
+- Sesiunile din WSL nu pot primi mesaje din aplicație, pentru că acolo rulează alt `claude`. Le poți deschide în terminal (`wsl.exe … claude --resume`).
+- O sesiune poate porni în fundal doar într-un folder pe care l-ai marcat ca sigur în Claude. Altfel aplicația o deschide interactiv în terminal, ca să confirmi o dată.
 - Un mesaj către o sesiune pornită costă puțin, pentru că pornește un releu scurt pe Haiku.

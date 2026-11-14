@@ -7,17 +7,19 @@ def _iso(sec_in_urma):
 
 
 def _agent(id_, titlu, proiect, status, activitate, varsta, prompt, text, feed, subagenti=(), pornita=True,
-           branch="main"):
+           branch="main", fel="terminal", intrebare=None):
     acum = time.time()
     return {
         "id": id_, "titlu": titlu, "are_titlu": True, "proiect": proiect,
         "cwd": f"C:\\Users\\demo\\{proiect.lower().replace(' ', '-')}", "branch": branch,
-        "model": "claude-opus-4", "wsl": False, "pornita": pornita, "nume_live": titlu, "fel": "interactive",
+        "model": "claude-opus-4", "wsl": False, "pornita": pornita, "nume_live": titlu,
+        "fel": fel if pornita else None, "intrebare": intrebare, "cwd_start": None, "job": id_[-8:],
         "mtime": acum - varsta, "varsta": varsta, "status": status, "activitate": activitate,
         "ultimul_prompt": prompt, "ultimul_text": text,
         "feed": [{"ts": _iso(s), "tip": t, "text": x, "tool": tool} for s, t, x, tool in feed],
-        "subagenti": [{"descriere": d, "tip": "general-purpose", "terminat": f, "mtime": acum - v, "varsta": v}
-                      for d, f, v in subagenti],
+        "subagenti": [{"id": f"s{i}", "descriere": d, "tip": "general-purpose", "terminat": f, "mtime": acum - v,
+                       "varsta": v, "ce": None if f else "citește staging.yaml", "unealta": None if f else "Read"}
+                      for i, (d, f, v) in enumerate(subagenti)],
     }
 
 
@@ -41,14 +43,15 @@ def stare():
                [(2, "tool", "payments.py", "Edit"), (30, "tool", "Rulează testele", "Bash"),
                 (70, "text", "Testele de plată trec. Mai am rambursările.", None),
                 (120, "tool", "→ review: PR #42 e gata de verificat", "SendMessage")], branch="feat/plati"),
-        _agent(_id(3), "frontend", P, "asteapta", "pornită, te așteaptă", 240,
+        _agent(_id(3), "frontend", P, "asteapta", "rulează în fundal, liberă — deschide-o în terminal ca s-o vezi", 240,
                "fă pagina de coș", "Pagina de coș e gata și testată pe mobil. Vrei să adaug și cupoane?",
                [(240, "text", "Pagina de coș e gata și testată pe mobil.", None),
                 (300, "tool", "Screenshot coș pe mobil", "Bash"), (600, "tool", "Cart.tsx", "Write")],
-               branch="feat/cos"),
-        _agent(_id(4), "review", P, "blocat", "s-a oprit la: rulează gh pr checkout 42 (poate așteaptă permisiune)", 600,
+               branch="feat/cos", fel="fundal"),
+        _agent(_id(4), "review", P, "blocat", "așteaptă să-i aprobi o acțiune — deschide-l în terminal ca să-i răspunzi", 600,
                "verifică PR-urile echipei", "Încep cu PR #42 de la backend.",
-               [(600, "tool", "gh pr checkout 42", "Bash"), (650, "text", "Încep cu PR #42 de la backend.", None)]),
+               [(600, "tool", "gh pr checkout 42", "Bash"), (650, "text", "Încep cu PR #42 de la backend.", None)],
+               fel="fundal", intrebare="aprobare"),
         _agent(_id(5), "docs", P, "doarme", "doarme", 5 * 3600,
                "scrie ghidul de instalare", "Ghidul e gata în docs/instalare.md.",
                [(5 * 3600, "text", "Ghidul e gata în docs/instalare.md.", None)], pornita=False),

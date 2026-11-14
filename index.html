@@ -135,6 +135,72 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 @keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(8px,-14px)}}
 @media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
 
+/* 🏡 atelier: fiecare agent are camera lui și se mută între birou, terminal, raft, fereastră și cutia poștală */
+#atelier{position:relative;margin-top:14px}
+.etaj{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:18px;align-items:start}
+.camera{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .15s}
+.camera:hover{transform:translateY(-2px)}
+.camera.sel{border-color:var(--orange)}
+.camera.intreaba{border-color:#ff6b8a;box-shadow:0 0 0 4px color-mix(in srgb,#ff6b8a 22%,transparent),var(--shadow)}
+.camera.primit .scena,.camera.buzzing .scena{animation:buzz .6s linear}
+.cam-top{display:flex;align-items:center;gap:8px;padding:10px 14px 6px}
+.cam-top .nume{font-weight:800;font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cam-top .pill{margin-top:0}
+.scena{position:relative;height:200px;overflow:hidden}
+.perete{position:absolute;inset:0 0 30% 0;background:color-mix(in srgb,var(--c) 12%,var(--card))}
+.podea{position:absolute;inset:70% 0 0 0;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--c) 18%,var(--bg)) 0 44px,color-mix(in srgb,var(--c) 28%,var(--bg)) 44px 46px)}
+.prop{position:absolute;bottom:30%;transform:translateX(-50%);opacity:.7;transition:opacity .3s,filter .3s}
+.camera[data-z="terminal"] .p-terminal,.camera[data-z="birou"] .p-birou,.camera[data-z="raft"] .p-raft,
+.camera[data-z="fereastra"] .p-fereastra,.camera[data-z="posta"] .p-posta{opacity:1;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--c) 80%,transparent))}
+.p-posta{left:9%;font-size:30px;line-height:1}
+.p-terminal{left:27%;width:66px}
+.p-terminal .ecran{height:46px;background:#1d2030;border-radius:7px;border:3px solid #3b3f52;padding:4px 5px;font:700 7.5px/1.25 ui-monospace,Consolas,monospace;color:#7ef0c8;overflow:hidden;word-break:break-all}
+.p-terminal .picior{width:12px;height:8px;background:#3b3f52;margin:0 auto}
+.p-birou{left:48%;width:118px}
+.p-birou .monitor{width:58px;height:38px;margin:0 auto;background:#25283a;border-radius:6px;border:3px solid #c9ccd6;padding:5px 5px;overflow:hidden}
+.p-birou .monitor i{display:block;height:3px;border-radius:2px;background:#7fd0ff;margin:0 0 3px;opacity:.85}
+.camera[data-z="birou"].lucreaza .p-birou .monitor i{animation:scrie 1.4s steps(6) infinite}
+.camera[data-z="birou"].lucreaza .p-birou .monitor i:nth-child(2){animation-delay:.35s;background:#ffd36e}
+.camera[data-z="birou"].lucreaza .p-birou .monitor i:nth-child(3){animation-delay:.7s;background:#ff9ec7}
+@keyframes scrie{0%{width:10%}100%{width:100%}}
+.p-birou .masa{height:9px;background:#b07a52;border-radius:4px;margin-top:4px}
+.p-birou .picioare{display:flex;justify-content:space-between;padding:0 8px}.p-birou .picioare b{width:6px;height:22px;background:#8a5a3c;display:block}
+.p-fereastra{left:67%;bottom:auto;top:12%;width:58px;height:46px;border-radius:8px;border:4px solid color-mix(in srgb,var(--c) 45%,#fff);
+  background:linear-gradient(#9fd3f5,#d8efff);overflow:hidden}
+.p-fereastra::after{content:"";position:absolute;left:8px;top:16px;width:22px;height:8px;border-radius:8px;background:#fff;box-shadow:14px -5px 0 -1px #fff;animation:nor 9s linear infinite}
+[data-theme="noapte"] .p-fereastra{background:linear-gradient(#1a1850,#3b2b7a)}
+[data-theme="noapte"] .p-fereastra::after{background:#fff6c0;width:10px;height:10px;box-shadow:none;left:34px;top:8px;animation:none}
+@keyframes nor{from{transform:translateX(-30px)}to{transform:translateX(60px)}}
+.p-raft{left:87%;width:48px;height:78px;background:#8a5a3c;border-radius:4px;padding:4px;display:flex;flex-direction:column;justify-content:space-around}
+.p-raft b{display:block;height:14px;border-radius:1px;background:repeating-linear-gradient(90deg,#e97a7a 0 6px,#6fb1e0 6px 11px,#8cc56b 11px 16px,#e6b34a 16px 21px,#d98fc2 21px 26px,transparent 26px 28px)}
+.bot{position:absolute;bottom:7%;left:48%;width:86px;transform:translateX(-50%);transition:left 1.3s ease-in-out;z-index:2}
+.bot .masc svg{width:86px;height:86px;display:block}
+.bot.merge .masc{animation:mers .3s ease-in-out infinite}
+@keyframes mers{50%{transform:translateY(-7px) rotate(4deg)}}
+.balon{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;
+  padding:4px 9px;font-size:11.5px;font-weight:700;line-height:1.25;width:max-content;max-width:200px;box-shadow:0 3px 8px rgba(0,0,0,.08);word-break:break-word}
+.balon:empty{display:none}
+.bot[data-z="posta"] .balon,.bot[data-z="terminal"] .balon{left:0;transform:none}
+.bot[data-z="raft"] .balon,.bot[data-z="fereastra"] .balon{left:auto;right:0;transform:none}
+.camera.intreaba .balon{background:#ff6b8a;color:#fff;border-color:#ff6b8a}
+.efect{position:absolute;top:2px;right:-6px;font-size:21px;animation:pluteste 1.6s ease-in-out infinite}
+@keyframes pluteste{50%{transform:translateY(-6px) rotate(-8deg)}}
+.pitici-h{font-size:12px;color:var(--muted);font-weight:800;padding:8px 14px 0;border-top:1px dashed var(--line)}
+.pitici{display:flex;gap:4px;flex-wrap:wrap;padding:4px 10px 12px}
+.pitic{display:flex;flex-direction:column;align-items:center;width:72px;font-size:10px;text-align:center;color:var(--muted);line-height:1.15}
+.pitic svg{width:38px;height:38px}
+.pitic .ce{color:var(--work);font-weight:800;margin-top:1px}
+.pitic.gata{opacity:.45;filter:grayscale(.6)}
+.pitic.gata svg{width:28px;height:28px}
+.avion{position:absolute;left:0;top:0;font-size:24px;pointer-events:none;z-index:6}
+.dormitor{margin-top:22px;background:color-mix(in srgb,#2a2660 8%,var(--card));border-radius:22px;box-shadow:var(--shadow);padding:12px 16px}
+.dormitor h4{margin:0 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.paturi{display:flex;flex-wrap:wrap;gap:6px}
+.patut{width:92px;text-align:center;font-size:11px;cursor:pointer;border-radius:12px;padding:4px 2px;word-break:break-word}
+.patut:hover{background:var(--bg)} .patut.sel{outline:2px solid var(--orange)}
+.patut svg{width:54px;height:54px}
+.gol{color:var(--muted);text-align:center;padding:30px 0}
+
 /* tab-uri */
 .tabs{display:inline-flex;background:var(--card);border-radius:14px;padding:4px;box-shadow:var(--shadow);margin-bottom:6px}
 .tabs button{border:none;border-radius:10px;padding:7px 16px;font-weight:800;color:var(--muted);background:none}
@@ -166,9 +232,17 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .node.buzzing > svg{animation:buzz .65s linear}
 @keyframes buzz{0%,100%{translate:0 0}10%{translate:-7px 2px}20%{translate:6px -3px}30%{translate:-6px -2px}40%{translate:7px 3px}
   50%{translate:-5px 2px}60%{translate:5px -2px}70%{translate:-4px 1px}80%{translate:3px -1px}90%{translate:-2px 0}}
-.compose .hint{font-size:12px;color:var(--muted);flex:1}
+.compose .hint{font-size:12px;color:var(--muted);flex:1 1 100%}
 .compose .res{font-size:13px;margin-top:8px;border-radius:10px;padding:7px 10px}
 .res.ok{background:color-mix(in srgb,#7cc576 18%,transparent)} .res.err{background:color-mix(in srgb,#e97a7a 20%,transparent)}
+.p-intrebare{background:#ff6b8a;color:#fff;animation:pulse 1.6s infinite}
+.ask{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,#ff6b8a 16%,transparent);border:1.5px solid #ff6b8a;border-radius:14px;padding:10px 12px;margin:0 0 12px}
+.ask p{margin:0;flex:1;font-size:13px}
+.term{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:800;white-space:nowrap}
+.term:disabled{opacity:.5;cursor:wait}
+.somn{background:color-mix(in srgb,var(--sleep) 30%,var(--card));font-weight:800;white-space:nowrap}
+.somn:disabled{opacity:.5;cursor:wait}
+.compose .row{flex-wrap:wrap}
 .on-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7cc576;box-shadow:0 0 0 3px color-mix(in srgb,#7cc576 25%,transparent)}
 </style>
 </head>
@@ -201,8 +275,11 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 
 <script>
 const $ = s => document.querySelector(s);
-let DATA = null, PROJ = null, SEL = null, TAB = 'agenti', DRAFT = {}, SENDING = false, LASTRES = null;
-try { PROJ = localStorage.getItem('proj'); $('#zile').value = localStorage.getItem('zile') || '3'; } catch(e){}
+let DATA = null, PROJ = null, SEL = null, TAB = 'atelier', DRAFT = {}, SENDING = false, LASTRES = null;
+try { PROJ = localStorage.getItem('proj'); $('#zile').value = localStorage.getItem('zile') || '3'; TAB = localStorage.getItem('tab') || 'atelier'; } catch(e){}
+/* link direct: #p=Proiect&s=<id sesiune> */
+{ const q = new URLSearchParams(location.hash.slice(1)); if (q.get('tab')) TAB = q.get('tab'); if (q.get('th')) { try{ localStorage.setItem('tema', q.get('th')); }catch(e){} } if (q.get('m')) { try{ localStorage.setItem('mascote', q.get('m')); }catch(e){} } }
+{ const h = new URLSearchParams(location.hash.slice(1)); if (h.get('p')) PROJ = h.get('p'); if (h.get('s')) SEL = h.get('s'); }
 
 const STATUS = {
   lucreaza:{t:'lucrează', e:'⚡'}, asteapta:{t:'te așteaptă', e:'👋'},
@@ -449,15 +526,20 @@ function renderHome(){
   document.querySelectorAll('.proj').forEach(el => el.onclick = () => { PROJ = el.dataset.p; save(); render(); scrollTo(0,0); });
 }
 
+function pill(a){
+  if (a.intrebare) return `<span class="pill p-intrebare">${a.intrebare==='aprobare'?'✋ cere aprobare':'🙋 te întreabă'}</span>`;
+  return `<span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span>`;
+}
+
 function card(a){
   const subsActive = a.subagenti.filter(s => !s.terminat && s.varsta < 300).length;
   return `<div class="ag ${SEL===a.id?'sel':''}" data-id="${a.id}">
     <div class="top">${mascot(hue(a.titlu), a.status, a.titlu)}
       <div><h3>${esc(a.titlu)}</h3>
-      <span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span>
+      ${pill(a)}
       ${persona(a.titlu) ? `<div class="persona">${esc(persona(a.titlu))}</div>` : ''}</div></div>
     <div class="act">${esc(a.activitate)}</div>
-    <div class="meta">${a.pornita?'<span><span class="on-dot"></span> pornită</span>':''}<span>🕒 ${ago(a.varsta)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(a.proiect)}</span>`:''}</div>
+    <div class="meta">${a.pornita?`<span><span class="on-dot"></span> ${a.fel==='fundal'?'👻 în fundal':'🖥️ în terminal'}</span>`:''}<span>🕒 ${ago(a.varsta)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(a.proiect)}</span>`:''}</div>
     ${a.subagenti.length ? `<div class="subs">🐣 ${a.subagenti.length} sub-agenți${subsActive?` · <b style="color:var(--work)">${subsActive} activi</b>`:''}</div>` : ''}
   </div>`;
 }
@@ -468,11 +550,13 @@ function renderProject(){
   $('#back').hidden = false; $('#crumb').textContent = '/ ' + p.emoji + ' ' + p.nume;
   const treji = p.agenti.filter(a => a.status !== 'doarme');
   const dorm = p.agenti.filter(a => a.status === 'doarme');
-  const ord = {lucreaza:0, blocat:1, asteapta:2};
-  treji.sort((a,b) => ord[a.status]-ord[b.status] || a.varsta-b.varsta);
+  const ord = {lucreaza:1, blocat:2, asteapta:3};
+  const rang = a => a.intrebare ? 0 : ord[a.status];
+  treji.sort((a,b) => rang(a)-rang(b) || a.varsta-b.varsta);
   const nPornite = p.agenti.filter(a => a.pornita).length;
   let h = `<div class="hello">${p.emoji} ${esc(p.nume)}</div><p class="sub">${p.agenti.length} sesiuni · ${nPornite} pornite acum</p>
-    <div class="tabs"><button data-t="agenti" class="${TAB==='agenti'?'on':''}">🐣 Agenți</button><button data-t="harta" class="${TAB==='harta'?'on':''}">🕸️ Legături</button></div>`;
+    <div class="tabs"><button data-t="atelier" class="${TAB==='atelier'?'on':''}">🏡 Atelier</button><button data-t="agenti" class="${TAB==='agenti'?'on':''}">🐣 Agenți</button><button data-t="harta" class="${TAB==='harta'?'on':''}">🕸️ Legături</button></div>`;
+  if (TAB === 'atelier') return renderAtelier(p, h);
   if (TAB === 'harta') {
     $('#main').innerHTML = h + harta(p);
     bindTabs(); bindMap(); return;
@@ -485,8 +569,163 @@ function renderProject(){
   document.querySelectorAll('.ag').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
 }
 
+/* ---------- 🏡 atelier: camere cu agenții la treabă (totul din transcrieri locale, zero tokeni) ---------- */
+const ZONE = {posta:12, terminal:28, birou:48, fereastra:68, raft:84};
+const UNELTE_ZONA = {Bash:'terminal', PowerShell:'terminal', Monitor:'terminal', TaskStop:'terminal',
+  Edit:'birou', Write:'birou', NotebookEdit:'birou', Read:'raft', Grep:'raft', Glob:'raft',
+  WebSearch:'fereastra', WebFetch:'fereastra', SendMessage:'posta', ListAgents:'posta', SendToProject:'posta'};
+const EFECT = {terminal:'⌨️', birou:'✏️', raft:'🔍', fereastra:'🌐', posta:'✉️'};
+let ATL = {seen:null};
+
+function uneltaCurenta(a){
+  const l = a.feed[a.feed.length - 1];
+  return a.status === 'lucreaza' && l && l.tip === 'tool' ? l : null;
+}
+function zona(a){
+  const t = uneltaCurenta(a);
+  if (!t) return 'birou';
+  if (t.tool && t.tool.startsWith('mcp__claude-in-chrome')) return 'fereastra';
+  return UNELTE_ZONA[t.tool] || 'birou';
+}
+function efect(a, z){
+  if (a.intrebare) return a.intrebare === 'aprobare' ? '✋' : '❓';
+  if (a.status === 'asteapta') return '☕';
+  if (a.status === 'blocat') return '😅';
+  const t = uneltaCurenta(a);
+  if (!t) return a.subagenti.some(s => !s.terminat && s.varsta < 120) ? '🐣' : '💭';
+  if (t.tool === 'Agent' || t.tool === 'Workflow') return '🐣';
+  return EFECT[z] || '⚙️';
+}
+function balon(a){
+  if (a.intrebare) return a.intrebare === 'aprobare' ? 'Am nevoie de aprobarea ta!' : 'Am o întrebare pentru tine!';
+  const u = uneltaCurenta(a);
+  const t = u && u.text ? u.text : (a.activitate || '');
+  return t.length > 70 ? t.slice(0, 69) + '…' : t;
+}
+const CAMERA = `<div class="cam-top"><span class="nume"></span><span class="pillw"></span></div>
+  <div class="scena"><div class="perete"></div><div class="podea"></div>
+    <div class="prop p-posta">📮</div>
+    <div class="prop p-terminal"><div class="ecran"></div><div class="picior"></div></div>
+    <div class="prop p-fereastra"></div>
+    <div class="prop p-birou"><div class="monitor"><i style="width:80%"></i><i style="width:55%"></i><i style="width:68%"></i></div><div class="masa"></div><div class="picioare"><b></b><b></b></div></div>
+    <div class="prop p-raft"><b></b><b></b><b></b><b></b></div>
+    <div class="bot"><div class="balon"></div><div class="masc"></div><div class="efect"></div></div>
+  </div><div class="echipa"></div>`;
+
+function piticiHtml(a){
+  const subs = a.subagenti;
+  if (!subs.length) return '';
+  const activi = subs.filter(s => !s.terminat);
+  const gata = subs.filter(s => s.terminat);
+  const pe = (s) => {
+    const st = s.terminat ? 'doarme' : s.varsta < 90 ? 'lucreaza' : 'asteapta';
+    const ce = s.ce || (s.varsta < 90 ? 'lucrează…' : 'așteaptă');
+    return `<div class="pitic ${s.terminat?'gata':''}" title="${esc(s.descriere + (s.ce ? ' — ' + s.ce : ''))}">
+      ${mascot(hue(s.descriere), st, s.descriere)}<span>${esc(s.descriere.length > 26 ? s.descriere.slice(0,25)+'…' : s.descriere)}</span>
+      ${s.terminat ? '' : `<span class="ce">${esc(ce.length > 30 ? ce.slice(0,29)+'…' : ce)}</span>`}</div>`;
+  };
+  const arat = [...activi, ...gata.slice(0, Math.max(0, 6 - activi.length))];
+  const rest = subs.length - arat.length;
+  return `<div class="pitici-h">🐣 echipa lui: ${activi.length} la treabă · ${gata.length} au terminat</div>
+    <div class="pitici">${arat.map(pe).join('')}${rest > 0 ? `<div class="pitic"><span style="font-size:20px;margin-top:8px">+${rest}</span></div>` : ''}</div>`;
+}
+
+function updateCamera(el, a){
+  const c = hue(a.titlu), z = zona(a);
+  el.style.setProperty('--c', c);
+  el.dataset.nume = a.titlu; el.dataset.live = a.nume_live || '';
+  el.dataset.z = a.status === 'lucreaza' ? z : '';
+  el.classList.toggle('sel', SEL === a.id);
+  el.classList.toggle('intreaba', !!a.intrebare);
+  el.classList.toggle('lucreaza', a.status === 'lucreaza');
+  el.querySelector('.nume').textContent = a.titlu;
+  el.querySelector('.pillw').innerHTML = pill(a) + (a.fel ? ` <span title="${a.fel==='fundal'?'rulează în fundal':'deschisă într-un terminal'}">${a.fel==='fundal'?'👻':'🖥️'}</span>` : '');
+  const bot = el.querySelector('.bot');
+  if (bot.dataset.z !== z){
+    if (bot.dataset.z){ bot.classList.add('merge'); clearTimeout(bot._t); bot._t = setTimeout(() => bot.classList.remove('merge'), 1300); }
+    bot.dataset.z = z; bot.style.left = ZONE[z] + '%';
+  }
+  const m = el.querySelector('.masc'), mk = a.status + '|' + MASCOTE;
+  if (m.dataset.k !== mk){ m.dataset.k = mk; m.innerHTML = mascot(c, a.status, a.titlu); }
+  el.querySelector('.efect').textContent = efect(a, z);
+  el.querySelector('.balon').textContent = balon(a);
+  const t = uneltaCurenta(a);
+  el.querySelector('.ecran').textContent = z === 'terminal' && t ? '$ ' + t.text : '$ _';
+  const ech = el.querySelector('.echipa'), eh = piticiHtml(a), ek = MASCOTE + eh;
+  if (ech.dataset.k !== ek){ ech.dataset.k = ek; ech.innerHTML = eh; }
+}
+
+function renderAtelier(p, head){
+  let root = $('#atelier');
+  if (!root || root.dataset.p !== p.nume || root.dataset.m !== MASCOTE){
+    $('#main').innerHTML = `<div id="ahead"></div><div id="atelier"><div class="etaj"></div><div class="gol" hidden></div><div class="dorm"></div></div>`;
+    root = $('#atelier'); root.dataset.p = p.nume; root.dataset.m = MASCOTE; ATL = {seen:null};
+  }
+  $('#ahead').innerHTML = head; bindTabs();
+  const etaj = root.querySelector('.etaj');
+  const treji = p.agenti.filter(a => a.status !== 'doarme');
+  const ids = new Set(treji.map(a => a.id));
+  etaj.querySelectorAll('.camera').forEach(el => { if (!ids.has(el.dataset.id)) el.remove(); });
+  // ordinea: cine are nevoie de tine primul, apoi cine lucrează
+  const rang = a => a.intrebare ? 0 : a.status === 'blocat' ? 1 : a.status === 'lucreaza' ? 2 : 3;
+  treji.sort((a, b) => rang(a) - rang(b) || a.titlu.localeCompare(b.titlu));
+  treji.forEach((a, i) => {
+    let el = etaj.querySelector(`.camera[data-id="${a.id}"]`);
+    if (!el){
+      el = document.createElement('div'); el.className = 'camera'; el.dataset.id = a.id; el.innerHTML = CAMERA;
+      el.onclick = () => { SEL = a.id; LASTRES = null; render(); };
+    }
+    if (etaj.children[i] !== el) etaj.insertBefore(el, etaj.children[i] || null);
+    updateCamera(el, a);
+  });
+  const gol = root.querySelector('.gol');
+  gol.hidden = treji.length > 0;
+  if (!treji.length) gol.innerHTML = `${mascot('#e8875b','doarme')}<p>Toți agenții din proiect dorm. Trezește unul din dormitor.</p>`;
+  const dorm = p.agenti.filter(a => a.status === 'doarme');
+  const dk = MASCOTE + SEL + dorm.map(a => a.id).join();
+  const d = root.querySelector('.dorm');
+  if (d.dataset.k !== dk){
+    d.dataset.k = dk;
+    d.innerHTML = dorm.length ? `<div class="dormitor"><h4>🌙 Dormitor · ${dorm.length}</h4><div class="paturi">${dorm.map(a =>
+      `<div class="patut ${SEL===a.id?'sel':''}" data-id="${a.id}" title="${esc(a.titlu)} · ${esc(ago(a.varsta))}">${mascot(hue(a.titlu), 'doarme', a.titlu)}<div>${esc(a.titlu.length > 24 ? a.titlu.slice(0,23)+'…' : a.titlu)}</div></div>`).join('')}</div></div>` : '';
+    d.querySelectorAll('.patut').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; render(); });
+  }
+  avioane();
+}
+
+/* mesajele noi zboară ca plicuri de la o cameră la alta (Tu = de sus) */
+function avioane(){
+  const edges = DATA.legaturi || [];
+  if (!ATL.seen){ ATL.seen = {}; edges.forEach(e => ATL.seen[e.de + '→' + e.la] = e.ultim); return; }
+  edges.forEach(e => {
+    const k = e.de + '→' + e.la;
+    if (e.ultim && e.ultim !== ATL.seen[k]){
+      ATL.seen[k] = e.ultim;
+      if (Date.now() - new Date(e.ultim).getTime() < 180000) zboara(e.de, e.la);
+    }
+  });
+}
+function zboara(de, la){
+  const root = $('#atelier'); if (!root) return;
+  const gaseste = n => [...root.querySelectorAll('.camera')].find(c => c.dataset.nume === n || (c.dataset.live && c.dataset.live === n));
+  const A = de === 'Tu' ? null : gaseste(de), B = gaseste(la);
+  if (!B || (!A && de !== 'Tu')) return;
+  const rr = root.getBoundingClientRect();
+  const pt = el => { const r = el.querySelector('.bot').getBoundingClientRect(); return {x: r.left + r.width/2 - rr.left - 12, y: r.top + r.height/3 - rr.top}; };
+  const a = A ? pt(A) : {x: rr.width/2, y: -30}, b = pt(B);
+  const av = document.createElement('div'); av.className = 'avion'; av.textContent = '✉️';
+  root.appendChild(av);
+  const mx = (a.x + b.x)/2, my = Math.min(a.y, b.y) - 90;
+  const anim = av.animate([
+    {transform:`translate(${a.x}px,${a.y}px) scale(.5)`, opacity:0},
+    {transform:`translate(${(a.x+mx)/2}px,${(a.y+my)/2}px) scale(1) rotate(-12deg)`, opacity:1, offset:.3},
+    {transform:`translate(${mx}px,${my}px) scale(1.25) rotate(8deg)`, opacity:1, offset:.55},
+    {transform:`translate(${b.x}px,${b.y}px) scale(.7)`, opacity:1}], {duration:2000, easing:'ease-in-out'});
+  anim.onfinish = () => { av.remove(); B.classList.add('primit'); setTimeout(() => B.classList.remove('primit'), 700); };
+}
+
 function bindTabs(){
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; render(); });
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; try{ localStorage.setItem('tab', TAB); }catch(e){} render(); });
 }
 
 /* ---------- hartă: cine cui scrie ---------- */
@@ -580,19 +819,28 @@ function renderPanel(){
   const ta = P.querySelector('#msg');
   if (ta) DRAFT[a.id] = ta.value;
   const hadFocus = ta && document.activeElement === ta;
-  const modTxt = a.wsl ? 'Sesiunile din WSL nu pot primi mesaje de aici.'
-    : a.pornita ? `E pornită: mesajul ajunge în ea ca de la un coleg (prin releu, ~10 s). Agentul îl citește când termină ce face.`
-    : `E închisă: o pornesc în fundal cu mesajul tău (claude --resume --bg).`;
+  const modTxt = a.wsl ? 'Sesiunile din WSL nu primesc mesaje de aici, dar le poți deschide în terminal.'
+    : a.pornita && a.fel === 'fundal' ? `Rulează în fundal: mesajul ajunge ca de la un coleg (~10 s). Ca s-o vezi și să-i răspunzi la întrebări: 🖥️ Terminal.`
+    : a.pornita ? `E deschisă într-un terminal: mesajul ajunge ca de la un coleg (~10 s). 🖥️ Terminal îți aduce fereastra ei în față.`
+    : `E închisă. ✈️ Trimite: o trezesc în fundal cu mesajul tău. 🖥️ Terminal: o trezesc și o deschid într-o fereastră (cu mesajul, dacă ai scris unul).`;
+  const termTxt = a.pornita && a.fel === 'terminal' ? '🖥️ Arată fereastra' : a.pornita ? '🖥️ Deschide în terminal' : '🖥️ Trezește în terminal';
   P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.titlu), a.status, a.titlu)}
-      <div><h3 style="margin:0">${esc(a.titlu)}</h3><span class="pill p-${a.status}">${STATUS[a.status].e} ${STATUS[a.status].t}</span>
+      <div><h3 style="margin:0">${esc(a.titlu)}</h3>${pill(a)}
         ${persona(a.titlu) ? `<div class="persona">${esc(persona(a.titlu))}</div>` : ''}</div>
       <button class="x" id="close" title="închide">✕</button></div>
     <div class="pb">
-      <div class="act">${a.pornita?'<span class="on-dot"></span> ':''}${esc(a.activitate)}</div>
+      ${a.intrebare ? `<div class="ask"><span style="font-size:26px">${a.intrebare==='aprobare'?'✋':'🙋'}</span>
+        <p><b>${a.intrebare==='aprobare'?'Așteaptă să-i aprobi o acțiune.':'Ți-a pus o întrebare.'}</b>
+        ${a.fel==='fundal'?'Rulează în fundal, deci n-o vezi nicăieri până nu o deschizi.':'Răspunde-i în fereastra lui.'}
+        Până nu-i răspunzi, stă pe loc.</p>
+        <button class="term" id="term2" ${SENDING?'disabled':''}>${a.fel==='fundal'?'🖥️ Răspunde în terminal':'🖥️ Arată fereastra'}</button></div>` : ''}
+      ${a.intrebare ? '' : `<div class="act">${a.pornita?'<span class="on-dot"></span> ':''}${esc(a.activitate)}</div>`}
       <h4>Scrie-i un mesaj</h4>
       <div class="compose">
         <textarea id="msg" placeholder="ex: după ce termini, dă-mi un rezumat scurt" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
         <div class="row"><span class="hint">${modTxt}</span>
+          ${a.pornita && !a.wsl ? `<button class="somn" id="somn" ${SENDING?'disabled':''} title="Oprește agentul. Conversația rămâne salvată și îl trezești oricând.">😴 Pune la somn</button>` : ''}
+          <button class="term" id="term" ${SENDING?'disabled':''} title="Deschide sesiunea într-o fereastră de terminal în care o vezi și îi poți răspunde">${termTxt}</button>
           <button class="buzz" id="buzz" ${!a.pornita||a.wsl||SENDING?'disabled':''} title="${a.pornita&&!a.wsl ? 'Scutură-l și cere-i un update scurt' : 'Merge doar la sesiunile pornite'}">🐝 BUZZ!</button>
           <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${SENDING?'se trimite…':'Trimite ✈️'}</button></div>
         ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(LASTRES.info)}</div>` : ''}
@@ -602,13 +850,15 @@ function renderPanel(){
       <h4>Ce a făcut recent</h4>
       <ul class="feed">${a.feed.slice().reverse().map(e => `<li><span class="tm">${hhmm(e.ts)}</span><span class="ic">${ic[e.tip]}</span>
         <span class="${e.tip}">${e.tip==='tool' ? `<b>${esc(e.tool)}</b> ${esc(e.text)}` : esc(e.text)}</span></li>`).join('') || '<li>—</li>'}</ul>
-      ${a.subagenti.length ? `<h4>Sub-agenți</h4><ul class="feed">${a.subagenti.map(s => `<li><span class="ic">${s.terminat?'✅':(s.varsta<300?'⚡':'⏸️')}</span><span>${esc(s.descriere)} <span style="color:var(--muted)">· ${ago(s.varsta)}</span></span></li>`).join('')}</ul>` : ''}
+      ${a.subagenti.length ? `<h4>Sub-agenți</h4><ul class="feed">${a.subagenti.map(s => `<li><span class="ic">${s.terminat?'✅':(s.varsta<300?'⚡':'⏸️')}</span><span>${esc(s.descriere)} <span style="color:var(--muted)">· ${ago(s.varsta)}</span>${s.ce && !s.terminat ? `<br><span style="color:var(--work);font-weight:700">${esc(s.ce)}</span>` : ''}</span></li>`).join('')}</ul>` : ''}
       <h4>Detalii</h4>
-      <div class="kv"><b>proiect</b><span><select id="mut">${opts}<option value="">↺ automat</option></select></span>
+      <div class="kv"><b>proiect</b><span><select id="mut">${opts}<option value="__nou__">➕ proiect nou…</option><option value="">↺ automat</option></select></span>
         <b>folder</b><span>${esc(a.cwd)}</span><b>branch</b><span>${esc(a.branch||'—')}</span>
         <b>model</b><span>${esc(a.model||'—')}</span><b>sesiune</b><span>${a.id}</span>
         <b>activ</b><span>${ago(a.varsta)}</span></div>
-      <p class="sub" style="margin-top:14px;font-size:12px">Continui sesiunea cu: <code>claude --resume ${a.id}</code></p>
+      <p class="sub" style="margin-top:14px;font-size:12px">Din orice terminal: ${a.pornita && a.fel==='fundal'
+        ? `<code>claude attach ${esc(a.job || a.id.slice(0,8))}</code> (sesiunea din fundal)`
+        : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> simplu pornește o sesiune nouă.</p>
     </div>`;
   P.classList.add('open');
   P.querySelector('.pb').scrollTop = keepScroll;
@@ -626,6 +876,31 @@ function renderPanel(){
     SENDING = false; load();
   };
   $('#send').onclick = () => { const text = t2.value.trim(); if (text && !SENDING) trimite(text, true); };
+  const deschide = async () => {
+    if (SENDING) return;
+    const text = a.pornita ? '' : t2.value.trim();     // la cele închise, mesajul pleacă odată cu trezirea
+    SENDING = true; LASTRES = null; renderPanel();
+    try{
+      const r = await fetch('/api/deschide', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, text})});
+      LASTRES = await r.json();
+      if (LASTRES.ok && text){ DRAFT[a.id] = ''; const t3 = $('#msg'); if (t3) t3.value = ''; }
+    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
+    SENDING = false; load();
+  };
+  $('#term').onclick = deschide;
+  if ($('#somn')) $('#somn').onclick = async () => {
+    if (SENDING) return;
+    const unde = a.fel === 'fundal' ? 'Se oprește sesiunea din fundal.' : 'Se închide Claude din fereastra lui de terminal.';
+    const grija = a.status === 'lucreaza' ? '\n\n⚠️ Lucrează chiar acum: se oprește la jumătatea a ce face.' : '';
+    if (!confirm(`Pui la somn „${a.titlu}”?\n\n${unde} Conversația rămâne salvată; îl trezești oricând din BuzzzHub.${grija}`)) return;
+    SENDING = true; LASTRES = null; renderPanel();
+    try{
+      const r = await fetch('/api/somn', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id})});
+      LASTRES = await r.json();
+    }catch(e){ LASTRES = {ok:false, info:'Serverul nu răspunde.'}; }
+    SENDING = false; load();
+  };
+  if ($('#term2')) $('#term2').onclick = deschide;
   $('#buzz').onclick = () => {
     if (SENDING) return;
     buzzEfect(a.id);
@@ -633,6 +908,12 @@ function renderPanel(){
   };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
   $('#mut').onchange = async e => {
+    if (e.target.value === '__nou__'){
+      const nume = (prompt('Numele proiectului nou:') || '').trim();
+      if (!nume){ e.target.value = a.proiect; return; }
+      await fetch('/api/proiect', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, nume})});
+      return load();
+    }
     await fetch('/api/aloca', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:a.id, proiect:e.target.value})});
     load();
   };
@@ -656,7 +937,7 @@ function buzzSunet(){
 }
 function buzzEfect(id){
   buzzSunet();
-  const tinte = [$('#panel'), ...document.querySelectorAll(`.ag[data-id="${id}"], .node[data-id="${id}"]`)];
+  const tinte = [$('#panel'), ...document.querySelectorAll(`.ag[data-id="${id}"], .node[data-id="${id}"], .camera[data-id="${id}"]`)];
   tinte.forEach(el => { if (!el) return; el.classList.remove('buzzing'); void el.offsetWidth; el.classList.add('buzzing'); });
   setTimeout(() => tinte.forEach(el => el && el.classList.remove('buzzing')), 700);
 }

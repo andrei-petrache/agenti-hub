@@ -1,23 +1,41 @@
 {
   "numele_tau": "",
+  "terminal": "auto",
   "cauta_wsl": true,
   "radacini_extra": [],
+  "foldere_comune": [],
   "proiecte": [
     {
       "nume": "Aplicația mea",
       "emoji": "🚀",
       "culoare": "#f2a65a",
       "descriere": "backend, frontend, review",
-      "titluri": ["backend", "frontend", "review"],
-      "cai": ["aplicatia-mea"]
+      "titluri": [
+        "backend",
+        "frontend",
+        "review"
+      ],
+      "cuvinte": [
+        "aplicatia mea"
+      ],
+      "cai": [
+        "aplicatia-mea"
+      ]
     },
     {
       "nume": "Site",
       "emoji": "🌐",
       "culoare": "#8fb996",
       "descriere": "site-ul de prezentare",
-      "titluri": ["site"],
-      "cai": ["site"]
+      "titluri": [
+        "site"
+      ],
+      "cuvinte": [
+        "site de prezentare"
+      ],
+      "cai": [
+        "site"
+      ]
     }
   ],
   "alocari": {}
