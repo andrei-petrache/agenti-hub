@@ -32,6 +32,7 @@ Open it in a terminal with one click, send it a message or put it to sleep.</p>
 ## What it does
 
 - **Projects.** Sessions are grouped by project using the session name, the folder it worked in the most, or keywords from its first requests. The home page shows how many agents are working in each project. From an agent's panel you can move it to another project or to a new one (➕ new project…).
+- **➕ Create, edit, merge and delete.** Make a project from the home page (name, emoji, colour, plus the keywords and folders that pull agents into it), and edit it, merge it into another one or delete it from its page (deleting a project keeps its agents; they get placed automatically again). **➕ New agent** starts a fresh Claude session with a name, a folder, a project and, if you like, a model, an effort and a first request: in a terminal window, or in the background (`claude --session-id … -n … --bg`). From an agent's panel, ✏️ renames it (the same lines `/rename` writes) or moves it, and 🗑️ deletes it: it is put to sleep first and its conversation moves to BuzzzHub's 🗑️ trash, where you can restore it or delete it for good.
 - **Agents.** Every session gets a mascot animated by its status:
   - ⚡ **working**: it bounces and its star spins. You also see what it runs, e.g. "runs Run all tests".
   - 👋 **waiting for you**: it is done and waves at you.

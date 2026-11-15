@@ -123,6 +123,31 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .kv b{color:var(--muted);font-weight:700}
 .x{margin-left:auto;font-size:18px;border:none;background:none}
 .empty{color:var(--muted);text-align:center;padding:50px 0}
+.ptools{display:flex;gap:8px;flex-wrap:wrap;margin:-12px 0 18px}
+.ptools button,.linkbtn{font-size:13px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:700}
+.ptools button:hover,.linkbtn:hover{border-color:var(--orange)}
+.proj.add{border:2px dashed var(--line);box-shadow:none;background:transparent;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:150px}
+.proj.add:hover{border-color:var(--orange)}
+.ibtn{border:none;background:none;font-size:16px;cursor:pointer;padding:4px 6px;border-radius:8px;opacity:.75}
+.ibtn:hover{opacity:1;background:var(--line)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);color:var(--ink);border-radius:20px;box-shadow:var(--shadow);width:min(520px,100%);max-height:90vh;overflow:auto;padding:22px}
+.modal h3{margin:0 0 14px}
+.modal label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 4px}
+.modal input,.modal textarea,.modal select{width:100%;box-sizing:border-box;font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.modal textarea{min-height:70px;resize:vertical}
+.modal input[type=color]{padding:2px;height:38px}
+.modal .row2{display:grid;grid-template-columns:90px 90px 1fr;gap:10px}
+.modal .row2 label{margin-top:0}
+.modal .note{font-size:12px;color:var(--muted);margin:4px 0 0}
+.modal .radio{display:flex;gap:8px;align-items:flex-start;font-weight:600;color:var(--ink);margin:6px 0}
+.modal .radio input{width:auto;margin-top:3px}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.mbtns button{padding:8px 16px;border-radius:12px;cursor:pointer}
+.trow{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.trow span{flex:1;min-width:0}
+.trow small{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:60;padding:10px 16px;border-radius:14px;box-shadow:var(--shadow);background:var(--card);color:var(--ink);max-width:min(560px,92vw);font-weight:600}
 .empty svg{width:110px;height:110px}
 
 /* mascot */
@@ -403,6 +428,25 @@ en: {
   sleep_warn:'\n\n⚠️ It is working right now: it stops halfway through.',
   buzz_text:'Buzzz! 🐝 How is it going? Give me a short update (2–3 lines): what you are working on now and whether you are stuck on anything.',
   new_project_prompt:'Name of the new project:',
+  add_proj:'➕ New project', add_proj_desc:'Make a project and choose what lands in it.',
+  t_new_agent:'➕ New agent', t_edit:'✏️ Edit', t_merge:'🔀 Merge into…', t_delete:'🗑️ Delete',
+  m_new_proj:'New project', m_edit_proj:'Edit project', f_name:'Name', f_emoji:'Emoji', f_color:'Color', f_desc:'Description',
+  f_kw:'Keywords (comma separated)', f_kw_note:'An agent whose name or first requests contain one of them lands here.',
+  f_paths:'Folders (part of the path, comma separated)', f_paths_note:'E.g. "mobila-3d": an agent working in a folder with that in its path lands here.',
+  b_save:'Save', b_cancel:'Cancel', b_create:'Create', b_close:'Close', b_merge:'Merge', b_start:'Start',
+  m_merge:'Merge “{p}” into…', merge_note:'Its agents, keywords and folders move into the project you pick, and “{p}” disappears. The conversations stay as they are.',
+  proj_del_confirm:'Delete the project “{p}”?\n\nOnly the project goes. Its agents and their conversations stay and get placed automatically again (maybe in Other).',
+  m_new_agent:'New agent', f_folder:'Folder it works in', f_folder_note:'Empty = your home folder.', f_project:'Project',
+  f_first:'First request (optional)', f_where:'Where it runs', w_term:'🖥️ In a terminal window (you see it and can answer)',
+  w_bg:'🌙 In the background (needs a first request; if the folder is not trusted yet it opens in a terminal)',
+  f_model:'Model', f_effort:'Effort', f_default:'(default)',
+  m_edit_agent:'Edit agent', f_agent_name_note:'The name is written into the conversation, just like /rename.',
+  agent_del_confirm:'Delete the agent “{t}”?\n\n{run}Its conversation moves to the 🗑️ trash in BuzzzHub and can be restored from there.',
+  agent_del_run:'It is running: it gets put to sleep first.\n',
+  a_edit:'Edit (name, project)', a_delete:'Delete the agent',
+  trash_h:'🗑️ Trash ({n})', trash_title:'Deleted agents', trash_restore:'↩️ Restore', trash_purge:'Delete forever',
+  trash_purge_confirm:'Delete “{t}” forever? The conversation can no longer be recovered afterwards.', trash_empty:'The trash is empty.',
+  trash_from:'from {p} · deleted {a}',
   ago_s:'{n}s ago', ago_m:'{n} min ago', ago_h:'{n} h ago', ago_d:'{n} days ago',
   robot:'🤖 dev robot · writes {l}', hobby:'hobby',
   animals:{cat:'cat', fox:'fox', bear:'bear', bunny:'bunny', frog:'frog', panda:'panda', owl:'owl', penguin:'penguin', dog:'puppy', hamster:'hamster'},
@@ -470,6 +514,15 @@ en: {
     woke_opened:'Woke it in the background and opened it in {term}.',
     woke_opened_msg:'Woke it in the background and opened it in {term}. Your message has already reached it.',
     opened:'Opened it in {term}.', term_failed:"Couldn't open the terminal: {err}", demo:'Demo mode: nothing is sent.',
+    name_needed:'Write a name first.', proj_exists:'There is already a project called “{name}”.',
+    proj_created:'Project “{name}” created.', proj_saved:'Saved.', proj_deleted:'Project “{name}” deleted; its agents are placed automatically again.',
+    proj_merged:'“{name}” merged into “{into}”.', no_folder:"The folder {dir} doesn't exist.",
+    agent_bg:'“{name}” started in the background with your request.', agent_term:'“{name}” opened in a terminal: write your first request there. It shows up here after it.',
+    agent_term_msg:'“{name}” opened in a terminal with your request.', agent_saved:'Saved.',
+    agent_saved_run:'Saved. The running session picks up the new name the next time it starts.',
+    agent_deleted:'“{name}” moved to the trash.', wsl_running:'A running WSL session must be closed in its own window first.',
+    still_running:"It didn't stop, so I didn't delete it.", delete_failed:"Couldn't move the files: {err}",
+    trash_purged:'“{name}” deleted forever.', trash_restored:'“{name}” is back.', restore_exists:'A conversation with the same id already exists, so I left it in the trash.',
   },
 },
 ro: {
@@ -537,6 +590,25 @@ ro: {
   sleep_warn:'\n\n⚠️ Lucrează chiar acum: se oprește la jumătatea a ce face.',
   buzz_text:'Buzzz! 🐝 Ce faci? Dă-mi un update scurt (2–3 rânduri): la ce lucrezi acum și dacă ești blocat în ceva.',
   new_project_prompt:'Numele proiectului nou:',
+  add_proj:'➕ Proiect nou', add_proj_desc:'Fă un proiect și alege ce intră în el.',
+  t_new_agent:'➕ Agent nou', t_edit:'✏️ Editează', t_merge:'🔀 Unește cu…', t_delete:'🗑️ Șterge',
+  m_new_proj:'Proiect nou', m_edit_proj:'Editează proiectul', f_name:'Nume', f_emoji:'Emoji', f_color:'Culoare', f_desc:'Descriere',
+  f_kw:'Cuvinte-cheie (despărțite prin virgulă)', f_kw_note:'Un agent care are unul dintre ele în nume sau în primele cereri ajunge aici.',
+  f_paths:'Foldere (o parte din cale, despărțite prin virgulă)', f_paths_note:'De ex. „mobila-3d”: un agent care lucrează într-un folder cu asta în cale ajunge aici.',
+  b_save:'Salvează', b_cancel:'Renunță', b_create:'Creează', b_close:'Închide', b_merge:'Unește', b_start:'Pornește',
+  m_merge:'Unește „{p}” cu…', merge_note:'Agenții, cuvintele-cheie și folderele lui trec în proiectul ales, iar „{p}” dispare. Conversațiile rămân neatinse.',
+  proj_del_confirm:'Ștergi proiectul „{p}”?\n\nSe șterge doar proiectul. Agenții și conversațiile lor rămân și sunt puși din nou automat (poate la Diverse).',
+  m_new_agent:'Agent nou', f_folder:'Folderul în care lucrează', f_folder_note:'Gol = folderul tău personal (home).', f_project:'Proiect',
+  f_first:'Prima cerere (opțional)', f_where:'Unde rulează', w_term:'🖥️ Într-o fereastră de terminal (îl vezi și îi poți răspunde)',
+  w_bg:'🌙 În fundal (are nevoie de o primă cerere; dacă folderul nu e încă de încredere, se deschide în terminal)',
+  f_model:'Model', f_effort:'Efort', f_default:'(implicit)',
+  m_edit_agent:'Editează agentul', f_agent_name_note:'Numele se scrie în conversație, exact ca /rename.',
+  agent_del_confirm:'Ștergi agentul „{t}”?\n\n{run}Conversația lui ajunge în 🗑️ coșul din BuzzzHub și o poți recupera de acolo.',
+  agent_del_run:'Rulează acum: întâi îl pun la somn.\n',
+  a_edit:'Editează (nume, proiect)', a_delete:'Șterge agentul',
+  trash_h:'🗑️ Coș ({n})', trash_title:'Agenți șterși', trash_restore:'↩️ Recuperează', trash_purge:'Șterge definitiv',
+  trash_purge_confirm:'Ștergi definitiv „{t}”? Conversația nu mai poate fi recuperată după aceea.', trash_empty:'Coșul e gol.',
+  trash_from:'din {p} · șters {a}',
   ago_s:'acum {n}s', ago_m:'acum {n} min', ago_h:'acum {n} h', ago_d:'acum {n} zile',
   robot:'🤖 roboțel · scrie în {l}', hobby:'pasiune',
   animals:{cat:'pisică', fox:'vulpe', bear:'urs', bunny:'iepuraș', frog:'broscuță', panda:'panda', owl:'bufniță', penguin:'pinguin', dog:'cățel', hamster:'hamster'},
@@ -604,6 +676,15 @@ ro: {
     woke_opened:'Am trezit-o în fundal și am deschis-o în {term}.',
     woke_opened_msg:'Am trezit-o în fundal și am deschis-o în {term}. Mesajul tău a ajuns deja la ea.',
     opened:'Am deschis-o în {term}.', term_failed:'Nu am putut deschide terminalul: {err}', demo:'În modul demo nu trimit nimic.',
+    name_needed:'Scrie întâi un nume.', proj_exists:'Există deja un proiect „{name}”.',
+    proj_created:'Am creat proiectul „{name}”.', proj_saved:'Salvat.', proj_deleted:'Am șters proiectul „{name}”; agenții lui sunt puși din nou automat.',
+    proj_merged:'Am unit „{name}” cu „{into}”.', no_folder:'Folderul {dir} nu există.',
+    agent_bg:'„{name}” a pornit în fundal cu cererea ta.', agent_term:'„{name}” s-a deschis în terminal: scrie acolo prima cerere. Apare aici după ea.',
+    agent_term_msg:'„{name}” s-a deschis în terminal cu cererea ta.', agent_saved:'Salvat.',
+    agent_saved_run:'Salvat. Sesiunea care rulează preia numele nou la următoarea pornire.',
+    agent_deleted:'Am mutat „{name}” în coș.', wsl_running:'O sesiune WSL pornită trebuie închisă întâi din fereastra ei.',
+    still_running:'Nu s-a oprit, așa că nu l-am șters.', delete_failed:'Nu am putut muta fișierele: {err}',
+    trash_purged:'Am șters definitiv „{name}”.', trash_restored:'„{name}” s-a întors.', restore_exists:'Există deja o conversație cu același id, așa că am lăsat-o în coș.',
   },
 },
 };
@@ -916,7 +997,8 @@ function renderHome(){
   let h = `<div class="hello">${t('pick', {g})}</div>
     <p class="sub" style="margin-bottom:4px">${t('summary', {w:c.working, a:c.waiting, s:c.stuck, z:c.sleeping})}</p>`;
   const su = sumUsage(all), hub = DATA.hub_usage || {};
-  h += `<p class="sub">📊 ${t('u_home', {t: fmtTok(su.day.tok), c: fmtUsd(su.day.cost), h: fmtTok(su.hour.tok)})}${hub.msgs ? ' · ' + t('u_home_hub', {n: hub.msgs, t: fmtTok(hub.tok)}) : ''}</p><div class="grid">`;
+  h += `<p class="sub">📊 ${t('u_home', {t: fmtTok(su.day.tok), c: fmtUsd(su.day.cost), h: fmtTok(su.hour.tok)})}${hub.msgs ? ' · ' + t('u_home_hub', {n: hub.msgs, t: fmtTok(hub.tok)}) : ''}</p>
+    ${(DATA.trash || []).length ? `<div class="ptools" style="margin:0 0 16px"><button id="trash">${t('trash_h', {n: DATA.trash.length})}</button></div>` : ''}<div class="grid">`;
   const projects = [...DATA.projects, {name:'*', emoji:'🌈', color:'#e8875b', description:t('all_desc'), agents: all}];
   for (const p of projects){
     const cc = counts(p.agents);
@@ -929,8 +1011,11 @@ function renderHome(){
       ${(() => { const pu = sumUsage(p.agents); return pu.day.tok ? `<div class="counts" style="align-items:center"><span>📊 ${t('mini', {t: fmtTok(pu.day.tok)})} · ${fmtUsd(pu.day.cost)}</span>${spark(pu.spark, 72, 16)}</div>` : ''; })()}
     </div>`;
   }
+  h += `<div class="proj add" id="add-proj"><div class="em">➕</div><h3>${t('add_proj').replace('➕ ', '')}</h3><p>${t('add_proj_desc')}</p></div>`;
   $('#main').innerHTML = h + '</div>';
-  document.querySelectorAll('.proj').forEach(el => el.onclick = () => { PROJ = el.dataset.p; save(); render(); scrollTo(0,0); });
+  document.querySelectorAll('.proj[data-p]').forEach(el => el.onclick = () => { PROJ = el.dataset.p; save(); render(); scrollTo(0,0); });
+  $('#add-proj').onclick = () => projectForm(null);
+  if ($('#trash')) $('#trash').onclick = trashModal;
 }
 
 function pill(a){
@@ -962,6 +1047,7 @@ function renderProject(){
   awake.sort((a,b) => rank(a)-rank(b) || a.age-b.age);
   const nRunning = p.agents.filter(a => a.running).length;
   let h = `<div class="hello">${p.emoji} ${esc(projName(p.name))}</div><p class="sub">${t('proj_sub', {n: p.agents.length, r: nRunning})}</p>
+    <div class="ptools"><button id="pt-new">${t('t_new_agent')}</button>${p.name !== '*' && p.name !== '@other' ? `<button id="pt-edit">${t('t_edit')}</button>${DATA.projects.length > 2 ? `<button id="pt-merge">${t('t_merge')}</button>` : ''}<button id="pt-del">${t('t_delete')}</button>` : ''}</div>
     <div class="tabs"><button data-t="workshop" class="${TAB==='workshop'?'on':''}">${t('tab_workshop')}</button><button data-t="agents" class="${TAB==='agents'?'on':''}">${t('tab_agents')}</button><button data-t="map" class="${TAB==='map'?'on':''}">${t('tab_map')}</button><button data-t="usage" class="${TAB==='usage'?'on':''}">${t('tab_usage')}</button></div>`;
   if (TAB === 'usage') return renderUsage(p, h);
   USAGE_KEY = '';
@@ -1311,7 +1397,16 @@ function renderUsage(p, head){
   document.querySelectorAll('#usage tr.click').forEach(el => el.onclick = () => { SEL = el.dataset.id; LASTRES = null; renderPanel(); });
 }
 
+function bindProjTools(){
+  const p = DATA.projects.find(x => x.name === PROJ) || {name: PROJ};
+  if ($('#pt-new')) $('#pt-new').onclick = () => agentForm(PROJ);
+  if ($('#pt-edit')) $('#pt-edit').onclick = () => projectForm(p);
+  if ($('#pt-merge')) $('#pt-merge').onclick = () => mergeForm(p);
+  if ($('#pt-del')) $('#pt-del').onclick = () => deleteProject(p);
+}
+
 function bindTabs(){
+  bindProjTools();
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { const was = TAB; TAB = b.dataset.t; store.set('tab', TAB); render(); if ((TAB === 'usage') !== (was === 'usage')) load(); });
 }
 
@@ -1418,7 +1513,10 @@ function renderPanel(){
   P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.title), a.status, a.title)}
       <div><h3 style="margin:0">${esc(a.title)}</h3>${pill(a)}
         ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div>
-      <button class="x" id="close" title="${t('close')}">✕</button></div>
+      <span style="margin-left:auto;display:flex;gap:2px;align-items:center">
+        <button class="ibtn" id="a-edit" title="${esc(t('a_edit'))}">✏️</button>
+        <button class="ibtn" id="a-del" title="${esc(t('a_delete'))}" ${SENDING ? 'disabled' : ''}>🗑️</button>
+        <button class="x" id="close" title="${t('close')}">✕</button></span></div>
     <div class="pb">
       ${a.asks ? `<div class="ask"><span style="font-size:26px">${a.asks==='approval'?'✋':'🙋'}</span>
         <p><b>${t(a.asks==='approval'?'ask_approval':'ask_question')}</b>
@@ -1543,6 +1641,8 @@ function renderPanel(){
     if (!SENDING && confirm(t('cmp_sleep_confirm', {t: a.title}))) run('/api/sleep', {id: a.id, compact: true}, false);
   };
   $('#close').onclick = () => { SEL = null; P.classList.remove('open'); render(); };
+  $('#a-edit').onclick = () => agentEditForm(a);
+  $('#a-del').onclick = () => { if (!SENDING) deleteAgent(a); };
   if ($('#move')) $('#move').onchange = async e => {
     if (e.target.value === '__new__'){
       const name = (prompt(t('new_project_prompt')) || '').trim();
@@ -1553,6 +1653,142 @@ function renderPanel(){
     await post('/api/assign', {id:a.id, project:e.target.value});
     load();
   };
+}
+
+/* ---------- create / edit / delete projects and agents ---------- */
+function toast(r){
+  document.querySelectorAll('.toast').forEach(x => x.remove());
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = (r.ok ? '✅ ' : '⚠️ ') + resultText(r);
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+function modal(title, body, onOk, okLabel){
+  document.querySelectorAll('.modal-bg').forEach(x => x.remove());
+  const m = document.createElement('div');
+  m.className = 'modal-bg';
+  m.innerHTML = `<div class="modal"><h3>${title}</h3><div class="mbody">${body}</div><div class="mres"></div>
+    <div class="mbtns"><button class="sleep" data-x>${t(onOk ? 'b_cancel' : 'b_close')}</button>${onOk ? `<button class="term" data-ok>${okLabel || t('b_save')}</button>` : ''}</div></div>`;
+  document.body.appendChild(m);
+  const close = () => { m.remove(); document.removeEventListener('keydown', esc_); };
+  const esc_ = e => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', esc_);
+  m.querySelector('[data-x]').onclick = close;
+  m.onmousedown = e => { if (e.target === m) close(); };
+  if (onOk) m.querySelector('[data-ok]').onclick = async () => {
+    const b = m.querySelector('[data-ok]');
+    b.disabled = true;
+    const r = await onOk(m);
+    b.disabled = false;
+    if (!r) return;
+    if (!r.ok){ m.querySelector('.mres').innerHTML = `<div class="res err">⚠️ ${esc(resultText(r))}</div>`; return; }
+    close(); toast(r); load();
+  };
+  const first = m.querySelector('input:not([type=radio]),textarea,select');
+  if (first) first.focus();
+  return m;
+}
+
+const manage = body => post('/api/manage', body);
+const val = (m, id) => (m.querySelector('#' + id) || {}).value || '';
+
+function projectForm(p){
+  const pr = p || {};
+  const body = `<label>${t('f_name')}</label><input id="f-name" maxlength="40" value="${esc(pr.name || '')}">
+    <div class="row2" style="margin-top:12px"><div><label>${t('f_emoji')}</label><input id="f-emoji" maxlength="4" value="${esc(pr.emoji || '📁')}"></div>
+      <div><label>${t('f_color')}</label><input id="f-color" type="color" value="${esc(pr.color || PALETTE[(DATA.projects.length) % PALETTE.length])}"></div>
+      <div><label>${t('f_desc')}</label><input id="f-desc" maxlength="160" value="${esc(pr.description || '')}"></div></div>
+    <label>${t('f_kw')}</label><input id="f-kw" value="${esc((pr.keywords || []).join(', '))}"><p class="note">${t('f_kw_note')}</p>
+    <label>${t('f_paths')}</label><input id="f-paths" value="${esc((pr.paths || []).join(', '))}"><p class="note">${t('f_paths_note')}</p>`;
+  modal(t(p ? 'm_edit_proj' : 'm_new_proj'), body, async m => {
+    const r = await manage({op: p ? 'proj_edit' : 'proj_create', project: p ? p.name : '', name: val(m, 'f-name'),
+      emoji: val(m, 'f-emoji'), color: val(m, 'f-color'), description: val(m, 'f-desc'),
+      keywords: val(m, 'f-kw'), paths: val(m, 'f-paths')});
+    if (r.ok){ PROJ = r.p.name; save(); }
+    return r;
+  }, t(p ? 'b_save' : 'b_create'));
+}
+
+function mergeForm(p){
+  const opts = DATA.projects.filter(x => x.name !== p.name && x.name !== '@other')
+    .map(x => `<option value="${esc(x.name)}">${x.emoji} ${esc(x.name)}</option>`).join('');
+  modal(t('m_merge', {p: esc(p.name)}), `<select id="f-into">${opts}</select><p class="note" style="margin-top:10px">${t('merge_note', {p: esc(p.name)})}</p>`,
+    async m => {
+      const into = val(m, 'f-into');
+      const r = await manage({op: 'proj_merge', project: p.name, into});
+      if (r.ok){ PROJ = into; save(); }
+      return r;
+    }, t('b_merge'));
+}
+
+async function deleteProject(p){
+  if (!confirm(t('proj_del_confirm', {p: p.name}))) return;
+  const r = await manage({op: 'proj_delete', project: p.name});
+  toast(r);
+  if (r.ok){ PROJ = null; save(); }
+  load();
+}
+
+function agentForm(projName){
+  const all = DATA.projects.flatMap(p => p.agents);
+  const mine = all.filter(a => a.project === projName && !a.wsl);
+  const folders = [...new Set(mine.concat(all).filter(a => !a.wsl).map(a => a.cwd).filter(Boolean))];
+  const popular = Object.entries(mine.reduce((o, a) => (o[a.cwd] = (o[a.cwd] || 0) + 1, o), {})).sort((a, b) => b[1] - a[1]);
+  const projOpts = DATA.projects.filter(p => p.name !== '@other').map(p => `<option value="${esc(p.name)}" ${p.name === projName ? 'selected' : ''}>${p.emoji} ${esc(p.name)}</option>`).join('')
+    + `<option value="" ${!projName || projName === '@other' || projName === '*' ? 'selected' : ''}>${t('automatic')}</option>`;
+  const body = `<label>${t('f_name')}</label><input id="f-name" maxlength="60">
+    <label>${t('f_project')}</label><select id="f-proj">${projOpts}</select>
+    <label>${t('f_folder')}</label><input id="f-folder" list="f-folders" value="${esc(popular.length ? popular[0][0] : '')}">
+      <datalist id="f-folders">${folders.map(f => `<option value="${esc(f)}">`).join('')}</datalist><p class="note">${t('f_folder_note')}</p>
+    <div class="row2" style="grid-template-columns:1fr 1fr;margin-top:12px">
+      <div><label>${t('f_model')}</label><select id="f-model"><option value="">${t('f_default')}</option>${MODEL_CHOICES.map(([m, p]) => `<option value="${m}">${modelName(m)} · ${p}</option>`).join('')}</select></div>
+      <div><label>${t('f_effort')}</label><select id="f-effort"><option value="">${t('f_default')}</option>${EFFORT_CHOICES.map(e => `<option>${e}</option>`).join('')}</select></div></div>
+    <label>${t('f_first')}</label><textarea id="f-text"></textarea>
+    <label>${t('f_where')}</label>
+    <label class="radio"><input type="radio" name="f-where" value="term" checked> ${t('w_term')}</label>
+    <label class="radio"><input type="radio" name="f-where" value="bg"> ${t('w_bg')}</label>`;
+  modal(t('m_new_agent'), body, m => manage({op: 'agent_new', name: val(m, 'f-name'), project: val(m, 'f-proj'),
+    folder: val(m, 'f-folder'), model: val(m, 'f-model'), effort: val(m, 'f-effort'), text: val(m, 'f-text'),
+    background: (m.querySelector('input[name=f-where]:checked') || {}).value === 'bg'}), t('b_start'));
+}
+
+function agentEditForm(a){
+  const projOpts = DATA.projects.filter(p => p.name !== '@other').map(p => `<option value="${esc(p.name)}" ${p.name === a.project ? 'selected' : ''}>${p.emoji} ${esc(p.name)}</option>`).join('')
+    + `<option value="" ${a.project === '@other' ? 'selected' : ''}>${t('automatic')}</option>`;
+  modal(t('m_edit_agent'), `<label>${t('f_name')}</label><input id="f-name" maxlength="60" value="${esc(a.title)}">
+    <p class="note">${t('f_agent_name_note')}</p>
+    <label>${t('f_project')}</label><select id="f-proj">${projOpts}</select>`,
+    m => manage({op: 'agent_edit', id: a.id, name: val(m, 'f-name'), project: val(m, 'f-proj')}));
+}
+
+async function deleteAgent(a){
+  if (!confirm(t('agent_del_confirm', {t: a.title, run: a.running ? t('agent_del_run') : ''}))) return;
+  SENDING = true; renderPanel();
+  const r = await manage({op: 'agent_delete', id: a.id});
+  SENDING = false;
+  toast(r);
+  if (r.ok){ SEL = null; $('#panel').classList.remove('open'); }
+  load();
+}
+
+function trashModal(){
+  const list = DATA.trash || [];
+  const rows = list.map(x => `<div class="trow"><span><b>${esc(x.title || x.id)}</b><br><small>${t('trash_from', {p: esc(projName(x.project || '@other')), a: ago(Date.now() / 1000 - x.t)})}</small></span>
+    <button class="term" data-r="${x.id}">${t('trash_restore')}</button><button class="sleep" data-d="${x.id}">${t('trash_purge')}</button></div>`).join('');
+  const m = modal(t('trash_title'), rows || `<p class="sub">${t('trash_empty')}</p>`, null);
+  const act = async (op, id) => {
+    const x = list.find(y => y.id === id);
+    if (op === 'trash_purge' && !confirm(t('trash_purge_confirm', {t: x.title || id}))) return;
+    const r = await manage({op, id});
+    toast(r);
+    m.remove();
+    await load();
+    if ((DATA.trash || []).length) trashModal();
+  };
+  m.querySelectorAll('[data-r]').forEach(b => b.onclick = () => act('trash_restore', b.dataset.r));
+  m.querySelectorAll('[data-d]').forEach(b => b.onclick = () => act('trash_purge', b.dataset.d));
 }
 
 /* BUZZ!: a short synthesised buzz + everything showing the agent shakes */

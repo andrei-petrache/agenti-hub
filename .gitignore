@@ -15,5 +15,7 @@ buzzzhub.log
 .venv/
 __pycache__/
 *.pyc
+# deleted agents, kept until restored or emptied from the app
+trash/
 # usage index (token totals per transcript, rebuilt automatically)
 cache/

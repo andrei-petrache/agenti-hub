@@ -667,6 +667,7 @@ def state(days, rng=None):
         m = meta.get(n, {})
         projects.append({"name": n, "emoji": m.get("emoji", "📁"), "color": m.get("color", "#c9b8a6"),
                          "description": m.get("description", ""),
+                         "keywords": m.get("keywords") or [], "paths": m.get("paths") or [],
                          "auto_compact": m.get("auto_compact"), "prompt_suggestions": m.get("prompt_suggestions", True),
                          "agents": [a for a in agents if a["project"] == n]})
     usage.INDEX.save()
@@ -677,7 +678,7 @@ def state(days, rng=None):
             hub["tok"] += m["relay_tok"]
             hub["cost"] += m.get("relay_cost") or 0
     return {"now": now_t, "projects": projects, "links": link_list, "live_ok": live is not None,
-            "hub_usage": hub, "global_auto_compact": _global_auto_compact()}
+            "hub_usage": hub, "global_auto_compact": _global_auto_compact(), "trash": trash_list()}
 
 
 def _global_auto_compact():
@@ -708,12 +709,14 @@ BANNER = {
            "attach": "You are in the session that runs in the background. If you close this window the agent "
                      "keeps going; reopen it any time from BuzzzHub.",
            "trust": "This folder is not marked as trusted yet: confirm in the terminal, then work as usual.",
-           "wsl": "Starting the WSL session…", "left": "You left the session. You can close this window."},
+           "wsl": "Starting the WSL session…", "left": "You left the session. You can close this window.",
+           "new": "A new agent, made from BuzzzHub. Write your first request below."},
     "ro": {"project": "proiect", "folder": "folder", "session": "sesiune",
            "attach": "Ești în sesiunea care rulează în fundal. Dacă închizi fereastra, agentul merge mai departe; "
                      "îl poți redeschide oricând din BuzzzHub.",
            "trust": "Folderul nu e încă marcat ca sigur: confirmă în terminal, apoi lucrezi normal.",
-           "wsl": "Pornesc sesiunea din WSL…", "left": "Ai ieșit din sesiune. Poți închide fereastra."},
+           "wsl": "Pornesc sesiunea din WSL…", "left": "Ai ieșit din sesiune. Poți închide fereastra.",
+           "new": "Agent nou, făcut din BuzzzHub. Scrie mai jos prima cerere."},
 }
 
 
@@ -1133,6 +1136,267 @@ def open_in_terminal(sid, text="", lang="en"):
     return True, ("woke_opened_msg" if woke and text else "woke_opened" if woke else "opened"), {"term": term}
 
 
+# ---------------------------------------------------------------- creating, editing and deleting
+TRASH = HERE / "trash"                               # deleted agents wait here until restored or emptied
+
+
+def _clean_list(v, lower=True):
+    items = v if isinstance(v, list) else re.split(r"[,\n]", str(v or ""))
+    out = []
+    for x in items:
+        x = short(x, 80)
+        x = x.lower() if lower else x
+        if x and x not in out:
+            out.append(x)
+    return out[:30]
+
+
+def _project_fields(d, old=None):
+    """Validated project fields from the form; None if the name is missing or invalid."""
+    name = short(d.get("name"), 40)
+    if not name or name.startswith("@") or name == "*":
+        return None
+    color = str(d.get("color") or "")
+    p = dict(old or {"titles": [], "keywords": [], "paths": []})
+    p.update({"name": name, "emoji": short(d.get("emoji"), 4) or (old or {}).get("emoji") or "📁",
+              "color": color if re.fullmatch(r"#[0-9a-fA-F]{6}", color) else (old or {}).get("color", "#c9b8a6"),
+              "description": short(d.get("description"), 160),
+              "keywords": _clean_list(d.get("keywords")), "paths": _clean_list(d.get("paths"))})
+    return p
+
+
+def manage_project(op, d):
+    cfg = load_config()
+    projects = cfg.setdefault("projects", [])
+    asg = cfg.setdefault("assignments", {})
+    names = [p["name"] for p in projects]
+    if op == "proj_create":
+        p = _project_fields(d)
+        if not p:
+            return False, "name_needed", {}
+        if p["name"] in names:
+            return False, "proj_exists", {"name": p["name"]}
+        projects.append(p)
+        save_config(cfg)
+        return True, "proj_created", {"name": p["name"]}
+    old = str(d.get("project") or "")
+    if old not in names:
+        return False, "not_found", {}
+    cur = projects[names.index(old)]
+    if op == "proj_edit":
+        p = _project_fields(d, cur)
+        if not p:
+            return False, "name_needed", {}
+        if p["name"] != old and p["name"] in names:
+            return False, "proj_exists", {"name": p["name"]}
+        projects[names.index(old)] = p
+        for sid, pr in list(asg.items()):            # a rename keeps the agents placed by hand
+            if pr == old:
+                asg[sid] = p["name"]
+        save_config(cfg)
+        return True, "proj_saved", {"name": p["name"]}
+    if op == "proj_delete":
+        projects.remove(cur)
+        for sid, pr in list(asg.items()):            # its agents go back to automatic placement
+            if pr == old:
+                asg.pop(sid)
+        save_config(cfg)
+        return True, "proj_deleted", {"name": old}
+    if op == "proj_merge":
+        into = str(d.get("into") or "")
+        if into not in names or into == old:
+            return False, "not_found", {}
+        dst = projects[names.index(into)]
+        for k in ("titles", "keywords", "paths"):    # whatever found agents for the old one now finds the new one
+            dst[k] = list(dict.fromkeys((dst.get(k) or []) + (cur.get(k) or [])))
+        dst["keywords"] = list(dict.fromkeys(dst["keywords"] + [old.lower()]))
+        for sid, pr in list(asg.items()):
+            if pr == old:
+                asg[sid] = into
+        for a in _latest.values():                   # agents it found automatically stay together too
+            if a.get("project") == old and a["id"] not in asg:
+                asg[a["id"]] = into
+        projects.remove(cur)
+        save_config(cfg)
+        return True, "proj_merged", {"name": old, "into": into}
+    return False, "not_found", {}
+
+
+def new_agent(d, lang="en"):
+    """A new Claude session with a name, in a folder and a project: in a terminal window, or in the background
+    when it gets a first request and the folder is trusted."""
+    import terminal
+    import uuid
+    if not CLAUDE:
+        return False, "no_claude", {}
+    lang = _lang(lang)
+    b = BANNER[lang]
+    name = short(d.get("name"), 60)
+    if not name:
+        return False, "name_needed", {}
+    folder = str(d.get("folder") or "").strip().strip('"') or str(Path.home())
+    if not Path(folder).is_dir():
+        return False, "no_folder", {"dir": folder}
+    text = str(d.get("text") or "").strip()[:8000]
+    sid = str(uuid.uuid4())
+    cfg = load_config()
+    project = str(d.get("project") or "")
+    if project in [p["name"] for p in cfg.get("projects", [])]:
+        cfg.setdefault("assignments", {})[sid] = project
+    else:
+        project = OTHER
+    ch = {k: v for k, v in (("model", d.get("model") if d.get("model") in MODELS else None),
+                            ("effort", d.get("effort") if d.get("effort") in EFFORTS else None)) if v}
+    if ch:
+        cfg.setdefault("choice", {})[sid] = dict(ch, t=time.time())
+    save_config(cfg)
+    a = {"id": sid, "title": name, "project": project, "cwd": folder, "cwd_start": folder}
+    args = ["--session-id", sid, "-n", name] + _model_flags(a)
+    line = b["new"]
+    if text and d.get("background"):
+        try:
+            r = subprocess.run([CLAUDE] + args + ["--bg", text], capture_output=True, timeout=90, cwd=folder,
+                               creationflags=NO_WIN)
+            out = (r.stdout + r.stderr).decode("utf-8", "replace").strip()
+        except (OSError, subprocess.SubprocessError) as e:
+            return False, "start_failed", {"err": str(e)}
+        if "not trusted" in out.lower():
+            line = b["trust"]                        # can be trusted once in the window
+        elif r.returncode != 0:
+            return False, "not_started", {"out": short(out, 300)}
+        else:
+            log_message(a, text, "background")
+            _live["t"] = 0
+            return True, "agent_bg", {"name": name}
+    ok, term = terminal.open_window(sid, name, _banner(a, lang, line), ["claude"] + args + ([text] if text else []),
+                                    folder, load_config().get("terminal", "auto"), b["left"])
+    if not ok:
+        return False, "term_failed", {"err": term}
+    if text:
+        log_message(a, text, "terminal")
+    _live["t"] = 0
+    return True, ("agent_term_msg" if text else "agent_term"), {"name": name}
+
+
+def _transcript(sid):
+    for root in roots_cached():
+        try:
+            for f in root.glob(f"*/{sid}.jsonl"):
+                return f
+        except OSError:
+            continue
+    return None
+
+
+def edit_agent(sid, d):
+    a = _latest.get(sid)
+    if not a:
+        return False, "not_found", {}
+    name = short(d.get("name"), 60)
+    if name and name != a["title"]:
+        f = _transcript(sid)
+        if not f:
+            return False, "not_found", {}
+        # the same lines Claude writes for /rename; --resume and `claude agents` pick the name up from them
+        with open(f, "a", encoding="utf-8", newline="\n") as fh:
+            for line in ({"type": "custom-title", "customTitle": name, "sessionId": sid},
+                         {"type": "agent-name", "agentName": name, "sessionId": sid}):
+                fh.write(json.dumps(line, ensure_ascii=False) + "\n")
+    if "project" in d:
+        cfg = load_config()
+        pr = str(d.get("project") or "")
+        if pr and pr != OTHER and pr in [p["name"] for p in cfg.get("projects", [])]:
+            cfg.setdefault("assignments", {})[sid] = pr
+        else:
+            cfg.setdefault("assignments", {}).pop(sid, None)
+        save_config(cfg)
+    return True, ("agent_saved_run" if name and name != a["title"] and a["running"] else "agent_saved"), {}
+
+
+def delete_agent(sid):
+    """Puts the agent to sleep and moves its conversation (and its sub-agents) to the trash, where it can be
+    restored from. Nothing is erased until the trash is emptied."""
+    a = _latest.get(sid)
+    if not a:
+        return False, "not_found", {}
+    if a["running"]:
+        if a["wsl"]:
+            return False, "wsl_running", {}
+        ok, code, params = put_to_sleep(sid)
+        if not ok:
+            return False, code, params
+        for _ in range(20):
+            _live["t"] = 0
+            if not (running_sessions() or {}).get(sid):
+                break
+            time.sleep(0.5)
+        else:
+            return False, "still_running", {}
+        _close_old_windows(sid)
+    if not a["wsl"]:
+        _forget_stopped_job(sid)
+    f = _transcript(sid)
+    if not f:
+        return False, "not_found", {}
+    dest = TRASH / sid
+    dest.mkdir(parents=True, exist_ok=True)
+    cfg = load_config()
+    saved = {k: (cfg.get(k) or {}).pop(sid, None) for k in ("assignments", "choice", "pending")}
+    meta = {"id": sid, "title": a["title"], "project": a["project"], "from": str(f), "t": time.time(),
+            "config": {k: v for k, v in saved.items() if v is not None}}
+    try:
+        shutil.move(str(f), str(dest / f.name))
+        sub = f.with_suffix("")                      # <sid>/ next to the transcript: sub-agents, tool output
+        if sub.is_dir():
+            shutil.move(str(sub), str(dest / "files"))
+    except OSError as e:
+        return False, "delete_failed", {"err": str(e)}
+    (dest / "meta.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    save_config(cfg)
+    _latest.pop(sid, None)
+    return True, "agent_deleted", {"name": a["title"]}
+
+
+def trash_list():
+    out = []
+    if TRASH.is_dir():
+        for m in TRASH.glob("*/meta.json"):
+            try:
+                x = json.loads(m.read_text(encoding="utf-8"))
+                out.append({k: x.get(k) for k in ("id", "title", "project", "t")})
+            except (OSError, ValueError):
+                continue
+    return sorted(out, key=lambda x: -(x.get("t") or 0))
+
+
+def manage_trash(op, sid):
+    dest = TRASH / sid
+    try:
+        meta = json.loads((dest / "meta.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False, "not_found", {}
+    if op == "trash_purge":
+        shutil.rmtree(dest, ignore_errors=True)
+        return True, "trash_purged", {"name": meta.get("title")}
+    f = Path(meta["from"])
+    if f.exists():
+        return False, "restore_exists", {}
+    try:
+        f.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(dest / f.name), str(f))
+        if (dest / "files").is_dir():
+            shutil.move(str(dest / "files"), str(f.with_suffix("")))
+    except OSError as e:
+        return False, "delete_failed", {"err": str(e)}
+    cfg = load_config()
+    for k, v in (meta.get("config") or {}).items():
+        if k != "assignments" or v in [p["name"] for p in cfg.get("projects", [])]:
+            cfg.setdefault(k, {})[sid] = v
+    save_config(cfg)
+    shutil.rmtree(dest, ignore_errors=True)
+    return True, "trash_restored", {"name": meta.get("title")}
+
+
 # ---------------------------------------------------------------- HTTP
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
@@ -1174,7 +1438,7 @@ class H(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in ("/api/assign", "/api/project", "/api/send", "/api/open", "/api/sleep", "/api/model",
-                             "/api/compact", "/api/psettings"):
+                             "/api/compact", "/api/psettings", "/api/manage"):
             return self.send_error(404)
         if self.headers.get("Origin") not in (None, f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"):
             return self.send_error(403)
@@ -1182,6 +1446,24 @@ class H(BaseHTTPRequestHandler):
         try:
             d = json.loads(self.rfile.read(n) or b"{}")
         except ValueError:
+            return self.send_error(400)
+        if self.path == "/api/manage":
+            if "--demo" in sys.argv:
+                return self._result((False, "demo", {}))
+            op = str(d.get("op") or "")
+            if op.startswith("proj_"):
+                return self._result(manage_project(op, d))
+            if op == "agent_new":
+                return self._result(new_agent(d, str(d.get("lang", "en"))))
+            sid = str(d.get("id", ""))
+            if not re.fullmatch(r"[0-9a-f-]{36}", sid):
+                return self.send_error(400)
+            if op == "agent_edit":
+                return self._result(edit_agent(sid, d))
+            if op == "agent_delete":
+                return self._result(delete_agent(sid))
+            if op in ("trash_restore", "trash_purge"):
+                return self._result(manage_trash(op, sid))
             return self.send_error(400)
         if self.path == "/api/psettings":
             if "--demo" in sys.argv:
