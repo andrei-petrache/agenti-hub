@@ -260,7 +260,7 @@ def sent_messages(path: Path, size: int):
 
 def parse(path: Path, st):
     lines, head = read_chunks(path, st.st_size)
-    title = agent_name = cwd = start = branch = model = last_prompt = first = effort = None
+    title = agent_name = cwd = start = branch = model = last_prompt = first = effort = reply_ts = None
     cwds = {}                # folder -> number of entries (where the session spent most time)
     prompts = []             # first requests, used to guess the project
     events = []              # (ts, kind, text, tool)
@@ -291,6 +291,7 @@ def parse(path: Path, st):
             model = m.get("model") or model
             effort = d.get("perTurnEffort") or d.get("effort") or effort
             ts = d.get("timestamp")
+            reply_ts = ts or reply_ts
             for c in m.get("content") or []:
                 if not isinstance(c, dict):
                     continue
@@ -314,7 +315,7 @@ def parse(path: Path, st):
         "title": title or agent_name,
         "effort": effort if isinstance(effort, str) else None,
         "first": short(first, 34) if first else None,
-        "cwd": cwd, "branch": branch, "model": model,
+        "cwd": cwd, "branch": branch, "model": model, "reply_t": usage._ts(reply_ts) if reply_ts else 0,
         "cwd_start": start,
         "cwds": sorted(cwds.items(), key=lambda kv: -kv[1]),
         "prompts": prompts,
@@ -612,7 +613,7 @@ def state(days, rng=None):
                 "project": find_project(sid, p, cfg),
                 "cwd": next((c for c, _ in p["cwds"] if not _generic(c, shared)), p["cwd_start"] or p["cwd"]),
                 "cwd_start": p["cwd_start"] or p["cwd"],
-                "branch": p["branch"], "model": p["model"], "effort": p["effort"],
+                "branch": p["branch"], **_shown_model(sid, p, cfg),
                 "pending": (cfg.get("pending") or {}).get(sid),
                 "wsl": wsl, "distro": str(f).split("\\")[3] if wsl and len(str(f).split("\\")) > 3 else None,
                 "running": bool(info), "live_name": info.get("name") if info else None,
@@ -743,7 +744,7 @@ def _model_flags(a):
     resumed from the folder they started in (often the home folder), so a project folder's own
     .claude/settings.json would never be read."""
     cfg = load_config()
-    p = (cfg.get("pending") or {}).get(a["id"]) or {}
+    p = (cfg.get("choice") or {}).get(a["id"]) or {}
     out = _project_settings(a, cfg)
     if p.get("model") in MODELS:
         out += ["--model", p["model"]]
@@ -846,10 +847,45 @@ def _compact_run(a):
 
 
 def _pending_done(sid):
+    """The chosen model/effort went into a start: from now on it is what the agent runs with."""
     cfg = load_config()
-    if sid in (cfg.get("pending") or {}):
-        cfg["pending"].pop(sid)
+    ch = (cfg.get("choice") or {}).get(sid)
+    if sid in (cfg.get("pending") or {}) or (ch and not ch.get("t")):
+        (cfg.get("pending") or {}).pop(sid, None)
+        if ch:
+            ch["t"] = time.time()
         save_config(cfg)
+
+
+def _close_old_windows(sid):
+    """Closes the terminal windows BuzzzHub opened earlier for this session, once Claude has left them."""
+    import processes
+    processes._cache["t"] = 0                        # fresh list: it may have quit a moment ago
+    if (running_sessions() or {}).get(sid) or processes.sessions().get(sid):
+        return
+    for pid in processes.windows_of(f"open-{sid[:8]}.sh"):
+        try:
+            subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True, timeout=20,
+                           creationflags=NO_WIN)
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+
+def _shown_model(sid, p, cfg):
+    """Model and effort to show. The transcript only has them once the agent replies, so right after a change
+    it would still show the old ones: until then (or if it was not changed elsewhere since) the choice wins."""
+    ch = (cfg.get("choice") or {}).get(sid) or {}
+    model, effort = p["model"], p["effort"]
+    if ch.get("t"):
+        changed = p.get("reply_t", 0) > ch["t"] and (
+            (ch.get("model") and not str(model or "").startswith(ch["model"])) or
+            (ch.get("effort") and effort != ch["effort"]))
+        if changed:                                  # switched with /model or /effort since: that wins
+            cfg["choice"].pop(sid, None)
+            save_config(cfg)
+        else:
+            model, effort = ch.get("model") or model, ch.get("effort") or effort
+    return {"model": model, "effort": effort}
 
 
 def _forget_stopped_job(sid):
@@ -905,7 +941,10 @@ def set_model(sid, model, effort, lang="en"):
     if not model and not effort:
         return False, "nothing_to_change", {}
     cfg = load_config()
-    cfg.setdefault("pending", {})[sid] = {k: v for k, v in (("model", model), ("effort", effort)) if v}
+    ch = {k: v for k, v in ((cfg.get("choice") or {}).get(sid) or {}).items() if k in ("model", "effort")}
+    ch.update({k: v for k, v in (("model", model), ("effort", effort)) if v})
+    cfg.setdefault("choice", {})[sid] = ch               # passed on every start from now on
+    cfg.setdefault("pending", {})[sid] = dict(ch)        # shown as "applies at the next start" until then
     save_config(cfg)
     if not a["running"]:
         return True, "model_pending", {}
@@ -1062,6 +1101,7 @@ def open_in_terminal(sid, text="", lang="en"):
 
     woke = False
     if not a["running"]:
+        _close_old_windows(sid)                      # the window it was in before only says "you left"
         ok, code, params = start_background(a, text)
         if not ok and code == "not_trusted":
             # fallback: interactive, straight in a terminal (where the folder can be trusted once)

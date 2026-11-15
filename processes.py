@@ -38,7 +38,17 @@ def sessions():
 
 
 # ---------------------------------------------------------------- Windows
-def _windows():
+def windows_of(script):
+    """Windows only: pids of terminal windows (mintty) that BuzzzHub opened with this launcher script."""
+    if os.name != "nt":
+        return []
+    try:
+        return [pid for pid, cmd in _windows((b"mintty.exe",)) if script in cmd]
+    except Exception:
+        return []
+
+
+def _windows(exes=(b"claude.exe", b"claude")):
     import ctypes
     from ctypes import wintypes as w
 
@@ -65,7 +75,7 @@ def _windows():
     e.dwSize = ctypes.sizeof(PE)
     ok = k32.Process32First(snap, ctypes.byref(e))
     while ok:
-        if e.szExeFile.lower() in (b"claude.exe", b"claude"):
+        if e.szExeFile.lower() in exes:
             pids.append(e.th32ProcessID)
         ok = k32.Process32Next(snap, ctypes.byref(e))
     k32.CloseHandle(snap)
