@@ -390,7 +390,7 @@ en: {
   cmp_sleep_confirm:'Put "{t}" to sleep and summarise its conversation?\n\nThe conversation stays; it continues from the summary when you wake it.',
   cmp_done:'Summarised: {pre}k → {post}k tokens per step.', cmp_failed:'Summarising failed: {err}',
   ps_h:'⚙️ Saving settings · {p}', ps_note:'They apply to the agents of this project that BuzzzHub starts or wakes (🖥️ Terminal, ✈️ Send, model change), from any folder. An agent that is running now gets them at its next start.',
-  ps_compact:'Summarise automatically at', ps_default:'default (~1M)', ps_sugg:'Prompt suggestions: the grey hint in the input box costs one extra read of the whole conversation after every reply',
+  ps_compact:'Summarise automatically at', ps_default:'default (~1M)', ps_default_g:'default ({k}, from ~/.claude/settings.json)', ps_sugg:'Prompt suggestions: the grey hint in the input box costs one extra read of the whole conversation after every reply',
   ps_saved:'Saved.', reco_compact_box:'For one project at a time, use the saving settings below.',
   sec_show:'Show:', sec_feed:'📜 Activity', sec_subs:'🐝 Sub-agents ({n})', sec_usage:'📊 {t} today', sec_details:'ℹ️ Details',
   last_req:'Your last request', last_said:'Last thing it said', recent:'What it did recently', subs:'Sub-agents', details:'Details',
@@ -524,7 +524,7 @@ ro: {
   cmp_sleep_confirm:'Pui „{t}” la somn și îi rezum conversația?\n\nConversația rămâne; când îl trezești, continuă de la rezumat.',
   cmp_done:'Rezumat: {pre}k → {post}k tokeni pe pas.', cmp_failed:'Rezumatul n-a mers: {err}',
   ps_h:'⚙️ Setări de economie · {p}', ps_note:'Se aplică agenților din proiect pe care îi pornește sau trezește BuzzzHub (🖥️ Terminal, ✈️ Trimite, schimbare de model), din orice folder. Un agent pornit acum le primește la următoarea pornire.',
-  ps_compact:'Rezumă automat la', ps_default:'implicit (~1M)', ps_sugg:'Sugestii de prompt: textul gri din căsuța de scris costă o recitire în plus a toată conversația după fiecare răspuns',
+  ps_compact:'Rezumă automat la', ps_default:'implicit (~1M)', ps_default_g:'implicit ({k}, din ~/.claude/settings.json)', ps_sugg:'Sugestii de prompt: textul gri din căsuța de scris costă o recitire în plus a toată conversația după fiecare răspuns',
   ps_saved:'Salvat.', reco_compact_box:'Pentru câte un proiect, folosește setările de economie de mai jos.',
   sec_show:'Arată:', sec_feed:'📜 Activitate', sec_subs:'🐝 Sub-agenți ({n})', sec_usage:'📊 {t} azi', sec_details:'ℹ️ Detalii',
   last_req:'Ultima ta cerere', last_said:'Ultimul lucru spus', recent:'Ce a făcut recent', subs:'Sub-agenți', details:'Detalii',
@@ -1267,7 +1267,7 @@ function renderUsage(p, head){
   const tipsAll = agents.flatMap(a => (a.tips || []).map(tp => ({a, tp})));
   let recos = '';
   const canSet = p.name && p.name !== '*' && !p.name.startsWith('@') && DATA.projects.some(x => x.name === p.name);
-  if (!p.auto_compact && saving / Math.max(totalCtx, 1) >= 0.15)
+  if (!p.auto_compact && !DATA.global_auto_compact && saving / Math.max(totalCtx, 1) >= 0.15)
     recos += `<div class="box reco"><h3>💡 ${t('reco_compact_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_compact', {max: Math.round(s.max_context / 1000), p: Math.round(100 * over / Math.max(nReq, 1)), s: Math.round(100 * saving / totalCtx)})}</p>
       <pre>{
   "env": { "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000" }
@@ -1278,7 +1278,7 @@ function renderUsage(p, head){
     ${recos}
     ${canSet ? `<div class="box"><h3>${t('ps_h', {p: esc(p.name)})}</h3><p class="note">${t('ps_note')}</p>
       <div style="display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center">
-        <label style="font-weight:700">${t('ps_compact')} <select id="ps-ac">${[[0, t('ps_default')], [200000, '200k'], [300000, '300k'], [500000, '500k']]
+        <label style="font-weight:700">${t('ps_compact')} <select id="ps-ac">${[[0, DATA.global_auto_compact ? t('ps_default_g', {k: fmtTok(DATA.global_auto_compact)}) : t('ps_default')], [200000, '200k'], [300000, '300k'], [500000, '500k']]
           .concat([0, 200000, 300000, 500000].includes(p.auto_compact || 0) ? [] : [[p.auto_compact, fmtTok(p.auto_compact)]])
           .map(([v, l]) => `<option value="${v}" ${(p.auto_compact || 0) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
         <label style="flex:1;min-width:260px"><input type="checkbox" id="ps-sg" ${p.prompt_suggestions === false ? '' : 'checked'}> ${t('ps_sugg')}</label>

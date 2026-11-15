@@ -676,7 +676,17 @@ def state(days, rng=None):
             hub["tok"] += m["relay_tok"]
             hub["cost"] += m.get("relay_cost") or 0
     return {"now": now_t, "projects": projects, "links": link_list, "live_ok": live is not None,
-            "hub_usage": hub}
+            "hub_usage": hub, "global_auto_compact": _global_auto_compact()}
+
+
+def _global_auto_compact():
+    """CLAUDE_CODE_AUTO_COMPACT_WINDOW from ~/.claude/settings.json (applies to every session), or None."""
+    try:
+        env = json.loads((Path.home() / ".claude" / "settings.json").read_text(encoding="utf-8")).get("env") or {}
+        v = int(env.get("CLAUDE_CODE_AUTO_COMPACT_WINDOW") or 0)
+        return v if 100_000 <= v <= 1_000_000 else None
+    except (OSError, ValueError, TypeError, AttributeError):
+        return None
 
 
 # ---------------------------------------------------------------- actions
