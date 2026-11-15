@@ -537,12 +537,22 @@ def _ts_epoch(ts):
         return 0
 
 
-def state(days):
+def usage_range(start, end, now_t):
+    """The period of the 📊 Usage tab: (start, end, bin seconds) for about 48 bars, bins in whole 10 minutes."""
+    end = min(end or now_t, now_t)
+    start = max(0, min(start or end - 86400, end - 600))
+    step = max(600, -(-int((end - start) / 48) // 600) * 600)
+    return start, end, step
+
+
+def state(days, rng=None):
     import processes
     cfg = load_config()
     shared = cfg.get("shared_folders", [])
     now_t = time.time()
     since = now_t - days * 86400
+    if rng:
+        since = min(since, rng[0])                   # every session that worked in the period
     live = running_sessions()
     by_process = processes.sessions()     # safety net: running sessions missing from `claude agents`
     agents = []
@@ -563,7 +573,7 @@ def state(days):
             sid = f.stem
             wsl = str(f).startswith("\\\\wsl")
             subs = subagents_of(f, now_t)
-            u = usage.INDEX.session(f, st)
+            u = usage.INDEX.session(f, st, rng)
             stt, activity = status(p, subs, st.st_mtime, now_t)
             info = (live or {}).get(sid)
             if not info and not wsl:
@@ -1097,7 +1107,11 @@ class H(BaseHTTPRequestHandler):
             if "--demo" in sys.argv:
                 import demo
                 return self._json(demo.state())
-            return self._json(state(float(m.group(1)) if m else 3))
+            q = dict(re.findall(r"(from|to)=(\d+(?:\.\d+)?)", self.path))
+            rng = usage_range(float(q.get("from", 0)), float(q.get("to", 0)), time.time())
+            out = state(float(m.group(1)) if m else 3, rng)
+            out["range"] = {"from": rng[0], "to": rng[1], "step": rng[2]}
+            return self._json(out)
         if self.path.split("?")[0].split("#")[0] in ("/", "/index.html"):
             b = (HERE / "index.html").read_bytes()
             self.send_response(200)

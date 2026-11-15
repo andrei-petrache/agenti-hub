@@ -16,10 +16,11 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CACHE_FILE = HERE / "cache" / "usage.json"
-VERSION = 6
+VERSION = 7
 
 CACHE_TTL = 3600            # Claude Code writes its prompt cache with a 1-hour lifetime
-REBUILD_MIN = 20_000        # a cache write this big after a long pause = the whole context re-processed
+REBUILD_MIN = 20_000
+SLOT = 600                  # usage is also kept in 10-minute buckets, for any period the user picks        # a cache write this big after a long pause = the whole context re-processed
 
 # $ per million tokens: (input, output, cache read). Cache writes: 1.25x input (5 min), 2x input (1 h).
 # Anthropic list prices (Nov 2026); an estimate only, subscriptions are not billed per token.
@@ -86,7 +87,7 @@ def _ts(s):
 def _new_state():
     return {"off": 0, "seen": [], "models": {}, "hours": {}, "first": 0, "last": 0, "context": 0,
             "max_context": 0, "rebuilds": 0, "rebuild_tokens": 0, "think": 0, "cross_msgs": 0,
-            "cross_tokens": 0, "ctx_hist": [[0, 0] for _ in range(11)]}
+            "cross_tokens": 0, "slots": {}, "ctx_hist": [[0, 0] for _ in range(11)]}
 
 
 def _scan(path: Path, st, s):
@@ -150,6 +151,18 @@ def _scan(path: Path, st, s):
             hb["cost"] += one["cost"]
             hb["req"] = hb.get("req", 0) + 1            # for the average context read per step
             hb["ctx"] = hb.get("ctx", 0) + one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+            sl = s.setdefault("slots", {}).setdefault(str(int(t // SLOT)), {"tok": 0, "cost": 0.0, "req": 0, "ctx": 0,
+                                                                               "cr": 0, "inp": 0, "out": 0, "m": {}})
+            sl["tok"] += total(one)                      # 10-minute buckets: any period can be added up
+            sl["cost"] += one["cost"]
+            sl["req"] += 1
+            sl["ctx"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+            sl["cr"] += one["cr"]
+            sl["inp"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+            sl["out"] += one["out"]
+            mm = sl["m"].setdefault(model, [0, 0.0])
+            mm[0] += total(one)
+            mm[1] += one["cost"]
             gap = t - s["last"] if s["last"] else 0
             if gap > CACHE_TTL and one["cw5"] + one["cw1h"] > REBUILD_MIN:
                 s["rebuilds"] += 1                       # cache had expired: whole context written again
@@ -202,7 +215,7 @@ class Index:
                 self._dirty = True
             return s
 
-    def session(self, path: Path, st=None):
+    def session(self, path: Path, st=None, rng=None):
         """The session's own usage plus its sub-agents' usage (subagents/*.jsonl next to it)."""
         own = self.file(path, st)
         if own is None:
@@ -217,7 +230,7 @@ class Index:
                         subs.append((jl.stem, s))
             except OSError:
                 pass
-        return summarize(own, subs)
+        return summarize(own, subs, rng)
 
     def save(self, force=False):
         if not self._dirty or (not force and time.time() - self._saved < 30):
@@ -255,7 +268,42 @@ def _merge_hours(dst, hours):
         b["cost"] += v["cost"]
 
 
-def summarize(own, subs):
+def window_of(own, subs, rng):
+    """Usage of the session (with its sub-agents) between rng = (start, end, bin seconds), from the 10-min buckets."""
+    a, b, step = rng
+    lo, hi = int(a // SLOT), int((b - 1) // SLOT)
+    nb = max(1, int(-(-(b - a) // step)))
+    w = {"tok": 0, "cost": 0.0, "req": 0, "cr": 0, "inp": 0, "out": 0, "sub_tok": 0, "own_req": 0, "own_ctx": 0,
+         "models": {}, "bins": [0] * nb, "active": 0}
+    active = set()
+    for i, s in enumerate([own] + [x for _, x in subs]):
+        for k, v in (s.get("slots") or {}).items():
+            k = int(k)
+            if not lo <= k <= hi:
+                continue
+            active.add(k)
+            for f in ("tok", "cost", "req", "cr", "inp", "out"):
+                w[f] += v[f]
+            if i == 0:
+                w["own_req"] += v["req"]
+                w["own_ctx"] += v["ctx"]
+            else:
+                w["sub_tok"] += v["tok"]
+            for m, (tk, c) in v["m"].items():
+                x = w["models"].setdefault(m, {"tok": 0, "cost": 0.0})
+                x["tok"] += tk
+                x["cost"] += c
+            j = min(nb - 1, max(0, int((k * SLOT - a) // step)))
+            w["bins"][j] += v["tok"]
+    w["active"] = len(active) * SLOT                     # seconds in which it actually worked
+    w["cost"] = round(w["cost"], 4)
+    w["step"] = round(w["own_ctx"] / w["own_req"]) if w["own_req"] else None
+    for x in w["models"].values():
+        x["cost"] = round(x["cost"], 4)
+    return w
+
+
+def summarize(own, subs, rng=None):
     """Compact usage summary of a session for the API (all numbers, no texts)."""
     now_h = int(time.time() // 3600)
     models = {}
@@ -321,6 +369,7 @@ def summarize(own, subs):
         "ctx_hist": _hist(own, subs),
         "first": own["first"], "last": own["last"],
         "hours": {h: v for h, v in hours.items() if now_h - int(h) < 24 * 31},
+        "win": window_of(own, subs, rng) if rng else None,
     }
 
 

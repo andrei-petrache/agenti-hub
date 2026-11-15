@@ -107,6 +107,8 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 .psec{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:999px;padding:4px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .psec:hover{border-color:var(--orange)}
 .psec.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.urange{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 2px}
+.urange input{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .panel .ph{display:flex;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
 .panel .ph svg{width:64px;height:64px}
 .panel .pb{overflow:auto;padding:16px 20px 40px}
@@ -416,16 +418,19 @@ en: {
   tab_usage:'📊 Usage', u_today:'tokens in the last 24 h', u_cost:'≈ API value, last 24 h', u_hour:'tokens in the last hour',
   u_total:'tokens in these sessions', u_cache:'read from cache', u_ctx:'average context per message',
   u_home:'Last 24 h: {t} tokens · ≈ {c} at API prices · last hour {h}', u_home_hub:'BuzzzHub relay: {n} messages, {t} tokens',
-  u_hours:'Tokens per hour, last 24 h', u_hours_note:'Every bar is one hour; hover for the exact number.',
-  u_agents:'Agents', u_col_agent:'agent', u_col_day:'24 h', u_col_total:'total', u_col_cost:'≈ $', u_col_ctx:'context now',
-  u_col_cache:'cache', u_col_subs:'sub-agents', u_models:'By model', u_models_note:'All tokens of these sessions, by the model that produced them.',
-  u_hist:'How big the context was at each message', u_hist_note:'Every message re-sends the whole conversation. Bars to the right of the line are what an earlier automatic summary (compaction) would cut.',
+  u_hours:'Tokens over time', u_hours_note:'Every bar is {s}; hover for the exact number.',
+  r_1h:'1 h', r_3h:'3 h', r_6h:'6 h', r_12h:'12 h', r_24h:'24 h', r_3d:'3 days', r_7d:'7 days', r_30d:'30 days', r_custom:'pick…', r_go:'Show',
+  u_p_tok:'tokens in this period', u_p_cost:'≈ API value, this period', u_p_pace:'tokens per hour on average', u_p_day:'≈ per day at this pace',
+  u_p_steps:'steps (replies and tool calls)', u_p_none:'No tokens used in this period.', u_p_all:'All-time in these sessions: {t} tokens · ≈ {c}.',
+  u_p_span:'Period: {a} → {b}.', u_min:'{n} min', u_hr:'{n} h', u_dy:'{n} days',
+  u_agents:'Agents', u_col_agent:'agent', u_col_day:'period', u_col_total:'total', u_col_cost:'≈ $ period', u_col_ctx:'context now',
+  u_col_cache:'cache', u_col_subs:'sub-agents', u_models:'By model', u_models_note:'Tokens of this period, by the model that produced them.',
+  u_hist:'How big the context was at each message', u_hist_note:'Every message re-sends the whole conversation. Bars to the right of the line are what an earlier automatic summary (compaction) would cut. All messages of these sessions, not only this period.',
   u_hist_line:'compact at {k}k', u_req:'{n} messages', u_tips:'Suggestions', u_no_tips:'Nothing stands out. 👍',
   u_none:'No usage recorded yet for these sessions.', u_sub_share:'{p}% by sub-agents',
   u_api_note:'Tokens are exact (from the transcripts). Dollars are an estimate at Anthropic API list prices; on a Pro/Max plan you are not billed per token, but the same tokens count against your plan limits.',
   reco_compact_t:'Let agents summarise their conversation earlier',
   reco_compact:'Your agents let the conversation grow to {max}k tokens, and {p}% of messages carried more than 300k. Setting the automatic summary (compaction) at 300k tokens would cut about {s}% of the tokens of these sessions. Add this to ~/.claude/settings.json and restart the agents:',
-  reco_cross_t:'Messages between agents wake them up', reco_cross:'{n} messages from other sessions started a new turn for an idle agent, about {t} tokens in total: each one re-sends the whole conversation. Send fewer, bigger messages, or let idle agents hold them until their next turn:',
   per_msg:'Each message to it re-sends about {k}k tokens of context.',
   p_usage:'Usage', p_usage_line:'{d} tokens in the last 24 h (≈ {c}) · {t} total (≈ {ct})', p_ctx:'Context now: {k}k tokens',
   p_cache:'{p}% read from cache', mini:'{t} in 24 h', per_step:'{t}/step',
@@ -547,16 +552,19 @@ ro: {
   tab_usage:'📊 Consum', u_today:'tokeni în ultimele 24 h', u_cost:'≈ valoare la prețuri API, 24 h', u_hour:'tokeni în ultima oră',
   u_total:'tokeni în sesiunile astea', u_cache:'citiți din cache', u_ctx:'context mediu pe mesaj',
   u_home:'Ultimele 24 h: {t} tokeni · ≈ {c} la prețuri API · ultima oră {h}', u_home_hub:'Releul BuzzzHub: {n} mesaje, {t} tokeni',
-  u_hours:'Tokeni pe oră, ultimele 24 h', u_hours_note:'Fiecare bară e o oră; treci cu mouse-ul pentru cifra exactă.',
-  u_agents:'Agenți', u_col_agent:'agent', u_col_day:'24 h', u_col_total:'total', u_col_cost:'≈ $', u_col_ctx:'context acum',
-  u_col_cache:'cache', u_col_subs:'sub-agenți', u_models:'Pe modele', u_models_note:'Toți tokenii sesiunilor astea, după modelul care i-a folosit.',
-  u_hist:'Cât de mare era contextul la fiecare mesaj', u_hist_note:'Fiecare mesaj retrimite toată conversația. Barele din dreapta liniei sunt ce ar tăia un rezumat automat (compactare) făcut mai devreme.',
+  u_hours:'Tokeni în timp', u_hours_note:'Fiecare bară înseamnă {s}; treci cu mouse-ul pentru cifra exactă.',
+  r_1h:'1 h', r_3h:'3 h', r_6h:'6 h', r_12h:'12 h', r_24h:'24 h', r_3d:'3 zile', r_7d:'7 zile', r_30d:'30 zile', r_custom:'alege…', r_go:'Arată',
+  u_p_tok:'tokeni în perioada aleasă', u_p_cost:'≈ valoare la prețuri API, perioada aleasă', u_p_pace:'tokeni pe oră, în medie', u_p_day:'≈ pe zi, în ritmul ăsta',
+  u_p_steps:'pași (răspunsuri și unelte)', u_p_none:'Niciun token folosit în perioada asta.', u_p_all:'De la început, în sesiunile astea: {t} tokeni · ≈ {c}.',
+  u_p_span:'Perioada: {a} → {b}.', u_min:'{n} min', u_hr:'{n} h', u_dy:'{n} zile',
+  u_agents:'Agenți', u_col_agent:'agent', u_col_day:'perioadă', u_col_total:'total', u_col_cost:'≈ $ perioadă', u_col_ctx:'context acum',
+  u_col_cache:'cache', u_col_subs:'sub-agenți', u_models:'Pe modele', u_models_note:'Tokenii din perioada aleasă, după modelul care i-a folosit.',
+  u_hist:'Cât de mare era contextul la fiecare mesaj', u_hist_note:'Fiecare mesaj retrimite toată conversația. Barele din dreapta liniei sunt ce ar tăia un rezumat automat (compactare) făcut mai devreme. Toate mesajele sesiunilor, nu doar perioada aleasă.',
   u_hist_line:'compactare la {k}k', u_req:'{n} mesaje', u_tips:'Sugestii', u_no_tips:'Nimic ieșit din comun. 👍',
   u_none:'Încă nu e consum înregistrat pentru sesiunile astea.', u_sub_share:'{p}% de la sub-agenți',
   u_api_note:'Tokenii sunt exacți (din transcrieri). Dolarii sunt o estimare la prețurile de listă API Anthropic; pe un abonament Pro/Max nu plătești per token, dar aceiași tokeni se scad din limitele planului.',
   reco_compact_t:'Lasă agenții să-și rezume conversația mai devreme',
   reco_compact:'Agenții tăi lasă conversația să crească până la {max}k tokeni, iar {p}% din mesaje au dus peste 300k. Cu rezumatul automat (compactarea) la 300k tokeni, sesiunile astea ar folosi cu aproximativ {s}% mai puțini tokeni. Pune asta în ~/.claude/settings.json și repornește agenții:',
-  reco_cross_t:'Mesajele între agenți îi trezesc', reco_cross:'{n} mesaje de la alte sesiuni au pornit o tură nouă la un agent care stătea, în total cam {t} tokeni: fiecare retrimite toată conversația. Trimite mesaje mai puține și mai mari, sau lasă agenții să le țină până la tura următoare:',
   per_msg:'Fiecare mesaj către el retrimite cam {k}k tokeni de context.',
   p_usage:'Consum', p_usage_line:'{d} tokeni în ultimele 24 h (≈ {c}) · {t} în total (≈ {ct})', p_ctx:'Context acum: {k}k tokeni',
   p_cache:'{p}% din cache', mini:'{t} în 24 h', per_step:'{t}/pas',
@@ -843,9 +851,41 @@ function setLang(l){
   render();
 }
 
+/* ---------- the period of the Usage tab ---------- */
+const URANGES = ['1h', '3h', '6h', '12h', '24h', '3d', '7d', '30d', 'custom'];
+let URANGE = store.get('urange') || '24h';
+let UCUST = (() => { try{ return JSON.parse(store.get('ucust') || 'null'); }catch(e){ return null; } })();
+function rangeQuery(){
+  if (TAB !== 'usage') return '';
+  if (URANGE === 'custom' && UCUST && UCUST.from) return `&from=${UCUST.from}&to=${UCUST.to || 0}`;
+  const m = (URANGE.match(/^(\d+)([hd])$/) || [0, 24, 'h']);
+  return `&from=${Math.floor(Date.now() / 1000 - m[1] * (m[2] === 'h' ? 3600 : 86400))}`;
+}
+const toInput = ts => new Date(ts * 1000 - new Date(ts * 1000).getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+const fromInput = v => v ? Math.floor(new Date(v).getTime() / 1000) : 0;
+const fmtDur = sec => sec < 3600 ? t('u_min', {n: Math.round(sec / 60)}) : sec < 86400 ? t('u_hr', {n: +(sec / 3600).toFixed(1)}) : t('u_dy', {n: +(sec / 86400).toFixed(1)});
+function rangeBar(){
+  const R = (DATA && DATA.range) || {from: Date.now() / 1000 - 86400, to: Date.now() / 1000};
+  return `<div class="urange">${URANGES.map(k => `<button class="psec ${URANGE === k ? 'on' : ''}" data-r="${k}">${t('r_' + k)}</button>`).join('')}
+    ${URANGE === 'custom' ? `<input type="datetime-local" id="ur-from" value="${toInput(R.from)}"> → <input type="datetime-local" id="ur-to" value="${toInput(R.to)}"> <button class="psec on" id="ur-go">${t('r_go')}</button>` : ''}</div>`;
+}
+function bindRange(){
+  document.querySelectorAll('.urange [data-r]').forEach(b => b.onclick = () => {
+    URANGE = b.dataset.r; store.set('urange', URANGE); USAGE_KEY = null;
+    if (URANGE === 'custom' && !(UCUST && UCUST.from)) UCUST = {from: Math.floor(Date.now() / 1000 - 86400), to: 0};
+    render(); load();
+  });
+  const go = $('#ur-go');
+  if (go) go.onclick = () => {
+    const a = fromInput($('#ur-from').value), b = fromInput($('#ur-to').value);
+    if (!a) return;
+    UCUST = {from: a, to: b && b > a ? b : 0}; store.set('ucust', JSON.stringify(UCUST)); USAGE_KEY = null; load();
+  };
+}
+
 async function load(){
   try{
-    const r = await fetch('/api/state?days=' + $('#days').value, {cache:'no-store'});
+    const r = await fetch('/api/state?days=' + $('#days').value + rangeQuery(), {cache:'no-store'});
     DATA = await r.json();
     $('#upd').textContent = 'live · ' + new Date().toLocaleTimeString(LANG === 'ro' ? 'ro-RO' : 'en-GB');
     render();
@@ -1124,7 +1164,7 @@ const cmpBadge = a => { const ci = compactInfo(a); return !ci ? '' : ci.k === 'r
 function sumUsage(agents){
   const s = {tok:0, cost:0, cr:0, in:0, cw:0, out:0, req:0, sub_tok:0, day:{tok:0, cost:0}, hour:{tok:0, cost:0},
              spark: Array(24).fill(0), models:{}, hist: Array.from({length:11}, () => [0, 0]), max_context:0,
-             cross_msgs:0, cross_tok:0};
+             cross_msgs:0, cross_tok:0, w:{tok:0, cost:0, req:0, cr:0, inp:0, sub_tok:0, own_req:0, own_ctx:0, bins:[], models:{}}};
   for (const a of agents){
     const u = a.usage; if (!u) continue;
     for (const k of ['tok','cost','cr','in','cw','out','req','sub_tok','cross_msgs']) s[k] += u[k] || 0;
@@ -1134,6 +1174,10 @@ function sumUsage(agents){
     for (const [m, v] of Object.entries(u.models)){ const x = s.models[m] ||= {tok:0, cost:0}; x.tok += v.tok; x.cost += v.cost; }
     (u.ctx_hist || []).forEach(([n, t], i) => { s.hist[i][0] += n; s.hist[i][1] += t; });
     s.max_context = Math.max(s.max_context, u.max_context || 0);
+    const w = u.win; if (!w) continue;
+    for (const k of ['tok','cost','req','cr','inp','sub_tok','own_req','own_ctx']) s.w[k] += w[k] || 0;
+    w.bins.forEach((v, i) => s.w.bins[i] = (s.w.bins[i] || 0) + v);
+    for (const [m, v] of Object.entries(w.models)){ const x = s.w.models[m] ||= {tok:0, cost:0}; x.tok += v.tok; x.cost += v.cost; }
   }
   return s;
 }
@@ -1193,26 +1237,33 @@ function modelName(m){
 }
 const modelEffort = a => a.model ? `${modelName(a.model)}${a.effort ? ' · ' + a.effort : ''}` : '';
 function renderUsage(p, head){
-  const agents = p.agents.filter(a => a.usage && a.usage.req);
-  const s = sumUsage(agents);
-  const key = LANG + JSON.stringify([s.tok, s.day.tok, s.hour.tok, agents.map(a => a.id + a.status + (a.compact || {}).state), p.auto_compact, p.prompt_suggestions]);
+  const all = p.agents.filter(a => a.usage && a.usage.req);
+  const agents = all.filter(a => a.usage.win && a.usage.win.tok);
+  const s = sumUsage(all), R = DATA.range || {from: 0, to: 0, step: 3600};
+  const key = LANG + JSON.stringify([R.from, s.tok, s.w.tok, all.map(a => a.id + a.status + (a.compact || {}).state), p.auto_compact, p.prompt_suggestions]);
   if (USAGE_KEY === key && $('#usage')) return;
   USAGE_KEY = key;
-  if (!agents.length){ $('#main').innerHTML = head + `<div class="empty">${mascot('#e8875b','sleeping')}<p>${t('u_none')}</p></div>`; bindTabs(); return; }
-  const inputs = s.in + s.cr + s.cw;
-  const tiles = [[fmtTok(s.day.tok), t('u_today')], [fmtUsd(s.day.cost), t('u_cost')], [fmtTok(s.hour.tok), t('u_hour')],
-                 [fmtTok(s.tok), t('u_total')], [inputs ? Math.round(100 * s.cr / inputs) + '%' : '—', t('u_cache')],
-                 [s.req ? fmtTok(inputs / s.req) : '—', t('u_ctx')]];
-  const nowH = new Date().getHours();
-  const hourLabels = s.spark.map((_, i) => { const hh = (nowH - 23 + i + 24) % 24; return i % 3 === 2 || i === 23 ? String(hh).padStart(2, '0') : ''; });
-  const hoursChart = barChart(s.spark, hourLabels, i => `${String((nowH - 23 + i + 24) % 24).padStart(2,'0')}:00 · ${fmtTok(s.spark[i])} tok`);
+  const loc = LANG === 'ro' ? 'ro-RO' : 'en-GB';
+  const when = ts => new Date(ts * 1000).toLocaleString(loc, {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'});
+  const spanNote = `<p class="sub" style="font-size:12px;margin:0">${t('u_p_span', {a: when(R.from), b: when(R.to)})} ${t('u_p_all', {t: fmtTok(s.tok), c: fmtUsd(s.cost)})}</p>`;
+  if (!agents.length){ $('#main').innerHTML = head + rangeBar() + (all.length ? spanNote : '') + `<div class="empty">${mascot('#e8875b','sleeping')}<p>${t(all.length ? 'u_p_none' : 'u_none')}</p></div>`; bindTabs(); bindRange(); return; }
+  const hours = Math.max((R.to - R.from) / 3600, 1 / 6);
+  const tiles = [[fmtTok(s.w.tok), t('u_p_tok')], [fmtUsd(s.w.cost), t('u_p_cost')], [fmtTok(s.w.tok / hours), t('u_p_pace')],
+                 [fmtTok(s.w.tok / hours * 24), t('u_p_day')], [s.w.inp ? Math.round(100 * s.w.cr / s.w.inp) + '%' : '—', t('u_cache')],
+                 [s.w.own_req ? fmtTok(s.w.own_ctx / s.w.own_req) : '—', t('u_ctx')], [String(s.w.req), t('u_p_steps')]];
+  const nb = Math.max(1, Math.ceil((R.to - R.from) / R.step)), bins = Array.from({length: nb}, (_, i) => s.w.bins[i] || 0);
+  const binT = i => R.from + i * R.step, short = R.to - R.from <= 2 * 86400;
+  const lab = ts => new Date(ts * 1000).toLocaleString(loc, short ? {hour: '2-digit', minute: '2-digit'} : {day: '2-digit', month: 'short'});
+  const every = Math.max(1, Math.round(nb / 8));
+  const hoursChart = barChart(bins, bins.map((_, i) => i % every === 0 && i < nb - 2 ? lab(binT(i)) : ''),
+    i => `${when(binT(i))} · ${fmtTok(bins[i])} tok · ≈ ${fmtUsd(s.w.tok ? s.w.cost * bins[i] / s.w.tok : 0)}`);
   const W = 300000, totalCtx = s.hist.reduce((a, [, t2]) => a + t2, 0), saving = totalCtx ? compactSaving(s.hist, W) : 0;
   const over = s.hist.reduce((a, [n], i) => a + (i >= 3 ? n : 0), 0), nReq = s.hist.reduce((a, [n]) => a + n, 0);
   const histChart = barChart(s.hist.map(h => h[0]), s.hist.map((_, i) => i === 10 ? '1M' : (i * 100) + 'k'),
     i => `${i * 100}–${(i + 1) * 100}k · ${t('u_req', {n: s.hist[i][0]})}`, {rule: 3, ruleLabel: t('u_hist_line', {k: 300}), dim: i => i < 3, h: 160});
-  const models = Object.entries(s.models).sort((a, b) => b[1].cost - a[1].cost);
+  const models = Object.entries(s.w.models).sort((a, b) => b[1].cost - a[1].cost);
   const maxM = Math.max(...models.map(([, v]) => v.tok), 1);
-  const rows = agents.slice().sort((a, b) => b.usage.day.tok - a.usage.day.tok || b.usage.tok - a.usage.tok);
+  const rows = agents.slice().sort((a, b) => b.usage.win.tok - a.usage.win.tok);
   const tipsAll = agents.flatMap(a => (a.tips || []).map(tp => ({a, tp})));
   let recos = '';
   const canSet = p.name && p.name !== '*' && !p.name.startsWith('@') && DATA.projects.some(x => x.name === p.name);
@@ -1221,14 +1272,9 @@ function renderUsage(p, head){
       <pre>{
   "env": { "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000" }
 }</pre>${canSet ? `<p class="note" style="margin:8px 0 0">👇 ${t('reco_compact_box')}</p>` : ''}</div>`;
-  if (s.cross_msgs >= 10 && s.cross_tok >= 5e6)
-    recos += `<div class="box reco"><h3>💡 ${t('reco_cross_t')}</h3><p class="note" style="margin-bottom:0">${t('reco_cross', {n: s.cross_msgs, t: fmtTok(s.cross_tok)})}</p>
-      <pre>{
-  "crossSessionInbound": "hold"
-}</pre></div>`;
-  const html = `<div id="usage">
+  const html = `<div id="usage">${rangeBar()}
     <div class="tiles">${tiles.map(([v, l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('')}</div>
-    <p class="sub" style="font-size:12px;margin:0">${t('u_api_note')}</p>
+    ${spanNote}<p class="sub" style="font-size:12px;margin:0">${t('u_api_note')}</p>
     ${recos}
     ${canSet ? `<div class="box"><h3>${t('ps_h', {p: esc(p.name)})}</h3><p class="note">${t('ps_note')}</p>
       <div style="display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center">
@@ -1237,12 +1283,12 @@ function renderUsage(p, head){
           .map(([v, l]) => `<option value="${v}" ${(p.auto_compact || 0) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
         <label style="flex:1;min-width:260px"><input type="checkbox" id="ps-sg" ${p.prompt_suggestions === false ? '' : 'checked'}> ${t('ps_sugg')}</label>
         <span id="ps-res" class="usage-mini"></span></div></div>` : ''}
-    <div class="box"><h3>${t('u_hours')}</h3><p class="note">${t('u_hours_note')}</p>${hoursChart}<div class="ctip"></div></div>
+    <div class="box"><h3>${t('u_hours')}</h3><p class="note">${t('u_hours_note', {s: fmtDur(R.step)})}</p>${hoursChart}<div class="ctip"></div></div>
     <div class="box"><h3>${t('u_agents')}</h3>
       <table class="utable"><thead><tr><th>${t('u_col_agent')}</th><th class="num">${t('u_col_day')}</th><th></th><th class="num">${t('u_col_total')}</th><th class="num">${t('u_col_cost')}</th><th>${t('u_col_ctx')}</th><th class="num" title="${esc(t('step_hint'))}">${t('u_col_step')}</th><th class="num">${t('u_col_cache')}</th><th class="num">${t('u_col_subs')}</th><th>🧠</th></tr></thead><tbody>
       ${rows.map(a => { const u = a.usage, ci = u.in + u.cr + u.cw;
         return `<tr class="click" data-id="${a.id}"><td><b>${esc(a.title)}</b>${PROJ === '*' ? ` <span class="usage-mini">· ${esc(projName(a.project))}</span>` : ''}${(a.tips||[]).length ? ' 💡' : ''}</td>
-          <td class="num">${fmtTok(u.day.tok)}</td><td>${spark(u.spark)}</td><td class="num">${fmtTok(u.tok)}</td><td class="num">${fmtUsd(u.cost)}</td>
+          <td class="num">${fmtTok(u.win.tok)}</td><td>${spark(u.win.bins)}</td><td class="num">${fmtTok(u.tok)}</td><td class="num">${fmtUsd(u.win.cost)}</td>
           <td><div class="gauge"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span>${fmtTok(u.context)}</span></div></td>
           <td class="num">${stepCell(u)}</td>
           <td class="num">${ci ? Math.round(100 * u.cr / ci) + '%' : '—'}</td><td class="num">${u.tok ? Math.round(100 * u.sub_tok / u.tok) + '%' : '—'}</td><td class="usage-mini">${esc(modelEffort(a))}</td></tr>`; }).join('')}
@@ -1253,7 +1299,7 @@ function renderUsage(p, head){
     <div class="box"><h3>💡 ${t('u_tips')}</h3>${tipsAll.length ? `<ul class="tiplist">${tipsAll.map(({a, tp}) => `<li><b>${esc(a.title)}:</b> ${tipText(tp)}</li>`).join('')}</ul>` : `<p class="note">${t('u_no_tips')}</p>`}</div>
   </div>`;
   $('#main').innerHTML = head + html;
-  bindTabs(); bindChartTips($('#usage'));
+  bindTabs(); bindRange(); bindChartTips($('#usage'));
   if (canSet){
     const savePs = async () => {
       const r = await post('/api/psettings', {project: p.name, auto_compact: +$('#ps-ac').value || null, prompt_suggestions: $('#ps-sg').checked});
@@ -1266,7 +1312,7 @@ function renderUsage(p, head){
 }
 
 function bindTabs(){
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { TAB = b.dataset.t; store.set('tab', TAB); render(); });
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { const was = TAB; TAB = b.dataset.t; store.set('tab', TAB); render(); if ((TAB === 'usage') !== (was === 'usage')) load(); });
 }
 
 /* ---------- links map: who writes to whom ---------- */

@@ -28,7 +28,11 @@ def _usage(day_m, total_m, ctx_k, sub_share=0.0, model="claude-opus-5-5", shape=
             "models": {model: {"tok": tok, "cost": round(cost, 2), "out": out, "req": 300}},
             "sub_tok": int(tok * sub_share), "sub_cost": round(cost * sub_share, 2), "subs": [],
             "context": ctx_k * 1000, "max_context": int(ctx_k * 1300), "rebuilds": 0, "rebuild_tok": 0,
-            "cross_msgs": 4, "cross_tok": int(ctx_k * 4000), "ctx_hist": hist, "first": 0, "last": 0}, list(tips)
+            "cross_msgs": 4, "cross_tok": int(ctx_k * 4000), "ctx_hist": hist, "first": 0, "last": 0,
+            "win": {"tok": day, "cost": round(cost * day / tok, 2), "req": 180, "cr": int(day * 0.985), "inp": int(day * 0.996),
+                    "out": int(day * 0.004), "sub_tok": int(day * sub_share), "own_req": 150, "own_ctx": 150 * int(ctx_k * 1150),
+                    "step": int(ctx_k * 1150), "active": 6 * 3600, "bins": [v // 2 for v in spark for _ in (0, 1)],
+                    "models": {model: {"tok": day, "cost": round(cost * day / tok, 2)}}}}, list(tips)
 
 
 def _iso(seconds_ago):
@@ -135,4 +139,5 @@ def state():
     ]
     for p in projects:
         p["agents"] = [a for a in agents if a["project"] == p["name"]]
-    return {"now": time.time(), "projects": projects, "links": link_list, "live_ok": True}
+    return {"now": time.time(), "projects": projects, "links": link_list, "live_ok": True,
+            "range": {"from": time.time() - 86400, "to": time.time(), "step": 1800}}
