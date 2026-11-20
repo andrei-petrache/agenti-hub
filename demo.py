@@ -101,6 +101,13 @@ def state():
                "review the team's PRs", "Starting with PR #42 from backend.",
                [(600, "tool", "gh pr checkout 42", "Bash"), (650, "text", "Starting with PR #42 from backend.", None)],
                mode="background", asks="approval", use=_usage(5, 22, 120, shape=(0, 1, 2, 3))),
+        dict(_agent(_id(10), "codex", P, "working", tool("Bash", "pytest tests/test_refunds.py"), 5,
+                    "[message from backend, via the BuzzzHub bridge] write the edge-case tests for refunds",
+                    "Adding tests for partial and double refunds.",
+                    [(5, "tool", "pytest tests/test_refunds.py", "Bash"), (40, "tool", "test_refunds.py", "Edit"),
+                     (90, "text", "Adding tests for partial and double refunds.", None)],
+                    mode="app", use=_usage(6, 14, 140, model="gpt-6.2-sol", shape=(0, 2, 4, 3))),
+             engine="codex", model="gpt-6.2-sol", effort="high", job=None, live_name=None, cache_age=None),
         _agent(_id(5), "docs", P, "sleeping", {"k": "closed"}, 5 * 3600,
                "write the install guide", "The guide is ready in docs/install.md.",
                [(5 * 3600, "text", "The guide is ready in docs/install.md.", None)], running=False,
@@ -126,6 +133,7 @@ def state():
         ("ops", "review", 6, 700, "look at #42 first"),
         ("research", "backend", 3, 500, "SCA needs a second factor above 30 EUR"),
         ("@you", "ops", 4, 300, "coordinate the team"),
+        ("backend", "codex", 2, 100, "write the edge-case tests for refunds"),
         ("check", "site", 3, 900, "two images are too large"),
         ("site", "check", 2, 1200, "I redid the home page, can you check?"),
     ]
@@ -137,7 +145,20 @@ def state():
         {"name": "Landing page", "emoji": "🌐", "color": "#8fb996", "description": "site + check"},
         {"name": "Platformer game", "emoji": "🎮", "color": "#b48ac7", "description": "levels and art"},
     ]
+    for a in agents:
+        a.setdefault("engine", "claude")
+    for a in agents:
+        if a["title"] == "backend":
+            a["review"] = {"state": "done", "what": "uncommitted", "t": time.time() - 120, "text":
+                           "- [P1] Refund larger than the payment is accepted — payments.py:88\n"
+                           "  `refund()` checks the amount against the order total, not against what was actually "
+                           "paid, so a partial payment can be refunded in full.\n"
+                           "- [P3] The new /pay error code is missing from the API docs — docs/api.md"}
     for p in projects:
         p["agents"] = [a for a in agents if a["project"] == p["name"]]
-    return {"now": time.time(), "projects": projects, "links": link_list, "live_ok": True,
+    codex = {"available": True, "models": [["gpt-6.2-sol", "GPT-6.2 Sol", ["low", "medium", "high", "xhigh"]],
+                                           ["gpt-6.1-terra", "GPT-6.1 Terra", ["low", "medium", "high"]]],
+             "rate": {"primary": {"used_percent": 34, "window_minutes": 300, "resets_at": time.time() + 7200},
+                      "secondary": {"used_percent": 12, "window_minutes": 10080}}}
+    return {"now": time.time(), "projects": projects, "links": link_list, "live_ok": True, "codex": codex, "trash": [],
             "range": {"from": time.time() - 86400, "to": time.time(), "step": 1800}}

@@ -35,6 +35,7 @@ HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:          # terminal.py / processes.py / usage.py live next to server.py
     sys.path.insert(0, str(HERE))
 import usage  # noqa: E402  (needs the path above)
+import codex  # noqa: E402
 CONFIG = HERE / "config.json"
 EXAMPLE_CONFIG = HERE / "config.example.json"
 OLD_CONFIG = HERE / "proiecte.json"    # pre-1.0 Romanian config, migrated once
@@ -546,6 +547,47 @@ def usage_range(start, end, now_t):
     return start, end, step
 
 
+def codex_agents(cfg, since, now_t, rng=None):
+    """Codex threads as agents (engine "codex"), plus the newest plan limits Codex reported."""
+    shared = cfg.get("shared_folders", [])
+    out, rate, rate_t = [], None, 0
+    for f, st, m, kids in codex.threads(since):
+        sid = m["id"]
+        p = dict(codex.session(f, st), title=codex.names().get(sid))     # renames don't touch the thread file
+        subs = codex.subagents(kids, now_t)
+        mtime = max([st.st_mtime, p["last_t"]] + [x["mtime"] for x in subs])
+        stt, activity = codex.status(p, subs, mtime, now_t)
+        bg = codex.running(sid)
+        if bg and stt != "working":
+            stt, activity = "working", {"k": "busy"}
+        if p.get("rate") and st.st_mtime > rate_t:
+            rate, rate_t = p["rate"], st.st_mtime
+        u = usage.INDEX.session_files(f, st, [k[0] for k in kids], rng)
+        live = bg or stt in ("working", "stuck")
+        out.append({
+            "id": sid, "engine": "codex",
+            "title": p["title"] or p["first"] or ("untitled · " + sid[:6]), "has_title": bool(p["title"]),
+            "project": find_project(sid, p, cfg),
+            "cwd": next((c for c, _ in p["cwds"] if not _generic(c, shared)), p["cwd_start"] or p["cwd"]),
+            "cwd_start": p["cwd_start"] or p["cwd"],
+            "branch": p["branch"], **_shown_model(sid, p, cfg),
+            "pending": (cfg.get("pending") or {}).get(sid),
+            "wsl": False, "distro": None,
+            "running": bool(live), "live_name": None,
+            "mode": ("background" if bg else "app") if live else None,
+            "pid": codex.BG[sid].pid if bg else None, "job": None,
+            "asks": (activity or {}).get("kind") if stt == "stuck" else None,
+            "mtime": mtime, "age": now_t - mtime,
+            "status": stt, "activity": activity,
+            "last_prompt": p["last_prompt"], "last_text": p["last_text"],
+            "feed": p["feed"], "subagents": subs,
+            "usage": {k: v for k, v in u.items() if k != "hours"} if u else None,
+            "cache_age": None, "compact": None, "tips": [],
+            "review": None,
+        })
+    return out, rate
+
+
 def state(days, rng=None):
     import processes
     cfg = load_config()
@@ -632,6 +674,13 @@ def state(days, rng=None):
             agents.append(a)
             for m in sent:
                 all_sent.append((a, m))
+    codex_list, codex_rate = codex_agents(cfg, since, now_t, rng)
+    agents += codex_list
+    for a in agents:
+        a.setdefault("engine", "claude")
+        rv = codex.REVIEWS.get(a["id"])
+        if a["engine"] == "claude" and rv:
+            a["review"] = rv
     agents.sort(key=lambda a: a["age"])
     _latest.clear()
     _latest.update({a["id"]: a for a in agents})
@@ -652,7 +701,7 @@ def state(days, rng=None):
             add(a["title"], to, m["ts"], m["summary"])
     for m in hub_messages():
         if m.get("t", 0) >= since:
-            add(YOU, m.get("title") or m.get("titlu"), m.get("ts"), short(m.get("text"), 120))
+            add(m.get("sender") or YOU, m.get("title") or m.get("titlu"), m.get("ts"), short(m.get("text"), 120))
     link_list = []
     for e in links.values():
         e["recent"] = sorted(e["recent"], key=lambda r: r["ts"] or "")[-4:]
@@ -678,7 +727,8 @@ def state(days, rng=None):
             hub["tok"] += m["relay_tok"]
             hub["cost"] += m.get("relay_cost") or 0
     return {"now": now_t, "projects": projects, "links": link_list, "live_ok": live is not None,
-            "hub_usage": hub, "global_auto_compact": _global_auto_compact(), "trash": trash_list()}
+            "hub_usage": hub, "global_auto_compact": _global_auto_compact(), "trash": trash_list(),
+            "codex": {"available": codex.available(), "rate": codex_rate, "models": codex.models()}}
 
 
 def _global_auto_compact():
@@ -710,13 +760,15 @@ BANNER = {
                      "keeps going; reopen it any time from BuzzzHub.",
            "trust": "This folder is not marked as trusted yet: confirm in the terminal, then work as usual.",
            "wsl": "Starting the WSL session…", "left": "You left the session. You can close this window.",
-           "new": "A new agent, made from BuzzzHub. Write your first request below."},
+           "new": "A new agent, made from BuzzzHub. Write your first request below.",
+           "codex": "Codex (OpenAI), opened from BuzzzHub. It uses your ChatGPT plan, not the Claude one."},
     "ro": {"project": "proiect", "folder": "folder", "session": "sesiune",
            "attach": "Ești în sesiunea care rulează în fundal. Dacă închizi fereastra, agentul merge mai departe; "
                      "îl poți redeschide oricând din BuzzzHub.",
            "trust": "Folderul nu e încă marcat ca sigur: confirmă în terminal, apoi lucrezi normal.",
            "wsl": "Pornesc sesiunea din WSL…", "left": "Ai ieșit din sesiune. Poți închide fereastra.",
-           "new": "Agent nou, făcut din BuzzzHub. Scrie mai jos prima cerere."},
+           "new": "Agent nou, făcut din BuzzzHub. Scrie mai jos prima cerere.",
+           "codex": "Codex (OpenAI), deschis din BuzzzHub. Folosește abonamentul ChatGPT, nu pe cel Claude."},
 }
 
 
@@ -937,6 +989,8 @@ def set_model(sid, model, effort, lang="en"):
     a = _latest.get(sid)
     if not a:
         return False, "not_found", {}
+    if a.get("engine") == "codex":
+        return codex_model(a, model, effort)
     if a["wsl"]:
         return False, "wsl_no_model", {}
     model = model if model in MODELS else None
@@ -973,6 +1027,8 @@ def send(sid, text, lang="en"):
     a = _latest.get(sid)
     if not a:
         return False, "not_found", {}
+    if a.get("engine") == "codex":
+        return (codex_send(a, text.strip()) if text.strip() else (False, "empty", {}))
     if not CLAUDE:
         return False, "no_claude", {}
     if a["wsl"]:
@@ -1028,6 +1084,8 @@ def _put_to_sleep(sid):
     a = _latest.get(sid)
     if not a:
         return False, "not_found", {}
+    if a.get("engine") == "codex":
+        return codex_sleep(a)
     if not a["running"]:
         return False, "already_asleep", {}
     if a["mode"] == "background":
@@ -1083,6 +1141,8 @@ def open_in_terminal(sid, text="", lang="en"):
     a = _latest.get(sid)
     if not a:
         return False, "not_found", {}
+    if a.get("engine") == "codex":
+        return codex_open(a, (text or "").strip(), lang)
     if not CLAUDE and not a["wsl"]:
         return False, "no_claude", {}
     pref = load_config().get("terminal", "auto")
@@ -1134,6 +1194,180 @@ def open_in_terminal(sid, text="", lang="en"):
     if not ok:
         return False, "term_failed", {"err": term}
     return True, ("woke_opened_msg" if woke and text else "woke_opened" if woke else "opened"), {"term": term}
+
+
+# ---------------------------------------------------------------- Codex agents
+def _codex_choice(sid):
+    return (load_config().get("choice") or {}).get(sid) or {}
+
+
+def _codex_guard(a):
+    if not codex.exe():
+        return False, "no_codex", {}
+    if codex.running(a["id"]):
+        return False, "codex_running", {}
+    if a["status"] in ("working", "stuck"):           # mid-turn in the app or a window: a second writer would clash
+        return False, "codex_busy", {}
+    return None
+
+
+def codex_send(a, text):
+    g = _codex_guard(a)
+    if g:
+        return g
+    ok, code, params = codex.resume_bg(a["id"], text, a.get("cwd_start") or a.get("cwd") or str(Path.home()),
+                                       _codex_choice(a["id"]))
+    if ok:
+        _pending_done(a["id"])
+        log_message(a, text, "codex")
+    return ok, code, params
+
+
+def codex_open(a, text, lang):
+    import terminal
+    g = _codex_guard(a)
+    if g:
+        return g
+    b = BANNER[lang]
+    cmd = [codex.exe(), "resume", a["id"]] + codex.flags(_codex_choice(a["id"])) + ([text] if text else [])
+    ok, term = terminal.open_window(a["id"], a["title"], _banner(a, lang, b["codex"]), cmd,
+                                    a.get("cwd_start") or a.get("cwd") or str(Path.home()),
+                                    load_config().get("terminal", "auto"), b["left"])
+    if not ok:
+        return False, "term_failed", {"err": term}
+    _pending_done(a["id"])
+    if text:
+        log_message(a, text, "terminal")
+    return True, "opened", {"term": term}
+
+
+def codex_sleep(a):
+    if codex.stop(a["id"]):
+        return True, "slept", {}
+    if a.get("running"):
+        return False, "codex_app_sleep", {}           # it runs in the Codex app or in a window: stop it there
+    return False, "already_asleep", {}
+
+
+def codex_model(a, model, effort):
+    model = model if model in [m[0] for m in codex.models()] else None
+    effort = effort if effort in codex.EFFORTS else None
+    if not model and not effort:
+        return False, "nothing_to_change", {}
+    cfg = load_config()
+    ch = {k: v for k, v in ((cfg.get("choice") or {}).get(a["id"]) or {}).items() if k in ("model", "effort")}
+    ch.update({k: v for k, v in (("model", model), ("effort", effort)) if v})
+    cfg.setdefault("choice", {})[a["id"]] = ch
+    cfg.setdefault("pending", {})[a["id"]] = dict(ch)
+    save_config(cfg)
+    return True, "model_pending", {}                 # every Codex turn is a new start: it applies to the next one
+
+
+def _codex_watch_new(folder, t0, name, project):
+    """A Codex started in a window has no id until its first thread file appears: find it, then name it."""
+    def run():
+        for _ in range(180):
+            time.sleep(2)
+            for f in codex.all_files():
+                try:
+                    if f.stat().st_mtime < t0:
+                        continue
+                except OSError:
+                    continue
+                m = codex.meta(f)
+                if m and not m["sub"] and norm(m.get("cwd")).rstrip("/") == norm(folder).rstrip("/") \
+                        and (usage._ts(m.get("t")) or 0) >= t0 - 5:
+                    _codex_name(m["id"], name, project)
+                    return
+    threading.Thread(target=run, daemon=True).start()
+
+
+def _codex_name(tid, name, project):
+    codex.rename(tid, name)
+    if project != OTHER:
+        cfg = load_config()
+        cfg.setdefault("assignments", {})[tid] = project
+        save_config(cfg)
+
+
+def codex_new(d, name, folder, text, project, lang):
+    import terminal
+    if not codex.exe():
+        return False, "no_codex", {}
+    slugs = [m[0] for m in codex.models()]
+    ch = {k: v for k, v in (("model", d.get("model") if d.get("model") in slugs else None),
+                            ("effort", d.get("effort") if d.get("effort") in codex.EFFORTS else None)) if v}
+    a = {"id": "-", "title": name, "project": project, "cwd": folder, "cwd_start": folder}
+    if text and d.get("background"):
+        pr, tid = codex.new_bg(text, folder, ch)
+        if not tid:
+            return False, "not_started", {"out": "codex"}
+        _codex_name(tid, name, project)
+        if ch:
+            cfg = load_config()
+            cfg.setdefault("choice", {})[tid] = dict(ch, t=time.time())
+            save_config(cfg)
+        log_message(dict(a, id=tid), text, "codex")
+        return True, "agent_bg", {"name": name}
+    b = BANNER[lang]
+    t0 = time.time()
+    cmd = [codex.exe(), "-C", folder] + codex.flags(ch) + ([text] if text else [])
+    ok, term = terminal.open_window("codex-" + str(int(t0)), name, _banner(a, lang, b["codex"]), cmd, folder,
+                                    load_config().get("terminal", "auto"), b["left"])
+    if not ok:
+        return False, "term_failed", {"err": term}
+    _codex_watch_new(folder, t0, name, project)
+    return True, ("agent_term_msg" if text else "agent_term"), {"name": name}
+
+
+def codex_delete(a):
+    """Archives the thread (Codex's own trash: it leaves the list, nothing is erased) and keeps a note in ours."""
+    if codex.running(a["id"]):
+        codex.stop(a["id"])
+        time.sleep(1)
+    elif a["status"] == "working":
+        return False, "codex_busy", {}
+    ok, out = codex.cli(["archive", a["id"]])
+    if not ok:
+        return False, "delete_failed", {"err": short(out, 200)}
+    sid = a["id"]
+    dest = TRASH / sid
+    dest.mkdir(parents=True, exist_ok=True)
+    cfg = load_config()
+    saved = {k: (cfg.get(k) or {}).pop(sid, None) for k in ("assignments", "choice", "pending")}
+    meta = {"id": sid, "title": a["title"], "project": a["project"], "engine": "codex", "t": time.time(),
+            "config": {k: v for k, v in saved.items() if v is not None}}
+    (dest / "meta.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    save_config(cfg)
+    _latest.pop(sid, None)
+    return True, "agent_deleted", {"name": a["title"]}
+
+
+def review_with_codex(sid):
+    a = _latest.get(sid)
+    if not a:
+        return False, "not_found", {}
+    if a.get("engine") == "codex" or a["wsl"]:
+        return False, "review_claude_only", {}
+    cwd = next((c for c in (a.get("cwd"), a.get("cwd_start")) if c and Path(c).is_dir()), None)
+    if not cwd:
+        return False, "no_folder", {"dir": a.get("cwd") or "?"}
+    return codex.review(sid, cwd)
+
+
+def review_to_agent(sid, lang="en"):
+    """Sends Codex's review to the Claude agent it was made for."""
+    rv = codex.REVIEWS.get(sid) or {}
+    if rv.get("state") != "done":
+        return False, "not_found", {}
+    head = {"en": "Codex (OpenAI) reviewed your recent changes. Check each point, fix what is right, "
+                  "say briefly which ones you disagree with and why:",
+            "ro": "Codex (OpenAI) ți-a verificat modificările recente. Verifică fiecare punct, repară ce e corect "
+                  "și spune pe scurt cu care nu ești de acord și de ce:"}[_lang(lang)]
+    ok, code, params = send(sid, head + "\n\n" + rv["text"], lang)
+    if ok:
+        rv["sent"] = time.time()
+    return ok, code, params
 
 
 # ---------------------------------------------------------------- creating, editing and deleting
@@ -1227,7 +1461,8 @@ def new_agent(d, lang="en"):
     when it gets a first request and the folder is trusted."""
     import terminal
     import uuid
-    if not CLAUDE:
+    codex_engine = d.get("engine") == "codex"
+    if not CLAUDE and not codex_engine:
         return False, "no_claude", {}
     lang = _lang(lang)
     b = BANNER[lang]
@@ -1245,6 +1480,8 @@ def new_agent(d, lang="en"):
         cfg.setdefault("assignments", {})[sid] = project
     else:
         project = OTHER
+    if codex_engine:
+        return codex_new(d, name, folder, text, project, lang)
     ch = {k: v for k, v in (("model", d.get("model") if d.get("model") in MODELS else None),
                             ("effort", d.get("effort") if d.get("effort") in EFFORTS else None)) if v}
     if ch:
@@ -1293,7 +1530,9 @@ def edit_agent(sid, d):
     if not a:
         return False, "not_found", {}
     name = short(d.get("name"), 60)
-    if name and name != a["title"]:
+    if name and name != a["title"] and a.get("engine") == "codex":
+        codex.rename(sid, name)
+    elif name and name != a["title"]:
         f = _transcript(sid)
         if not f:
             return False, "not_found", {}
@@ -1319,6 +1558,8 @@ def delete_agent(sid):
     a = _latest.get(sid)
     if not a:
         return False, "not_found", {}
+    if a.get("engine") == "codex":
+        return codex_delete(a)
     if a["running"]:
         if a["wsl"]:
             return False, "wsl_running", {}
@@ -1363,7 +1604,7 @@ def trash_list():
         for m in TRASH.glob("*/meta.json"):
             try:
                 x = json.loads(m.read_text(encoding="utf-8"))
-                out.append({k: x.get(k) for k in ("id", "title", "project", "t")})
+                out.append({k: x.get(k) for k in ("id", "title", "project", "t", "engine")})
             except (OSError, ValueError):
                 continue
     return sorted(out, key=lambda x: -(x.get("t") or 0))
@@ -1375,19 +1616,27 @@ def manage_trash(op, sid):
         meta = json.loads((dest / "meta.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False, "not_found", {}
-    if op == "trash_purge":
+    if meta.get("engine") == "codex":                 # Codex keeps the thread archived; we only hold a note
+        ok, out = codex.cli(["delete", "--force", sid] if op == "trash_purge" else ["unarchive", sid])
+        if not ok and "not found" not in out.lower():
+            return False, "delete_failed", {"err": short(out, 200)}
+        if op == "trash_purge":
+            shutil.rmtree(dest, ignore_errors=True)
+            return True, "trash_purged", {"name": meta.get("title")}
+    elif op == "trash_purge":
         shutil.rmtree(dest, ignore_errors=True)
         return True, "trash_purged", {"name": meta.get("title")}
-    f = Path(meta["from"])
-    if f.exists():
-        return False, "restore_exists", {}
-    try:
-        f.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(dest / f.name), str(f))
-        if (dest / "files").is_dir():
-            shutil.move(str(dest / "files"), str(f.with_suffix("")))
-    except OSError as e:
-        return False, "delete_failed", {"err": str(e)}
+    else:
+        f = Path(meta["from"])
+        if f.exists():
+            return False, "restore_exists", {}
+        try:
+            f.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(dest / f.name), str(f))
+            if (dest / "files").is_dir():
+                shutil.move(str(dest / "files"), str(f.with_suffix("")))
+        except OSError as e:
+            return False, "delete_failed", {"err": str(e)}
     cfg = load_config()
     for k, v in (meta.get("config") or {}).items():
         if k != "assignments" or v in [p["name"] for p in cfg.get("projects", [])]:
@@ -1395,6 +1644,67 @@ def manage_trash(op, sid):
     save_config(cfg)
     shutil.rmtree(dest, ignore_errors=True)
     return True, "trash_restored", {"name": meta.get("title")}
+
+
+# ---------------------------------------------------------------- bridge (buzz_mcp.py): agents writing to agents
+BRIDGE_LIMIT = 6                                     # messages to one agent per 10 minutes: stops ping-pong loops
+_bridge_t = {"t": 0}
+
+
+def write_port():
+    """buzz_mcp.py finds BuzzzHub through this file (the desktop app picks a free port each start)."""
+    try:
+        (HERE / "cache").mkdir(exist_ok=True)
+        (HERE / "cache" / "port.txt").write_text(str(PORT), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _mark_last_message(sid, **extra):
+    """Adds fields to the line send() just wrote to messages.jsonl (who sent it, through what)."""
+    try:
+        lines = MESSAGES.read_text(encoding="utf-8").splitlines()
+        if lines and json.loads(lines[-1]).get("id") == sid:
+            lines[-1] = json.dumps(dict(json.loads(lines[-1]), **extra), ensure_ascii=False)
+            MESSAGES.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
+def _bridge_agents():
+    if time.time() - _bridge_t["t"] > 15 or not _latest:
+        state(3)
+        _bridge_t["t"] = time.time()
+    return list(_latest.values())
+
+
+def bridge(d):
+    agents = _bridge_agents()
+    if d.get("op") == "list":
+        pr = norm(d.get("project") or "")
+        out = [{"title": a["title"], "id": a["id"], "engine": a.get("engine", "claude"),
+                "project": a["project"] if a["project"] != OTHER else "-", "status": a["status"]}
+               for a in agents if not pr or norm(a["project"]) == pr]
+        return {"ok": True, "agents": out[:60]}
+    to = str(d.get("to") or "").strip()
+    text = str(d.get("text") or "").strip()[:8000]
+    if not to or not text:
+        return {"ok": False, "error": "Give both `to` and `text`."}
+    hits = [a for a in agents if a["id"] == to] or [a for a in agents if norm(a["title"]) == norm(to)]
+    if not hits:
+        return {"ok": False, "error": f"No agent called “{to}”. Use list_agents for the names."}
+    a = sorted(hits, key=lambda x: (x["status"] == "sleeping", x["age"]))[0]
+    recent = [m for m in hub_messages() if m.get("id") == a["id"] and m.get("via_bridge") and time.time() - m.get("t", 0) < 600]
+    if len(recent) >= BRIDGE_LIMIT:
+        return {"ok": False, "error": f"{a['title']} already got {len(recent)} bridge messages in 10 minutes; wait."}
+    who = short(d.get("from"), 60) or "another agent"
+    body = (f"[message from {who}, via the BuzzzHub bridge. If you need to answer, use the send_to_agent tool "
+            f"of the buzzzhub MCP server, to “{who}”.]\n{text}")
+    ok, code, params = send(a["id"], body)
+    if ok:
+        _mark_last_message(a["id"], via_bridge=True, sender=who)
+        return {"ok": True, "info": f"Delivered to {a['title']} ({a.get('engine', 'claude')}): {code}."}
+    return {"ok": False, "error": f"Not delivered to {a['title']}: {code} {params or ''}".strip()}
 
 
 # ---------------------------------------------------------------- HTTP
@@ -1438,7 +1748,7 @@ class H(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in ("/api/assign", "/api/project", "/api/send", "/api/open", "/api/sleep", "/api/model",
-                             "/api/compact", "/api/psettings", "/api/manage"):
+                             "/api/compact", "/api/psettings", "/api/manage", "/api/bridge"):
             return self.send_error(404)
         if self.headers.get("Origin") not in (None, f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"):
             return self.send_error(403)
@@ -1447,6 +1757,10 @@ class H(BaseHTTPRequestHandler):
             d = json.loads(self.rfile.read(n) or b"{}")
         except ValueError:
             return self.send_error(400)
+        if self.path == "/api/bridge":
+            if "--demo" in sys.argv:
+                return self._json({"ok": False, "error": "BuzzzHub runs in demo mode."})
+            return self._json(bridge(d))
         if self.path == "/api/manage":
             if "--demo" in sys.argv:
                 return self._result((False, "demo", {}))
@@ -1464,6 +1778,13 @@ class H(BaseHTTPRequestHandler):
                 return self._result(delete_agent(sid))
             if op in ("trash_restore", "trash_purge"):
                 return self._result(manage_trash(op, sid))
+            if op == "review":
+                return self._result(review_with_codex(sid))
+            if op == "review_send":
+                return self._result(review_to_agent(sid, str(d.get("lang", "en"))))
+            if op == "review_close":
+                codex.REVIEWS.pop(sid, None)
+                return self._result((True, "", {}))
             return self.send_error(400)
         if self.path == "/api/psettings":
             if "--demo" in sys.argv:
@@ -1519,6 +1840,8 @@ def main():
             pass
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     url = f"http://127.0.0.1:{PORT}"
+    if "--demo" not in sys.argv:
+        write_port()
     print(f"BuzzzHub running: {url}   (Ctrl+C to stop)")
     print("Reading from:", *[str(r) for r in roots_cached()], sep="\n  ")
     if not {"--no-browser", "--fara-browser"} & set(sys.argv):

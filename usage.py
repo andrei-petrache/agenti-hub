@@ -90,6 +90,43 @@ def _new_state():
             "cross_tokens": 0, "slots": {}, "ctx_hist": [[0, 0] for _ in range(11)]}
 
 
+def _account(s, model, one, t, main=True):
+    """Adds one request's tokens to file state s: per model, per hour, per 10-minute slot, context."""
+    _add(s["models"].setdefault(model, _empty()), one)
+    if t:
+        h = str(int(t // 3600))
+        hb = s["hours"].setdefault(h, {"tok": 0, "cost": 0.0})
+        hb["tok"] += total(one)
+        hb["cost"] += one["cost"]
+        hb["req"] = hb.get("req", 0) + 1            # for the average context read per step
+        hb["ctx"] = hb.get("ctx", 0) + one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+        sl = s.setdefault("slots", {}).setdefault(str(int(t // SLOT)), {"tok": 0, "cost": 0.0, "req": 0, "ctx": 0,
+                                                                           "cr": 0, "inp": 0, "out": 0, "m": {}})
+        sl["tok"] += total(one)                      # 10-minute buckets: any period can be added up
+        sl["cost"] += one["cost"]
+        sl["req"] += 1
+        sl["ctx"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+        sl["cr"] += one["cr"]
+        sl["inp"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+        sl["out"] += one["out"]
+        mm = sl["m"].setdefault(model, [0, 0.0])
+        mm[0] += total(one)
+        mm[1] += one["cost"]
+        gap = t - s["last"] if s["last"] else 0
+        if gap > CACHE_TTL and one["cw5"] + one["cw1h"] > REBUILD_MIN:
+            s["rebuilds"] += 1                       # cache had expired: whole context written again
+            s["rebuild_tokens"] += one["cw5"] + one["cw1h"]
+        s["first"] = s["first"] or t
+        s["last"] = max(s["last"], t)
+    ctx = one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
+    b = s["ctx_hist"][min(ctx // 100_000, 10)]      # context size per request, 100k buckets
+    b[0] += 1
+    b[1] += ctx
+    if main:
+        s["context"] = ctx
+        s["max_context"] = max(s["max_context"], ctx)
+
+
 def _scan(path: Path, st, s):
     """Reads the new bytes of one transcript and adds them to state s."""
     size = st.st_size
@@ -142,43 +179,59 @@ def _scan(path: Path, st, s):
                "cr": u.get("cache_read_input_tokens", 0) or 0, "cw5": cw5 or 0, "cw1h": cw1h or 0,
                "think": ((u.get("output_tokens_details") or {}).get("thinking_tokens") or 0), "req": 1}
         one["cost"] = cost(model, one, u.get("speed") == "fast")
-        _add(s["models"].setdefault(model, _empty()), one)
-        t = _ts(d.get("timestamp"))
-        if t:
-            h = str(int(t // 3600))
-            hb = s["hours"].setdefault(h, {"tok": 0, "cost": 0.0})
-            hb["tok"] += total(one)
-            hb["cost"] += one["cost"]
-            hb["req"] = hb.get("req", 0) + 1            # for the average context read per step
-            hb["ctx"] = hb.get("ctx", 0) + one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
-            sl = s.setdefault("slots", {}).setdefault(str(int(t // SLOT)), {"tok": 0, "cost": 0.0, "req": 0, "ctx": 0,
-                                                                               "cr": 0, "inp": 0, "out": 0, "m": {}})
-            sl["tok"] += total(one)                      # 10-minute buckets: any period can be added up
-            sl["cost"] += one["cost"]
-            sl["req"] += 1
-            sl["ctx"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
-            sl["cr"] += one["cr"]
-            sl["inp"] += one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
-            sl["out"] += one["out"]
-            mm = sl["m"].setdefault(model, [0, 0.0])
-            mm[0] += total(one)
-            mm[1] += one["cost"]
-            gap = t - s["last"] if s["last"] else 0
-            if gap > CACHE_TTL and one["cw5"] + one["cw1h"] > REBUILD_MIN:
-                s["rebuilds"] += 1                       # cache had expired: whole context written again
-                s["rebuild_tokens"] += one["cw5"] + one["cw1h"]
-            s["first"] = s["first"] or t
-            s["last"] = max(s["last"], t)
-        ctx = one["in"] + one["cr"] + one["cw5"] + one["cw1h"]
-        b = s["ctx_hist"][min(ctx // 100_000, 10)]      # context size per request, 100k buckets
-        b[0] += 1
-        b[1] += ctx
-        if not d.get("isSidechain"):
-            s["context"] = ctx
-            s["max_context"] = max(s["max_context"], ctx)
+        _account(s, model, one, _ts(d.get("timestamp")), not d.get("isSidechain"))
         if pending_cross:
             s["cross_tokens"] += total(one)
             pending_cross = False
+    s["off"] += end
+    s["seen"] = list(seen)
+    return s
+
+
+def _scan_codex(path: Path, st, s):
+    """Same state from a Codex rollout file: one token_usage_record per model response (ChatGPT plan, no $)."""
+    size = st.st_size
+    if size < s["off"]:
+        s.clear()
+        s.update(_new_state())
+    if size == s["off"]:
+        return s
+    seen = deque(s["seen"], maxlen=64)
+    with open(path, "rb") as f:
+        f.seek(s["off"])
+        data = f.read(size - s["off"])
+    end = data.rfind(b"\n") + 1
+    for ln in data[:end].split(b"\n"):
+        if b'"thread_settings_applied"' in ln or b'"turn_context"' in ln:
+            try:
+                p = json.loads(ln).get("payload") or {}
+                s["model"] = (p.get("thread_settings") or {}).get("model") or p.get("model") or s.get("model")
+            except ValueError:
+                pass
+            continue
+        if b'"model_context_window"' in ln:
+            mw = re.search(rb'"model_context_window":(\d+)', ln)
+            if mw:
+                s["window"] = int(mw.group(1))
+            continue
+        if b'"token_usage_record"' not in ln:
+            continue
+        try:
+            d = json.loads(ln)
+        except ValueError:
+            continue
+        p = d.get("payload") or {}
+        rid, u = p.get("response_id"), p.get("usage") or {}
+        if not u or (rid and rid in seen):
+            continue
+        if rid:
+            seen.append(rid)
+        cached = u.get("cached_input_tokens", 0) or 0
+        cw = u.get("cache_write_input_tokens", 0) or 0
+        one = {"in": max((u.get("input_tokens", 0) or 0) - cached - cw, 0), "out": u.get("output_tokens", 0) or 0,
+               "cr": cached, "cw5": cw, "cw1h": 0, "think": u.get("reasoning_output_tokens", 0) or 0, "req": 1,
+               "cost": 0.0}
+        _account(s, s.get("model") or "gpt", one, _ts(d.get("timestamp")))
     s["off"] += end
     s["seen"] = list(seen)
     return s
@@ -211,7 +264,7 @@ class Index:
             if s is None:
                 s = self.files[key] = _new_state()
             if st.st_size != s["off"]:
-                _scan(path, st, s)
+                (_scan_codex if path.name.startswith("rollout-") else _scan)(path, st, s)
                 self._dirty = True
             return s
 
@@ -230,6 +283,14 @@ class Index:
                         subs.append((jl.stem, s))
             except OSError:
                 pass
+        return summarize(own, subs, rng)
+
+    def session_files(self, path: Path, st, sub_paths, rng=None):
+        """Like session(), with the sub-agent files given (Codex keeps them as separate threads)."""
+        own = self.file(path, st)
+        if own is None:
+            return None
+        subs = [(k.stem, s) for k in sub_paths for s in [self.file(k)] if s]
         return summarize(own, subs, rng)
 
     def save(self, force=False):
@@ -363,7 +424,7 @@ def summarize(own, subs, rng=None):
                    for m, u in models.items()},
         "sub_tok": total(sub_total), "sub_cost": round(sub_total["cost"], 4),
         "subs": sorted(sub_list, key=lambda x: -x["tok"])[:20],
-        "context": own["context"], "max_context": own["max_context"],
+        "context": own["context"], "max_context": own["max_context"], "window": own.get("window"),
         "rebuilds": own["rebuilds"], "rebuild_tok": own["rebuild_tokens"],
         "cross_msgs": own["cross_msgs"], "cross_tok": own["cross_tokens"],
         "ctx_hist": _hist(own, subs),

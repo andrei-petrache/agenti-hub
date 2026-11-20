@@ -2,7 +2,7 @@
 
 <h1 align="center">BuzzzHub 🐝</h1>
 
-<p align="center">A small desktop dashboard for all the <b>Claude Code</b> agents working in parallel on your computer.<br>
+<p align="center">A small desktop dashboard for all the <b>Claude Code</b> and <b>Codex</b> agents working in parallel on your computer.<br>
 Pick a project and see every agent as a little mascot in its own room: what it is doing right now, whether it has a question for you, who it is writing to.<br>
 Open it in a terminal with one click, send it a message or put it to sleep.</p>
 
@@ -33,6 +33,9 @@ Open it in a terminal with one click, send it a message or put it to sleep.</p>
 
 - **Projects.** Sessions are grouped by project using the session name, the folder it worked in the most, or keywords from its first requests. The home page shows how many agents are working in each project. From an agent's panel you can move it to another project or to a new one (➕ new project…).
 - **➕ Create, edit, merge and delete.** Make a project from the home page (name, emoji, colour, plus the keywords and folders that pull agents into it), and edit it, merge it into another one or delete it from its page (deleting a project keeps its agents; they get placed automatically again). **➕ New agent** starts a fresh Claude session with a name, a folder, a project and, if you like, a model, an effort and a first request: in a terminal window, or in the background (`claude --session-id … -n … --bg`). From an agent's panel, ✏️ renames it (the same lines `/rename` writes) or moves it, and 🗑️ deletes it: it is put to sleep first and its conversation moves to BuzzzHub's 🗑️ trash, where you can restore it or delete it for good.
+- **🤝 Codex next to Claude.** If [Codex](https://openai.com/codex/) is installed (the desktop app or the `codex` command), its threads show up as agents too, with a green **Codex** badge: status, activity, sub-agents, model, tokens and how much of your ChatGPT plan's 5-hour and weekly limits is used. From the panel you write to one (`codex exec resume <id>`: the same thread continues in the background), open it in a terminal (`codex resume`), change its model or effort for the next turn, rename it, or delete it (`codex archive`, so the 🗑️ trash can bring it back with `codex unarchive`). **➕ New agent** can start a Codex thread instead of a Claude one, in a window or in the background. Codex work uses your ChatGPT plan, not the Claude one.
+- **🔍 Review with Codex.** In a Claude agent's panel, **Review with Codex** has Codex read what that agent changed in its folder (the uncommitted changes, otherwise the last commit, with `codex exec review`) and shows the review there. **📨 Send to the agent** passes it to the Claude agent, which checks each point, fixes what is right and says which ones it disagrees with.
+- **🌉 Agents writing to agents.** `buzz_mcp.py` is a small MCP server with two tools, `list_agents` and `send_to_agent`. Add it to Claude Code and to Codex and their agents can write to each other through BuzzzHub, whatever the engine: a Claude agent can ask a Codex one for a second opinion and the other way round. A message wakes the receiver like one from you does, so BuzzzHub lets one agent receive at most 6 bridge messages in 10 minutes, which stops ping-pong loops.
 - **Agents.** Every session gets a mascot animated by its status:
   - ⚡ **working**: it bounces and its star spins. You also see what it runs, e.g. "runs Run all tests".
   - 👋 **waiting for you**: it is done and waves at you.
@@ -73,6 +76,7 @@ To show things, the app only **reads** and never changes anything in `~/.claude`
 | sub-agents and what each one is doing | `<session>/subagents/*.meta.json` and the tail of each sub-agent's transcript |
 | token usage | the `usage` block of every reply in the transcripts (and sub-agents' transcripts), counted once per message, indexed in `cache/usage.json` so only new bytes are read |
 | links | the `SendMessage` calls in the transcripts. Technical addresses become names via `~/.claude/sessions/*.json` and received messages. |
+| Codex threads, their status, tokens and plan limits | `~/.codex/sessions/*/*/*/rollout-*.jsonl` and the thread names in `~/.codex/session_index.jsonl`, read the same way; the commands are those of the `codex` CLI (the one in PATH, or the one inside the Codex desktop app) |
 
 For WSL sessions the status is estimated from how recently the session wrote and from its last message.
 
@@ -152,10 +156,23 @@ Upgrading from an older version? Its `proiecte.json` is copied into `config.json
 | `processes.py` | finds the running `claude` processes and the session of each (a safety net for status) |
 | `usage.py` | token usage and cost per session, the local index, the context histogram and the suggestion rules |
 | `terminal.py` | opens an agent in a terminal window (Git Bash / Windows Terminal / cmd / Terminal on macOS) |
+| `codex.py` | reads the Codex threads and runs the `codex` commands (messages, reviews, archive) |
+| `buzz_mcp.py` | the bridge: an MCP server agents use to write to each other through BuzzzHub |
 | `index.html` | the whole interface (HTML/CSS/JS with no dependencies, SVG mascots, English and Romanian texts) |
 | `demo.py` | made-up data for `--demo` |
 | `make_icon.py` | draws the `buzzzhub.ico` / `buzzzhub.png` icon in code, with no libraries |
 | `config.example.json` | the starting configuration |
+
+## The bridge (agents writing to agents)
+
+Add the MCP server once to each tool (use the full path of your BuzzzHub folder):
+
+```bash
+claude mcp add --scope user buzzzhub -- python C:/path/to/buzzzhub/buzz_mcp.py
+codex mcp add buzzzhub -- python C:/path/to/buzzzhub/buzz_mcp.py
+```
+
+Every agent then has `list_agents` and `send_to_agent`. BuzzzHub must be open: the bridge talks to it on `127.0.0.1` (the port is in `cache/port.txt`). A message arrives with who sent it, and the receiver is told to answer with the same tool if it needs to. Claude reads `CLAUDE.md` and Codex reads `AGENTS.md`: to give both the same project instructions, keep them in `AGENTS.md` and put a line with `@AGENTS.md` in `CLAUDE.md`.
 
 ## Limits
 
@@ -163,6 +180,7 @@ Upgrading from an older version? Its `proiecte.json` is copied into `config.json
 - WSL status is estimated, not exact.
 - WSL sessions can't get messages from the app, because a different `claude` runs there. You can still open them in a terminal (`wsl.exe … claude --resume`).
 - Claude starts background sessions only in folders you trusted. Otherwise the app opens the session interactively in a terminal so you can trust the folder once.
+- A Codex thread that is working in the Codex app can't get a message until it finishes, and BuzzzHub can't stop it: only threads it started itself in the background can be put to sleep from here. The app does not show a thread's new turns live if they were added from outside; reopen the thread there.
 
 ## Saving tokens: what we found
 
@@ -190,6 +208,7 @@ Almost nothing. The dashboard, the workshop, the statuses, the sub-agents and th
 - **✈️ a message or 🐝 BUZZ!** to a running session: a short `claude -p` relay on Haiku carries it;
 - **📝 Summarise**: one request that reads the conversation, mostly from cache if the agent worked in the last hour;
 - **what the agent does next**: your message puts it to work, just as if you had typed it to it directly.
+- **Codex** (a message, a new thread or a 🔍 review) runs on your ChatGPT plan. The panel shows how much of its limits is used.
 
 ## License
 

@@ -173,6 +173,8 @@ main{padding:26px 28px 60px;max-width:1300px;margin:0 auto}
 @keyframes led{50%{opacity:.25}}
 @keyframes steam{0%{opacity:0;transform:translateY(3px)}40%{opacity:.9}100%{opacity:0;transform:translateY(-4px)}}
 .persona{font-size:12px;color:var(--muted);margin-top:3px}
+.eng{display:inline-block;font-size:10px;font-weight:800;padding:1px 7px;border-radius:8px;background:#10a37f;color:#fff;margin-left:6px;vertical-align:middle;letter-spacing:.3px}
+.rvtext{max-height:280px;overflow:auto;white-space:pre-wrap}
 @keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(8px,-14px)}}
 @media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
 
@@ -378,7 +380,7 @@ en: {
   n_subs:'🐣 {n} sub-agents', n_active:'{n} active',
   verbs:{Bash:'runs', PowerShell:'runs', Read:'reads', Edit:'edits', Write:'writes', Grep:'searches', Glob:'looks for files',
     Agent:'sent a sub-agent', SendMessage:'messages', WebSearch:'searches the web', WebFetch:'reads the page',
-    Artifact:'publishes', ToolSearch:'loads tools', Skill:'uses a skill'},
+    Artifact:'publishes', ToolSearch:'loads tools', Skill:'uses a skill', MCP:'uses'},
   act_thinking:'thinking…', act_subagents:'working with sub-agents', act_done:'finished — waiting for you', act_sleeping:'sleeping',
   act_stopped_at:'stopped at: {what} (maybe waiting for a permission)', act_no_reply:'left without a reply (interrupted?)',
   act_busy:'working…', act_question:'has a question for you', act_approval:'waiting for you to approve an action',
@@ -489,7 +491,26 @@ en: {
     thinking:'<b>{p}% of its output is thinking.</b> For routine steps: /effort low or /effort medium.',
     cross:'<b>{n} messages from other sessions woke it up</b> (≈ {k}k tokens). Batch them, or set "crossSessionInbound": "hold".',
   },
+  in_codex:'in the Codex app', codex_badge:'Codex',
+  mode_codex_app:'It is running in the Codex app or in its window. Wait until it finishes, then write.',
+  mode_codex_closed:'Codex (OpenAI). ✈️ Send: it continues in the background with your message. 🖥️ Terminal: opens it in a window. It uses your ChatGPT plan, not the Claude one.',
+  ask_codex:'It is waiting for your approval in the Codex app (or in its window).', act_answer_codex:' — answer it in the Codex app',
+  codex_rate:'Codex plan: {p}% of the 5-hour limit used', codex_rate_w:' · {p}% of the week', codex_reset:' · resets at {h}',
+  mdl_note_codex:'Codex takes the new model/effort at its next turn (the next message you send it).',
+  rv_btn:'🔍 Review with Codex', rv_hint:'Codex (OpenAI) reads what this agent changed in its folder (uncommitted changes, otherwise the last commit) and writes a review. It uses your ChatGPT plan.',
+  rv_running:'🔍 Codex is reviewing the changes… (a few minutes)', rv_done_h:'🔍 Codex review · {what}',
+  rv_uncommitted:'uncommitted changes', rv_last_commit:'last commit', rv_failed:'⚠️ The Codex review failed: {err}',
+  rv_send:'📨 Send to the agent', rv_sent:'✅ Sent to the agent.', rv_close:'Close',
+  f_engine:'Engine', e_claude:'Claude (Anthropic)', e_codex:'Codex (OpenAI · ChatGPT plan)',
   msg:{
+    no_codex:"Can't find Codex (install the Codex app or the codex command).",
+    codex_running:'Codex is already working on a message from BuzzzHub; wait until it finishes.',
+    codex_busy:'It is working right now (in the Codex app or in a window); write when it finishes.',
+    codex_started_msg:'Codex continues in the background with your message (ChatGPT plan).',
+    codex_app_sleep:'It runs in the Codex app or in its own window: stop it there.',
+    review_started:'Codex started the review; the result shows up here in a few minutes.',
+    review_running:'Codex is already reviewing this agent.', review_no_git:'The folder is not a git repository, so Codex has nothing to compare.',
+    review_claude_only:'Codex reviews Claude agents only.',
     model_pending:'Saved: it gets the new model/effort the next time you wake it.', model_restarted:'Restarted in the background with the new model/effort.',
     model_restarted_term:'Restarted with the new model/effort and opened again in {term}.', wsl_no_model:"WSL sessions can't be changed from here.",
     nothing_to_change:'Pick a model or an effort first.',
@@ -540,7 +561,7 @@ ro: {
   n_subs:'🐣 {n} sub-agenți', n_active:'{n} activi',
   verbs:{Bash:'rulează', PowerShell:'rulează', Read:'citește', Edit:'editează', Write:'scrie', Grep:'caută', Glob:'caută fișiere',
     Agent:'a trimis un sub-agent', SendMessage:'trimite mesaj', WebSearch:'caută pe web', WebFetch:'citește pagina',
-    Artifact:'publică', ToolSearch:'încarcă unelte', Skill:'folosește skill'},
+    Artifact:'publică', ToolSearch:'încarcă unelte', Skill:'folosește skill', MCP:'folosește'},
   act_thinking:'se gândește…', act_subagents:'lucrează cu sub-agenți', act_done:'a terminat — te așteaptă', act_sleeping:'doarme',
   act_stopped_at:'s-a oprit la: {what} (poate așteaptă permisiune)', act_no_reply:'a rămas fără răspuns (întrerupt?)',
   act_busy:'lucrează…', act_question:'te întreabă ceva', act_approval:'așteaptă să-i aprobi o acțiune',
@@ -651,7 +672,26 @@ ro: {
     thinking:'<b>{p}% din ce scrie e gândire.</b> Pentru pași de rutină: /effort low sau /effort medium.',
     cross:'<b>{n} mesaje de la alte sesiuni l-au trezit</b> (≈ {k}k tokeni). Grupează-le sau setează "crossSessionInbound": "hold".',
   },
+  in_codex:'în aplicația Codex', codex_badge:'Codex',
+  mode_codex_app:'Rulează în aplicația Codex sau în fereastra lui. Așteaptă să termine, apoi scrie.',
+  mode_codex_closed:'Codex (OpenAI). ✈️ Trimite: continuă în fundal cu mesajul tău. 🖥️ Terminal: îl deschide într-o fereastră. Folosește abonamentul ChatGPT, nu pe cel Claude.',
+  ask_codex:'Așteaptă aprobarea ta în aplicația Codex (sau în fereastra lui).', act_answer_codex:' — răspunde-i în aplicația Codex',
+  codex_rate:'Plan Codex: {p}% din limita de 5 ore folosit', codex_rate_w:' · {p}% din săptămână', codex_reset:' · se resetează la {h}',
+  mdl_note_codex:'Codex ia noul model/efort la următorul pas (următorul mesaj pe care i-l trimiți).',
+  rv_btn:'🔍 Review cu Codex', rv_hint:'Codex (OpenAI) citește ce a schimbat agentul ăsta în folderul lui (modificările necomise, altfel ultimul commit) și scrie un review. Folosește abonamentul ChatGPT.',
+  rv_running:'🔍 Codex verifică modificările… (câteva minute)', rv_done_h:'🔍 Review Codex · {what}',
+  rv_uncommitted:'modificări necomise', rv_last_commit:'ultimul commit', rv_failed:'⚠️ Review-ul Codex a eșuat: {err}',
+  rv_send:'📨 Trimite-l agentului', rv_sent:'✅ Trimis agentului.', rv_close:'Închide',
+  f_engine:'Motor', e_claude:'Claude (Anthropic)', e_codex:'Codex (OpenAI · abonament ChatGPT)',
   msg:{
+    no_codex:'Nu găsesc Codex (instalează aplicația Codex sau comanda codex).',
+    codex_running:'Codex lucrează deja la un mesaj din BuzzzHub; așteaptă să termine.',
+    codex_busy:'Lucrează chiar acum (în aplicația Codex sau într-o fereastră); scrie-i după ce termină.',
+    codex_started_msg:'Codex continuă în fundal cu mesajul tău (abonament ChatGPT).',
+    codex_app_sleep:'Rulează în aplicația Codex sau în fereastra lui: oprește-l de acolo.',
+    review_started:'Codex a pornit review-ul; rezultatul apare aici în câteva minute.',
+    review_running:'Codex verifică deja agentul ăsta.', review_no_git:'Folderul nu e un repository git, deci Codex n-are cu ce compara.',
+    review_claude_only:'Codex face review doar agenților Claude.',
     model_pending:'Salvat: primește noul model/efort data viitoare când îl trezești.', model_restarted:'Repornit în fundal cu noul model/efort.',
     model_restarted_term:'Repornit cu noul model/efort și redeschis în {term}.', wsl_no_model:'Sesiunile din WSL nu pot fi schimbate de aici.',
     nothing_to_change:'Alege întâi un model sau un efort.',
@@ -728,7 +768,7 @@ function activity(a){
   switch (x.k){
     case 'tool': return toolText(x.tool, x.text);
     case 'stopped_at': return t('act_stopped_at', {what: toolText(x.tool, x.text)});
-    case 'asks': return t(x.kind === 'approval' ? 'act_approval' : 'act_question') + t(x.mode === 'background' ? 'act_answer_bg' : 'act_answer_term');
+    case 'asks': return t(x.kind === 'approval' ? 'act_approval' : 'act_question') + t(x.mode === 'background' ? 'act_answer_bg' : x.mode === 'codex' ? 'act_answer_codex' : 'act_answer_term');
     case 'idle': return t(x.mode === 'background' ? 'act_idle_bg' : 'act_idle_term');
     case 'untouched': return t(x.mode === 'terminal' ? 'act_untouched_term' : 'act_untouched', {h: x.h});
     default: return t('act_' + (x.k || 'sleeping'));
@@ -1027,11 +1067,11 @@ function card(a){
   const subsActive = a.subagents.filter(s => !s.done && s.age < 300).length;
   return `<div class="ag ${SEL===a.id?'sel':''}" data-id="${a.id}">
     <div class="top">${mascot(hue(a.title), a.status, a.title)}
-      <div><h3>${esc(a.title)}</h3>
+      <div><h3>${esc(a.title)}${eng(a)}</h3>
       ${pill(a)}
       ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div></div>
     <div class="act">${esc(activity(a))}</div>
-    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}${a.usage && a.usage.tok ? `<span title="${esc(t('step_hint'))}">📊 ${t('per_step', {t: fmtTok(a.usage.context)})} · ${t('mini', {t: fmtTok(a.usage.day.tok)})}</span>` : ''}${a.model ? `<span>🧠 ${esc(modelEffort(a))}</span>` : ''}${cmpBadge(a)}</div>
+    <div class="meta">${a.running?`<span><span class="on-dot"></span> ${t(a.mode==='background'?'in_bg':a.mode==='app'?'in_codex':'in_term')}</span>`:''}<span>🕒 ${ago(a.age)}</span>${a.branch?`<span>🌿 ${esc(a.branch)}</span>`:''}${a.wsl?'<span>🐧 WSL</span>':''}${PROJ==='*'?`<span>📁 ${esc(projName(a.project))}</span>`:''}${a.usage && a.usage.tok ? `<span title="${esc(t('step_hint'))}">📊 ${t('per_step', {t: fmtTok(a.usage.context)})} · ${t('mini', {t: fmtTok(a.usage.day.tok)})}</span>` : ''}${a.model ? `<span>🧠 ${esc(modelEffort(a))}</span>` : ''}${cmpBadge(a)}</div>
     ${a.subagents.length ? `<div class="subs">${t('n_subs', {n: a.subagents.length})}${subsActive?` · <b style="color:var(--work)">${t('n_active', {n: subsActive})}</b>`:''}</div>` : ''}
   </div>`;
 }
@@ -1238,7 +1278,7 @@ const stepCell = u => `${fmtTok(u.context)} <span class="usage-mini">/ ${u.per_s
 const WARM_S = 3300;      // the main conversation's cache lives 1 h on a subscription; keep a margin
 function compactInfo(a){
   const u = a.usage, c = a.compact || {};
-  if (!u || a.wsl) return null;
+  if (!u || a.wsl || a.engine === 'codex') return null;
   if (c.state === 'running') return {k: 'running'};
   if (c.state && c.t && Date.now() / 1000 - c.t < 1800 && a.status !== 'working') return {k: c.state, c};
   if (u.context < 150000 || a.status === 'working') return null;
@@ -1318,8 +1358,16 @@ const MODEL_CHOICES = [['claude-fable-5-2','$8 / $40'], ['claude-opus-5-5','$4 /
 const EFFORT_CHOICES = ['low','medium','high','xhigh','max'];
 function modelName(m){
   if (!m) return '—';
+  if (/^(gpt|codex)/i.test(m)) return m.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/^Gpt/, 'GPT');
   return m.replace(/^claude-/, '').replace(/\[.*\]$/, '').replace(/-(\d+)-(\d+)$/, ' $1.$2').replace(/-(\d+)$/, ' $1')
           .replace(/^\w/, c => c.toUpperCase());
+}
+const eng = a => a.engine === 'codex' ? `<span class="eng">${t('codex_badge')}</span>` : '';
+const CODEX_EFFORTS = ['low','medium','high','xhigh','max','ultra'];
+function codexRate(){
+  const r = (DATA.codex || {}).rate; if (!r || !r.primary) return '';
+  const h = r.primary.resets_at ? new Date(r.primary.resets_at * 1000).toLocaleTimeString(LANG === 'ro' ? 'ro-RO' : 'en-GB', {hour:'2-digit', minute:'2-digit'}) : '';
+  return t('codex_rate', {p: Math.round(r.primary.used_percent)}) + (r.secondary ? t('codex_rate_w', {p: Math.round(r.secondary.used_percent)}) : '') + (h ? t('codex_reset', {h}) : '');
 }
 const modelEffort = a => a.model ? `${modelName(a.model)}${a.effort ? ' · ' + a.effort : ''}` : '';
 function renderUsage(p, head){
@@ -1375,7 +1423,7 @@ function renderUsage(p, head){
       ${rows.map(a => { const u = a.usage, ci = u.in + u.cr + u.cw;
         return `<tr class="click" data-id="${a.id}"><td><b>${esc(a.title)}</b>${PROJ === '*' ? ` <span class="usage-mini">· ${esc(projName(a.project))}</span>` : ''}${(a.tips||[]).length ? ' 💡' : ''}</td>
           <td class="num">${fmtTok(u.win.tok)}</td><td>${spark(u.win.bins)}</td><td class="num">${fmtTok(u.tok)}</td><td class="num">${fmtUsd(u.win.cost)}</td>
-          <td><div class="gauge"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span>${fmtTok(u.context)}</span></div></td>
+          <td><div class="gauge"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / (u.window || 1e6))}%"></div></div><span>${fmtTok(u.context)}</span></div></td>
           <td class="num">${stepCell(u)}</td>
           <td class="num">${ci ? Math.round(100 * u.cr / ci) + '%' : '—'}</td><td class="num">${u.tok ? Math.round(100 * u.sub_tok / u.tok) + '%' : '—'}</td><td class="usage-mini">${esc(modelEffort(a))}</td></tr>`; }).join('')}
       </tbody></table></div>
@@ -1508,20 +1556,33 @@ function renderPanel(){
   const ta = P.querySelector('#msg');
   if (ta) DRAFT[a.id] = ta.value;
   const hadFocus = ta && document.activeElement === ta;
-  const modeTxt = a.wsl ? t('mode_wsl') : a.running && a.mode === 'background' ? t('mode_bg') : a.running ? t('mode_term') : t('mode_closed');
-  const termTxt = t(a.running && a.mode === 'terminal' ? 'btn_show' : a.running ? 'btn_open' : 'btn_wake');
+  const cx = a.engine === 'codex';
+  const modeTxt = cx ? t(a.running ? 'mode_codex_app' : 'mode_codex_closed')
+    : a.wsl ? t('mode_wsl') : a.running && a.mode === 'background' ? t('mode_bg') : a.running ? t('mode_term') : t('mode_closed');
+  const termTxt = cx ? '🖥️ Terminal' : t(a.running && a.mode === 'terminal' ? 'btn_show' : a.running ? 'btn_open' : 'btn_wake');
+  const mChoices = cx ? ((DATA.codex || {}).models || []).map(m => [m[0], 'ChatGPT']) : MODEL_CHOICES;
+  const eChoices = cx ? CODEX_EFFORTS : EFFORT_CHOICES;
   P.querySelector('#pinfo').innerHTML = `<div class="ph">${mascot(hue(a.title), a.status, a.title)}
-      <div><h3 style="margin:0">${esc(a.title)}</h3>${pill(a)}
+      <div><h3 style="margin:0">${esc(a.title)}${eng(a)}</h3>${pill(a)}
         ${persona(a.title) ? `<div class="persona">${esc(persona(a.title))}</div>` : ''}</div>
       <span style="margin-left:auto;display:flex;gap:2px;align-items:center">
         <button class="ibtn" id="a-edit" title="${esc(t('a_edit'))}">✏️</button>
         <button class="ibtn" id="a-del" title="${esc(t('a_delete'))}" ${SENDING ? 'disabled' : ''}>🗑️</button>
         <button class="x" id="close" title="${t('close')}">✕</button></span></div>
     <div class="pb">
-      ${a.asks ? `<div class="ask"><span style="font-size:26px">${a.asks==='approval'?'✋':'🙋'}</span>
+      ${a.asks && cx ? `<div class="ask"><span style="font-size:26px">✋</span><p><b>${t('ask_codex')}</b></p></div>` : ''}
+      ${a.asks && !cx ? `<div class="ask"><span style="font-size:26px">${a.asks==='approval'?'✋':'🙋'}</span>
         <p><b>${t(a.asks==='approval'?'ask_approval':'ask_question')}</b>
         ${t(a.mode==='background'?'ask_bg':'ask_term')} ${t('ask_wait')}</p>
         <button class="term" id="term2" ${SENDING?'disabled':''}>${t(a.mode==='background'?'btn_answer':'btn_show')}</button></div>` : ''}
+      ${cx && codexRate() ? `<div class="usage-mini" style="margin:6px 0;white-space:normal">🟢 ${esc(codexRate())}</div>` : ''}
+      ${!cx && !a.wsl && (DATA.codex || {}).available ? (() => { const r = a.review;
+        if (!r) return `<div style="margin:8px 0"><button class="sleep" id="rv" title="${esc(t('rv_hint'))}" ${SENDING ? 'disabled' : ''}>${t('rv_btn')}</button></div>`;
+        if (r.state === 'running') return `<div class="act cmp">${t('rv_running')}</div>`;
+        if (r.state === 'failed') return `<div class="act cmp">${t('rv_failed', {err: esc(r.text || '')})} <button class="sleep" id="rv-x">${t('rv_close')}</button></div>`;
+        return `<h4>${t('rv_done_h', {what: t('rv_' + r.what)})}</h4><div class="bubble rvtext">${esc(r.text)}</div>
+          <div style="display:flex;gap:8px;margin:8px 0;align-items:center">${r.sent ? `<span class="usage-mini">${t('rv_sent')}</span>` : `<button class="term" id="rv-send" ${SENDING ? 'disabled' : ''}>${t('rv_send')}</button>`}
+          <button class="sleep" id="rv-x">${t('rv_close')}</button></div>`; })() : ''}
       ${a.asks ? '' : `<div class="act">${a.running?'<span class="on-dot"></span> ':''}${esc(activity(a))}</div>`}
       ${(() => { const ci = compactInfo(a); if (!ci) return '';
         if (ci.k === 'running') return `<div class="act cmp">${t('cmp_running')}</div>`;
@@ -1537,9 +1598,9 @@ function renderPanel(){
       <div class="compose">
         <textarea id="msg" placeholder="${esc(t('placeholder'))}" ${a.wsl?'disabled':''}>${esc(DRAFT[a.id] || '')}</textarea>
         <div class="row"><span class="hint">${modeTxt}${a.usage && a.usage.context >= 20000 ? ' ' + t('per_msg', {k: Math.round(a.usage.context / 1000)}) : ''}</span>
-          ${a.running && !a.wsl ? `<button class="sleep" id="sleep" ${SENDING?'disabled':''} title="${esc(t('sleep_hint'))}">${t('btn_sleep')}</button>` : ''}
+          ${a.running && !a.wsl && (!cx || a.mode === 'background') ? `<button class="sleep" id="sleep" ${SENDING?'disabled':''} title="${esc(t('sleep_hint'))}">${t('btn_sleep')}</button>` : ''}
           <button class="term" id="term" ${SENDING?'disabled':''} title="${esc(t('term_hint'))}">${termTxt}</button>
-          <button class="buzz" id="buzz" ${!a.running||a.wsl||SENDING?'disabled':''} title="${esc(t(a.running&&!a.wsl ? 'buzz_ok' : 'buzz_no'))}">🐝 BUZZ!</button>
+          <button class="buzz" id="buzz" ${!a.running||a.wsl||cx||SENDING?'disabled':''} title="${esc(t(a.running&&!a.wsl ? 'buzz_ok' : 'buzz_no'))}">🐝 BUZZ!</button>
           <button class="send" id="send" ${a.wsl||SENDING?'disabled':''}>${t(SENDING ? 'sending' : 'send')}</button></div>
         ${LASTRES ? `<div class="res ${LASTRES.ok?'ok':'err'}">${LASTRES.ok?'✅':'⚠️'} ${esc(resultText(LASTRES))}</div>` : ''}
       </div>
@@ -1554,22 +1615,22 @@ function renderPanel(){
         <div class="act" style="margin-top:0">
           <div class="usage-mini" style="margin-bottom:8px">${t('mdl_now', {m: esc(modelName(a.model)), e: esc(a.effort || '—')})}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <select id="mdl">${(MODEL_CHOICES.some(([m]) => m === a.model) ? [] : [['', '']]).concat(MODEL_CHOICES).map(([m, p]) => m
+            <select id="mdl">${(mChoices.some(([m]) => m === a.model) ? [] : [['', '']]).concat(mChoices).map(([m, p]) => m
               ? `<option value="${m}" ${m === a.model ? 'selected' : ''}>${modelName(m)} · ${p}</option>`
               : `<option value="" selected>${esc(modelName(a.model))} ${t('mdl_keep')}</option>`).join('')}</select>
-            <select id="eff">${EFFORT_CHOICES.map(e => `<option ${e === a.effort ? 'selected' : ''}>${e}</option>`).join('')}</select>
+            <select id="eff">${eChoices.map(e => `<option ${e === a.effort ? 'selected' : ''}>${e}</option>`).join('')}</select>
             <button class="term" id="mdl-apply" ${SENDING ? 'disabled' : ''}>${t('mdl_apply')}</button></div>
-          <div class="usage-mini" style="margin-top:8px;font-weight:600;white-space:normal">${t(a.running ? (a.mode === 'terminal' ? 'mdl_note_term' : 'mdl_note_run') : 'mdl_note_closed')}
+          <div class="usage-mini" style="margin-top:8px;font-weight:600;white-space:normal">${t(cx ? 'mdl_note_codex' : a.running ? (a.mode === 'terminal' ? 'mdl_note_term' : 'mdl_note_run') : 'mdl_note_closed')}
             ${a.usage && a.usage.context >= 20000 ? ' ' + t('mdl_note_switch', {k: Math.round(a.usage.context / 1000)}) : ''}</div>
           ${a.pending ? `<div class="usage-mini" style="margin-top:6px;color:var(--work)">⏳ ${t('mdl_pending', {v: esc([a.pending.model && modelName(a.pending.model), a.pending.effort].filter(Boolean).join(' · '))})}</div>` : ''}
         </div>`}
       ${PSECS.has('usage') && a.usage && a.usage.req ? (() => { const u = a.usage, ci = u.in + u.cr + u.cw; return `<h4>📊 ${t('p_usage')}</h4>
-        <div class="act" style="margin-top:0">${t('p_usage_line', {d: fmtTok(u.day.tok), c: fmtUsd(u.day.cost), t: fmtTok(u.tok), ct: fmtUsd(u.cost)})}
+        <div class="act" style="margin-top:0">${t('p_usage_line', {d: fmtTok(u.day.tok), c: cx ? 'ChatGPT' : fmtUsd(u.day.cost), t: fmtTok(u.tok), ct: cx ? 'ChatGPT' : fmtUsd(u.cost)})}
           <div style="margin:8px 0 4px">${spark(u.spark, 300, 34)}</div>
           ${u.per_step ? `<div style="margin-top:6px" title="${esc(t('step_hint'))}">${t('p_step', {now: fmtTok(u.context), day: fmtTok(u.per_step.day || 0), week: fmtTok(u.per_step.week || 0)})}
             ${stepDrop(u) ? `<div style="color:#3d9a5b;font-weight:700">${t('p_step_down', {p: stepDrop(u)})}</div>` : ''}
             <div style="margin:4px 0">${spark(u.step_spark || [], 300, 28)}</div></div>` : ''}
-          <div class="gauge" style="margin-top:6px"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / 1e6)}%"></div></div><span style="width:auto">${t('p_ctx', {k: Math.round(u.context / 1000)})}</span></div>
+          <div class="gauge" style="margin-top:6px"><div class="track"><div class="fill" style="width:${Math.min(100, 100 * u.context / (u.window || 1e6))}%"></div></div><span style="width:auto">${t('p_ctx', {k: Math.round(u.context / 1000)})}</span></div>
           <div class="usage-mini" style="margin-top:6px">${ci ? t('p_cache', {p: Math.round(100 * u.cr / ci)}) : ''}${u.sub_tok ? ' · ' + t('u_sub_share', {p: Math.round(100 * u.sub_tok / Math.max(u.tok, 1))}) : ''}</div></div>
         ${(a.tips || []).length ? `<ul class="tiplist">${a.tips.map(tp => `<li>💡 ${tipText(tp)}</li>`).join('')}</ul>` : ''}`; })() : ''}
       ${PSECS.has('feed') ? `
@@ -1584,7 +1645,7 @@ function renderPanel(){
         <b>${t('k_folder')}</b><span>${esc(a.cwd)}</span><b>${t('k_branch')}</b><span>${esc(a.branch||'—')}</span>
         <b>${t('k_model')}</b><span>${esc(a.model||'—')}</span><b>${t('k_session')}</b><span>${a.id}</span>
         <b>${t('k_active')}</b><span>${ago(a.age)}</span></div>
-      <p class="sub" style="margin-top:14px;font-size:12px">${t('from_any')} ${a.running && a.mode==='background'
+      <p class="sub" style="margin-top:14px;font-size:12px">${t('from_any')} ${cx ? `<code>codex resume ${a.id}</code>` : a.running && a.mode==='background'
         ? `<code>claude attach ${esc(a.job || a.id.slice(0,8))}</code> ${t('bg_session')}`
         : `<code>claude --resume ${a.id}</code>`} · <code>claude</code> ${t('plain_new')}</p>` : ''}
     </div>`;
@@ -1607,6 +1668,9 @@ function renderPanel(){
     run('/api/open', {id:a.id, text}, !!text);
   };
   $('#term').onclick = open;
+  if ($('#rv')) $('#rv').onclick = () => { if (!SENDING) run('/api/manage', {op: 'review', id: a.id}, false); };
+  if ($('#rv-send')) $('#rv-send').onclick = () => { if (!SENDING) run('/api/manage', {op: 'review_send', id: a.id}, false); };
+  if ($('#rv-x')) $('#rv-x').onclick = () => { if (!SENDING) run('/api/manage', {op: 'review_close', id: a.id}, false); };
   if ($('#term2')) $('#term2').onclick = open;
   if ($('#sleep')) $('#sleep').onclick = () => {
     if (SENDING) return;
@@ -1738,20 +1802,28 @@ function agentForm(projName){
   const popular = Object.entries(mine.reduce((o, a) => (o[a.cwd] = (o[a.cwd] || 0) + 1, o), {})).sort((a, b) => b[1] - a[1]);
   const projOpts = DATA.projects.filter(p => p.name !== '@other').map(p => `<option value="${esc(p.name)}" ${p.name === projName ? 'selected' : ''}>${p.emoji} ${esc(p.name)}</option>`).join('')
     + `<option value="" ${!projName || projName === '@other' || projName === '*' ? 'selected' : ''}>${t('automatic')}</option>`;
+  const cxOk = (DATA.codex || {}).available;
+  const mOpts = cx => `<option value="">${t('f_default')}</option>` + (cx ? ((DATA.codex || {}).models || []).map(x => `<option value="${esc(x[0])}">${esc(modelName(x[0]))}</option>`)
+    : MODEL_CHOICES.map(([m, p]) => `<option value="${m}">${modelName(m)} · ${p}</option>`)).join('');
+  const eOpts = cx => `<option value="">${t('f_default')}</option>` + (cx ? CODEX_EFFORTS : EFFORT_CHOICES).map(e => `<option>${e}</option>`).join('');
   const body = `<label>${t('f_name')}</label><input id="f-name" maxlength="60">
+    ${cxOk ? `<label>${t('f_engine')}</label><select id="f-engine"><option value="claude">${t('e_claude')}</option><option value="codex">${t('e_codex')}</option></select>` : ''}
     <label>${t('f_project')}</label><select id="f-proj">${projOpts}</select>
     <label>${t('f_folder')}</label><input id="f-folder" list="f-folders" value="${esc(popular.length ? popular[0][0] : '')}">
       <datalist id="f-folders">${folders.map(f => `<option value="${esc(f)}">`).join('')}</datalist><p class="note">${t('f_folder_note')}</p>
     <div class="row2" style="grid-template-columns:1fr 1fr;margin-top:12px">
-      <div><label>${t('f_model')}</label><select id="f-model"><option value="">${t('f_default')}</option>${MODEL_CHOICES.map(([m, p]) => `<option value="${m}">${modelName(m)} · ${p}</option>`).join('')}</select></div>
-      <div><label>${t('f_effort')}</label><select id="f-effort"><option value="">${t('f_default')}</option>${EFFORT_CHOICES.map(e => `<option>${e}</option>`).join('')}</select></div></div>
+      <div><label>${t('f_model')}</label><select id="f-model">${mOpts(false)}</select></div>
+      <div><label>${t('f_effort')}</label><select id="f-effort">${eOpts(false)}</select></div></div>
     <label>${t('f_first')}</label><textarea id="f-text"></textarea>
     <label>${t('f_where')}</label>
     <label class="radio"><input type="radio" name="f-where" value="term" checked> ${t('w_term')}</label>
     <label class="radio"><input type="radio" name="f-where" value="bg"> ${t('w_bg')}</label>`;
-  modal(t('m_new_agent'), body, m => manage({op: 'agent_new', name: val(m, 'f-name'), project: val(m, 'f-proj'),
+  const md = modal(t('m_new_agent'), body, m => manage({op: 'agent_new', engine: val(m, 'f-engine') || 'claude', name: val(m, 'f-name'), project: val(m, 'f-proj'),
     folder: val(m, 'f-folder'), model: val(m, 'f-model'), effort: val(m, 'f-effort'), text: val(m, 'f-text'),
     background: (m.querySelector('input[name=f-where]:checked') || {}).value === 'bg'}), t('b_start'));
+  const eg = md && md.querySelector('#f-engine');
+  if (eg) eg.onchange = () => { const cx = eg.value === 'codex';
+    md.querySelector('#f-model').innerHTML = mOpts(cx); md.querySelector('#f-effort').innerHTML = eOpts(cx); };
 }
 
 function agentEditForm(a){

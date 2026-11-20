@@ -18,6 +18,7 @@ def main():
 
     srv = ThreadingHTTPServer(("127.0.0.1", 0), server.H)
     server.PORT = srv.server_address[1]
+    server.write_port()                           # for buzz_mcp.py, the bridge agents use to write to each other
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     webview.create_window(
